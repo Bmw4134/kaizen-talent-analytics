@@ -59,8 +59,16 @@ def prepare_funnel_data(df):
 funnel_data = prepare_funnel_data(ats_data)
 
 # Initialize Dash app with Bootstrap theme
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY])
+from flask import Flask, send_from_directory
+
+server = Flask(__name__, static_folder='landing_page', static_url_path='')
+
+app = dash.Dash(__name__, server=server, url_base_pathname='/dashboard/', external_stylesheets=[dbc.themes.DARKLY])
 app.title = "Kaizen Talent Insights: Netflix ML Application"
+
+@server.route('/')
+def serve_landing_page():
+    return server.send_static_file('index.html')
 
 # Helper function for color coding goal status
 def color_code_status(status):
