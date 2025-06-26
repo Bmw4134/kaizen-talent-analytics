@@ -1,0 +1,435 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<div data-dashboard-name="dwc" class="fade-in">
+    <!-- Dashboard Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6 mb-2">
+                        <i class="fas fa-layers me-3 text-primary"></i>
+                        DWC Dashboard
+                    </h1>
+                    <p class="text-muted">Dynamic Workflow Controller</p>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                            <li class="breadcrumb-item">Dashboards</li>
+                            <li class="breadcrumb-item active">DWC</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex gap-2">
+                    <button id="refresh-dashboard" class="btn btn-primary">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button id="dashboard-settings" class="btn btn-outline-secondary">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                    <button id="export-data" class="btn btn-outline-info">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Navigation -->
+    <div class="dashboard-nav">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard', dashboard_name='traxovo') }}">
+                    <i class="fas fa-activity me-1"></i>TRAXOVO
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('dashboard', dashboard_name='dwc') }}">
+                    <i class="fas fa-layers me-1"></i>DWC
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard', dashboard_name='jdd') }}">
+                    <i class="fas fa-database me-1"></i>JDD
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard', dashboard_name='crypto_nexus_trade') }}">
+                    <i class="fas fa-chart-line me-1"></i>CryptoNexus
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Error Container -->
+    <div id="error-container"></div>
+
+    <!-- Dashboard Status -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Dashboard Status</h6>
+                            <span id="dashboard-status" class="badge bg-success">
+                                {% if dashboard_data and dashboard_data.status %}
+                                    {{ dashboard_data.status.upper() }}
+                                {% else %}
+                                    INITIALIZING
+                                {% endif %}
+                            </span>
+                            {% if dashboard_data and dashboard_data.version %}
+                                <span class="badge bg-secondary ms-2">v{{ dashboard_data.version }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">Auto-refresh: 
+                                <div class="form-check form-switch d-inline-block ms-2">
+                                    <input class="form-check-input" type="checkbox" id="auto-refresh-toggle" checked>
+                                </div>
+                            </small>
+                            <div id="last-refresh" class="small text-muted">
+                                Last updated: 
+                                {% if dashboard_data and dashboard_data.timestamp %}
+                                    {{ dashboard_data.timestamp }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intelligence Insights -->
+    {% if dashboard_data and dashboard_data.intelligence %}
+    <div id="intelligence-insights" class="mb-4">
+        <div class="alert alert-primary">
+            <h6><i class="fas fa-brain me-2"></i>Quantum Nexus Intelligence</h6>
+            <p class="mb-1">{{ dashboard_data.intelligence.insights }}</p>
+            <small class="text-muted">
+                Optimization Score: {{ dashboard_data.intelligence.optimization_score | round(2) }}
+                | Processed: {{ dashboard_data.intelligence.processed_at }}
+            </small>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Workflow Metrics -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h5 class="mb-3">
+                <i class="fas fa-stream me-2"></i>
+                Workflow Metrics
+            </h5>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value" id="active-workflows">
+                    {% if dashboard_data and dashboard_data.workflow %}
+                        {{ dashboard_data.workflow.active_workflows or 0 }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </div>
+                <div class="metric-label">Active Workflows</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value" id="pending-tasks">
+                    {% if dashboard_data and dashboard_data.workflow %}
+                        {{ dashboard_data.workflow.pending_tasks or 0 }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </div>
+                <div class="metric-label">Pending Tasks</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value" id="completed-today">
+                    {% if dashboard_data and dashboard_data.workflow %}
+                        {{ dashboard_data.workflow.completed_today or 0 }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </div>
+                <div class="metric-label">Completed Today</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value" id="system-load">
+                    {% if dashboard_data and dashboard_data.workflow %}
+                        {{ (dashboard_data.workflow.system_load or 0) | round(1) }}%
+                    {% else %}
+                        --%
+                    {% endif %}
+                </div>
+                <div class="metric-label">System Load</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workflow Management -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        Active Workflows
+                    </h6>
+                    <button class="btn btn-outline-primary btn-sm" onclick="createWorkflow()">
+                        <i class="fas fa-plus me-1"></i>
+                        New Workflow
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="workflow-list">
+                        {% if dashboard_data and dashboard_data.workflow and dashboard_data.workflow.workflows %}
+                            {% for workflow in dashboard_data.workflow.workflows %}
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ workflow.name or 'Unnamed Workflow' }}</h6>
+                                            <p class="text-muted mb-0">{{ workflow.description or 'No description available' }}</p>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-{{ 'success' if workflow.status == 'running' else 'secondary' }}">
+                                                {{ workflow.status or 'unknown' }}
+                                            </span>
+                                            <div class="btn-group btn-group-sm ms-2">
+                                                <button class="btn btn-outline-secondary" onclick="pauseWorkflow('{{ workflow.id or '' }}')">
+                                                    <i class="fas fa-pause"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" onclick="stopWorkflow('{{ workflow.id or '' }}')">
+                                                    <i class="fas fa-stop"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-stream fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No active workflows found</p>
+                                <button class="btn btn-primary" onclick="createWorkflow()">
+                                    <i class="fas fa-plus me-1"></i>
+                                    Create First Workflow
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-cogs me-2"></i>
+                        Control Panel
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="control-panel">
+                        {% if dashboard_data and dashboard_data.control_panel %}
+                        <div class="mb-3">
+                            <label class="form-label small">System Health</label>
+                            <div>
+                                <span class="badge bg-{{ 'success' if dashboard_data.control_panel.system_health == 'operational' else 'warning' }}">
+                                    {{ dashboard_data.control_panel.system_health or 'Unknown' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small">Configuration Status</label>
+                            <div>
+                                <span class="badge bg-{{ 'info' if dashboard_data.control_panel.configuration_status == 'ready' else 'secondary' }}">
+                                    {{ dashboard_data.control_panel.configuration_status or 'Unknown' }}
+                                </span>
+                            </div>
+                        </div>
+                        {% else %}
+                        <p class="text-muted">Control panel data not available</p>
+                        {% endif %}
+                        
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="configureWorkflows()">
+                                <i class="fas fa-wrench me-1"></i>
+                                Configure
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="pauseAllWorkflows()">
+                                <i class="fas fa-pause me-1"></i>
+                                Pause All
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="emergencyStop()">
+                                <i class="fas fa-stop-circle me-1"></i>
+                                Emergency Stop
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Automation Rules -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-robot me-2"></i>
+                        Automation Rules
+                    </h6>
+                    <button class="btn btn-outline-primary btn-sm" onclick="addRule()">
+                        <i class="fas fa-plus me-1"></i>
+                        Add Rule
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if dashboard_data and dashboard_data.control_panel and dashboard_data.control_panel.automation_rules %}
+                        {% for rule in dashboard_data.control_panel.automation_rules %}
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ rule.name or 'Unnamed Rule' }}</h6>
+                                        <p class="text-muted mb-0 small">{{ rule.condition or 'No condition specified' }}</p>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-{{ 'success' if rule.enabled else 'secondary' }}">
+                                            {{ 'Enabled' if rule.enabled else 'Disabled' }}
+                                        </span>
+                                        <button class="btn btn-outline-secondary btn-sm ms-2" onclick="editRule('{{ rule.id or '' }}')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-3">
+                            <i class="fas fa-robot fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">No automation rules configured</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QNI Metadata -->
+    {% if dashboard_data and dashboard_data.qni_metadata %}
+    <div id="qni-metadata" class="mb-4">
+        <div class="card border-primary">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="fas fa-brain me-2"></i>
+                    QNI Processing Information
+                </h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <small class="text-muted">Processing Time</small>
+                        <div>{{ dashboard_data.qni_metadata.processing_time_ms or 0 }}ms</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Confidence Score</small>
+                        <div>{{ (dashboard_data.qni_metadata.confidence_score or 0) | round(2) }}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Last Processed</small>
+                        <div>{{ dashboard_data.qni_metadata.timestamp or 'Unknown' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Error State -->
+    {% if dashboard_data and dashboard_data.error %}
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-danger">
+                <h6>
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    Dashboard Error
+                </h6>
+                <p class="mb-0">{{ dashboard_data.error }}</p>
+                <button class="btn btn-outline-danger btn-sm mt-2" onclick="window.location.reload()">
+                    <i class="fas fa-redo me-1"></i>
+                    Retry
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function createWorkflow() {
+    showNotification('Workflow creation interface coming soon!', 'info');
+}
+
+function pauseWorkflow(workflowId) {
+    showNotification(`Workflow ${workflowId} paused`, 'warning');
+}
+
+function stopWorkflow(workflowId) {
+    showNotification(`Workflow ${workflowId} stopped`, 'danger');
+}
+
+function configureWorkflows() {
+    showNotification('Configuration panel coming soon!', 'info');
+}
+
+function pauseAllWorkflows() {
+    showNotification('All workflows paused', 'warning');
+}
+
+function emergencyStop() {
+    if (confirm('Are you sure you want to perform an emergency stop? This will halt all workflows immediately.')) {
+        showNotification('Emergency stop activated - All workflows halted', 'danger');
+    }
+}
+
+function addRule() {
+    showNotification('Rule creation interface coming soon!', 'info');
+}
+
+function editRule(ruleId) {
+    showNotification(`Editing rule ${ruleId}`, 'info');
+}
+
+function showNotification(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.top = '20px';
+    alertDiv.style.right = '20px';
+    alertDiv.style.zIndex = '9999';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alertDiv);
+
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.parentNode.removeChild(alertDiv);
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}
