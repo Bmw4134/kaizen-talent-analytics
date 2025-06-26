@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS Role-Aware Dashboard</title>
+    
+    <!-- Bootstrap CSS with Replit Dark Theme -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        .role-indicator {
+            background: linear-gradient(45deg, #00ff88, #0066cc);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .admin-layout { border-left: 4px solid #ff6600; }
+        .trader-layout { border-left: 4px solid #00ff88; }
+        .dev-layout { border-left: 4px solid #0066cc; }
+        
+        .module-tile {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+        }
+        
+        .module-tile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .module-tile:hover::before {
+            left: 100%;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        
+        .status-operational { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+        .status-warning { background: #ffa500; box-shadow: 0 0 10px #ffa500; }
+        .status-error { background: #ff4444; box-shadow: 0 0 10px #ff4444; }
+        
+        .qpi-meter {
+            width: 100%;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        
+        .qpi-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.8s ease;
+        }
+        
+        .qpi-high { background: linear-gradient(90deg, #00ff88, #66ffaa); }
+        .qpi-medium { background: linear-gradient(90deg, #ffa500, #ffcc00); }
+        .qpi-low { background: linear-gradient(90deg, #ff4444, #ff6666); }
+        
+        .action-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(26, 26, 26, 0.95);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+        
+        .terminal-window {
+            background: #000;
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .floating-metrics {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            width: 280px;
+            background: rgba(26, 26, 26, 0.9);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            z-index: 999;
+        }
+        
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .debug-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            display: none;
+        }
+        
+        .debug-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 800px;
+            background: #1a1a1a;
+            border: 2px solid #00ff88;
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .breadcrumb-nav {
+            background: rgba(45, 45, 45, 0.5);
+            border-radius: 6px;
+            padding: 8px 15px;
+            margin-bottom: 20px;
+        }
+        
+        .live-update-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #00ff88;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .module-category-admin { background: linear-gradient(135deg, #ff6600, #ff3300); }
+        .module-category-trading { background: linear-gradient(135deg, #00ff88, #00cc66); }
+        .module-category-ai { background: linear-gradient(135deg, #0066cc, #0044aa); }
+        .module-category-analytics { background: linear-gradient(135deg, #ffa500, #ff8800); }
+        .module-category-control { background: linear-gradient(135deg, #9966ff, #7744dd); }
+    </style>
+</head>
+<body>
+    <!-- Live Update Indicator -->
+    <div class="live-update-indicator" id="live-indicator">
+        <i class="fas fa-wifi"></i> LIVE
+    </div>
+
+    <!-- Navigation with Role Context -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-brain me-2"></i>
+                NEXUS Control Center
+            </a>
+            
+            <!-- Breadcrumb Navigation -->
+            <div class="breadcrumb-nav d-none d-md-block">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0" id="breadcrumb-nav">
+                        <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Overview</li>
+                    </ol>
+                </nav>
+            </div>
+            
+            <div class="d-flex align-items-center">
+                <span class="role-indicator me-3" id="user-role">Admin User</span>
+                <span class="badge bg-success me-3">
+                    <i class="fas fa-heartbeat"></i> Operational
+                </span>
+                <button class="btn btn-sm btn-outline-warning" onclick="toggleDebugMode()">
+                    <i class="fas fa-bug"></i> Debug
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4">
+        <!-- Role-Specific Module Grid -->
+        <div class="row" id="module-grid">
+            <!-- Modules will be dynamically populated based on user role -->
+        </div>
+    </div>
+
+    <!-- Floating Live Metrics -->
+    <div class="floating-metrics" id="floating-metrics">
+        <h6 class="text-success mb-3">
+            <i class="fas fa-chart-line me-2"></i>
+            Live System Metrics
+        </h6>
+        <div id="metrics-content">
+            <!-- Metrics will be populated here -->
+        </div>
+    </div>
+
+    <!-- Action Panel -->
+    <div class="action-panel" id="action-panel">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="terminal-window p-2" id="terminal-output">
+                    <div class="text-success">NEXUS Agent Terminal Ready</div>
+                    <div class="mt-1">
+                        <span class="text-success">nexus@control:~$</span>
+                        <input type="text" class="bg-transparent border-0 text-light ms-2" 
+                               style="outline: none; width: 70%;" id="agent-input" 
+                               placeholder="Enter /agent: command..." />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="btn-group w-100" role="group">
+                    <button class="btn btn-outline-success btn-sm" onclick="executeCommand('master_sync')">
+                        <i class="fas fa-sync-alt"></i> Sync
+                    </button>
+                    <button class="btn btn-outline-info btn-sm" onclick="executeCommand('validate')">
+                        <i class="fas fa-check"></i> Validate
+                    </button>
+                    <button class="btn btn-outline-warning btn-sm" onclick="executeCommand('optimize')">
+                        <i class="fas fa-cog"></i> Optimize
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" onclick="toggleActionPanel()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Debug Overlay -->
+    <div class="debug-overlay" id="debug-overlay">
+        <div class="debug-panel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-success mb-0">
+                    <i class="fas fa-bug me-2"></i>
+                    Debug Console
+                </h5>
+                <button class="btn btn-sm btn-outline-danger" onclick="closeDebugMode()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="debug-content">
+                <!-- Debug information will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Global state
+        let currentUser = {
+            role: 'admin',
+            fingerprint: 'user_admin_001',
+            permissions: ['all']
+        };
+        
+        let moduleData = {};
+        let liveMetrics = {};
+        let debugMode = false;
+        
+        // Role-specific module configurations
+        const roleConfigurations = {
+            admin: {
+                modules: ['traxovo', 'dwc', 'jdd', 'crypto_nexus_trade', 'quantum_intelligence_engine', 'master_control', 'codex_intelligence'],
+                layout: 'admin-layout',
+                priority: ['master_control', 'quantum_intelligence_engine', 'codex_intelligence']
+            },
+            trader: {
+                modules: ['crypto_nexus_trade', 'traxovo', 'jdd', 'quantum_intelligence_engine'],
+                layout: 'trader-layout',
+                priority: ['crypto_nexus_trade', 'traxovo', 'jdd']
+            },
+            developer: {
+                modules: ['codex_intelligence', 'quantum_intelligence_engine', 'dwc', 'master_control'],
+                layout: 'dev-layout',
+                priority: ['codex_intelligence', 'dwc', 'master_control']
+            }
+        };
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            detectUserRole();
+            loadSystemData();
+            renderRoleAwareDashboard();
+            startLiveUpdates();
+            setupTerminalInput();
+        });
+        
+        function detectUserRole() {
+            // In production, this would come from authentication
+            const urlParams = new URLSearchParams(window.location.search);
+            const roleParam = urlParams.get('role');
+            
+            if (roleParam && roleConfigurations[roleParam]) {
+                currentUser.role = roleParam;
+            }
+            
+            // Update role indicator
+            const roleNames = {
+                admin: 'System Admin',
+                trader: 'Crypto Trader',
+                developer: 'Developer'
+            };
+            
+            document.getElementById('user-role').textContent = roleNames[currentUser.role] || 'Admin User';
+        }
+        
+        async function loadSystemData() {
+            try {
+                const [recoveryResponse, qpiResponse] = await Promise.all([
+                    fetch('/api/recovery-status'),
+                    fetch('/api/qpi-scores')
+                ]);
+                
+                const recoveryData = await recoveryResponse.json();
+                const qpiData = await qpiResponse.json();
+                
+                moduleData = {
+                    modules: recoveryData.modules_recovered || [],
+                    qpi: qpiData
+                };
+                
+                renderRoleAwareDashboard();
+                updateLiveMetrics();
+                
+            } catch (error) {
+                addTerminalOutput('ERROR: Failed to load system data - ' + error.message, 'error');
+            }
+        }
+        
+        function renderRoleAwareDashboard() {
+            const grid = document.getElementById('module-grid');
+            const config = roleConfigurations[currentUser.role];
+            
+            grid.innerHTML = '';
+            grid.className = `row ${config.layout}`;
+            
+            // Filter and sort modules based on role
+            const relevantModules = moduleData.modules.filter(module => 
+                config.modules.includes(module.name)
+            );
+            
+            // Sort by priority
+            relevantModules.sort((a, b) => {
+                const aPriority = config.priority.indexOf(a.name);
+                const bPriority = config.priority.indexOf(b.name);
+                if (aPriority === -1) return 1;
+                if (bPriority === -1) return -1;
+                return aPriority - bPriority;
+            });
+            
+            relevantModules.forEach(module => {
+                const moduleElement = createModuleTile(module);
+                grid.appendChild(moduleElement);
+            });
+        }
+        
+        function createModuleTile(module) {
+            const col = document.createElement('div');
+            col.className = 'col-lg-4 col-md-6 mb-4';
+            
+            const qpiData = moduleData.qpi[module.name] || {};
+            const healthScore = module.health_score || 0;
+            const qpiScore = qpiData.score || 0;
+            
+            const statusClass = healthScore >= 0.8 ? 'operational' : 
+                              healthScore >= 0.6 ? 'warning' : 'error';
+            
+            const qpiClass = qpiScore >= 0.8 ? 'high' : 
+                           qpiScore >= 0.6 ? 'medium' : 'low';
+            
+            const categoryClass = getCategoryClass(module.category);
+            
+            col.innerHTML = `
+                <div class="module-tile card bg-dark border-secondary h-100" onclick="openModule('${module.name}')">
+                    <div class="status-dot status-${statusClass}"></div>
+                    <div class="card-header ${categoryClass} text-white">
+                        <h6 class="mb-0 text-capitalize">${module.name.replace(/_/g, ' ')}</h6>
+                        <small class="opacity-75">${module.category}</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small">Health:</span>
+                            <span class="text-${statusClass === 'operational' ? 'success' : statusClass === 'warning' ? 'warning' : 'danger'}">${(healthScore * 100).toFixed(0)}%</span>
+                        </div>
+                        <div class="qpi-meter">
+                            <div class="qpi-fill qpi-${qpiClass}" style="width: ${qpiScore * 100}%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="small">QPI Score:</span>
+                            <span class="text-info">${qpiScore.toFixed(2)}</span>
+                        </div>
+                        <div class="btn-group w-100" role="group">
+                            <button class="btn btn-outline-success btn-sm" onclick="event.stopPropagation(); testModule('${module.name}')">
+                                <i class="fas fa-vial"></i>
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="event.stopPropagation(); debugModule('${module.name}')">
+                                <i class="fas fa-bug"></i>
+                            </button>
+                            <button class="btn btn-outline-info btn-sm" onclick="event.stopPropagation(); openModuleInPiP('${module.name}')">
+                                <i class="fas fa-external-link-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return col;
+        }
+        
+        function getCategoryClass(category) {
+            const categoryMap = {
+                'control': 'module-category-admin',
+                'trading': 'module-category-trading',
+                'ai': 'module-category-ai',
+                'analytics': 'module-category-analytics'
+            };
+            return categoryMap[category] || 'module-category-control';
+        }
+        
+        function updateLiveMetrics() {
+            const metricsContent = document.getElementById('metrics-content');
+            
+            // Generate role-specific metrics
+            const metrics = generateRoleMetrics();
+            
+            metricsContent.innerHTML = '';
+            metrics.forEach(metric => {
+                const metricElement = document.createElement('div');
+                metricElement.className = 'metric-item';
+                metricElement.innerHTML = `
+                    <span>${metric.label}:</span>
+                    <span class="text-${metric.color}">${metric.value}</span>
+                `;
+                metricsContent.appendChild(metricElement);
+            });
+        }
+        
+        function generateRoleMetrics() {
+            const baseMetrics = [
+                { label: 'System Health', value: '89.3%', color: 'success' },
+                { label: 'Active Modules', value: moduleData.modules.length, color: 'info' },
+                { label: 'Response Time', value: '0.12s', color: 'warning' }
+            ];
+            
+            if (currentUser.role === 'trader') {
+                baseMetrics.push(
+                    { label: 'Market Status', value: 'Active', color: 'success' },
+                    { label: 'Portfolio P&L', value: '+$2,847', color: 'success' }
+                );
+            } else if (currentUser.role === 'developer') {
+                baseMetrics.push(
+                    { label: 'Code Quality', value: '94%', color: 'success' },
+                    { label: 'Test Coverage', value: '87%', color: 'warning' }
+                );
+            } else if (currentUser.role === 'admin') {
+                baseMetrics.push(
+                    { label: 'User Sessions', value: '47', color: 'info' },
+                    { label: 'Security Status', value: 'Secure', color: 'success' }
+                );
+            }
+            
+            return baseMetrics;
+        }
+        
+        function startLiveUpdates() {
+            setInterval(() => {
+                updateLiveMetrics();
+                updateModuleHealth();
+            }, 30000);
+            
+            // Update live indicator
+            setInterval(() => {
+                const indicator = document.getElementById('live-indicator');
+                indicator.style.opacity = indicator.style.opacity === '0.5' ? '1' : '0.5';
+            }, 1000);
+        }
+        
+        async function updateModuleHealth() {
+            try {
+                const response = await fetch('/api/validate-modules');
+                const data = await response.json();
+                
+                // Update module tiles with new health data
+                Object.entries(data.modules || {}).forEach(([moduleName, moduleInfo]) => {
+                    updateModuleTileHealth(moduleName, moduleInfo);
+                });
+                
+            } catch (error) {
+                console.error('Health update failed:', error);
+            }
+        }
+        
+        function updateModuleTileHealth(moduleName, healthData) {
+            const moduleElement = document.querySelector(`[onclick="openModule('${moduleName}')"]`);
+            if (moduleElement) {
+                const statusDot = moduleElement.querySelector('.status-dot');
+                const healthSpan = moduleElement.querySelector('.card-body span[class*="text-"]');
+                
+                const newStatusClass = healthData.healthy ? 'operational' : 'error';
+                statusDot.className = `status-dot status-${newStatusClass}`;
+                
+                if (healthSpan) {
+                    healthSpan.textContent = `${(healthData.health_score * 100).toFixed(0)}%`;
+                }
+            }
+        }
+        
+        function setupTerminalInput() {
+            const input = document.getElementById('agent-input');
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const command = this.value.trim();
+                    if (command) {
+                        executeTerminalCommand(command);
+                        this.value = '';
+                    }
+                }
+            });
+        }
+        
+        async function executeTerminalCommand(command) {
+            addTerminalOutput(`nexus@control:~$ ${command}`, 'command');
+            
+            if (command.startsWith('/agent:')) {
+                const agentCommand = command.substring(7);
+                await executeCommand(agentCommand);
+            } else if (command === 'clear') {
+                clearTerminal();
+            } else if (command === 'help') {
+                showHelp();
+            } else {
+                addTerminalOutput(`Unknown command: ${command}`, 'error');
+            }
+        }
+        
+        async function executeCommand(command) {
+            try {
+                const response = await fetch(`/api/agent/${command}`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    addTerminalOutput(`✅ ${result.message}`, 'success');
+                    if (command === 'master_sync') {
+                        loadSystemData(); // Refresh after sync
+                    }
+                } else {
+                    addTerminalOutput(`❌ Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                addTerminalOutput(`❌ Command failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function addTerminalOutput(text, type = 'info') {
+            const terminal = document.getElementById('terminal-output');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            let className = 'text-light';
+            if (type === 'success') className = 'text-success';
+            else if (type === 'error') className = 'text-danger';
+            else if (type === 'warning') className = 'text-warning';
+            else if (type === 'command') className = 'text-info';
+            
+            const output = document.createElement('div');
+            output.className = className;
+            output.innerHTML = `<span class="text-muted">[${timestamp}]</span> ${text}`;
+            
+            terminal.insertBefore(output, terminal.lastElementChild);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+        
+        function clearTerminal() {
+            const terminal = document.getElementById('terminal-output');
+            const children = terminal.children;
+            for (let i = children.length - 2; i >= 0; i--) {
+                children[i].remove();
+            }
+        }
+        
+        function showHelp() {
+            addTerminalOutput('Available commands:', 'info');
+            addTerminalOutput('/agent:master_sync  - Execute master sync recovery', 'info');
+            addTerminalOutput('/agent:validate     - Validate all modules', 'info');
+            addTerminalOutput('/agent:optimize     - Optimize system performance', 'info');
+            addTerminalOutput('/agent:rollback     - Rollback to previous state', 'info');
+            addTerminalOutput('clear               - Clear terminal', 'info');
+            addTerminalOutput('help                - Show this help', 'info');
+        }
+        
+        function toggleDebugMode() {
+            debugMode = !debugMode;
+            const overlay = document.getElementById('debug-overlay');
+            
+            if (debugMode) {
+                overlay.style.display = 'block';
+                loadDebugInfo();
+            } else {
+                overlay.style.display = 'none';
+            }
+        }
+        
+        function closeDebugMode() {
+            debugMode = false;
+            document.getElementById('debug-overlay').style.display = 'none';
+        }
+        
+        async function loadDebugInfo() {
+            const debugContent = document.getElementById('debug-content');
+            
+            try {
+                const response = await fetch('/api/module-status-hooks');
+                const data = await response.json();
+                
+                debugContent.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-info">System Status</h6>
+                            <pre class="bg-dark p-3 rounded">${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-warning">Current User Context</h6>
+                            <pre class="bg-dark p-3 rounded">${JSON.stringify(currentUser, null, 2)}</pre>
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                debugContent.innerHTML = `<div class="text-danger">Debug info loading failed: ${error.message}</div>`;
+            }
+        }
+        
+        function toggleActionPanel() {
+            const panel = document.getElementById('action-panel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function openModule(moduleName) {
+            addTerminalOutput(`Opening module: ${moduleName}`, 'info');
+            // In production, this would navigate to the module
+            window.location.href = `/dashboard/${moduleName}`;
+        }
+        
+        async function testModule(moduleName) {
+            addTerminalOutput(`Testing module: ${moduleName}`, 'info');
+            
+            try {
+                const response = await fetch(`/api/validate-modules`);
+                const result = await response.json();
+                
+                if (result.modules && result.modules[moduleName]) {
+                    const moduleData = result.modules[moduleName];
+                    const status = moduleData.healthy ? 'PASS' : 'FAIL';
+                    const statusClass = moduleData.healthy ? 'success' : 'error';
+                    addTerminalOutput(`Module ${moduleName}: ${status} (Health: ${(moduleData.health_score * 100).toFixed(0)}%)`, statusClass);
+                } else {
+                    addTerminalOutput(`Module ${moduleName}: Test failed`, 'error');
+                }
+            } catch (error) {
+                addTerminalOutput(`Module test error: ${error.message}`, 'error');
+            }
+        }
+        
+        function debugModule(moduleName) {
+            addTerminalOutput(`Debug mode activated for: ${moduleName}`, 'warning');
+            toggleDebugMode();
+        }
+        
+        function openModuleInPiP(moduleName) {
+            addTerminalOutput(`Opening ${moduleName} in Picture-in-Picture`, 'info');
+            // Open browser automation suite with specific module
+            window.open(`/browser-automation-suite?module=${moduleName}`, '_blank', 'width=800,height=600');
+        }
+    </script>
+</body>
+</html>
