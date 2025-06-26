@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kaizen_talent_analytics"
+version = "0.1.0"
+description = "Modular talent analytics system for Netflix Analyst, Talent Analytics (ML) application."
+authors = [
+    { name="Your Name", email="your.email@example.com" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+keywords = ["talent analytics", "machine learning", "predictive hiring", "Netflix"]
+
+[project.urls]
+"Homepage" = "https://github.com/yourusername/kaizen_talent_analytics"
+
+[project.dependencies]
+pydantic = "*"
+pandas = "*"
+scikit-learn = "*"
+sqlalchemy = "*"
+dash = "*"
+dash-bootstrap-components = "*"
+plotly = "*"
+
+[tool.setuptools.packages.find]
+where = ["kaizen_talent_analytics"]
