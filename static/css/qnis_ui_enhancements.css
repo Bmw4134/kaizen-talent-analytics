@@ -1,0 +1,384 @@
+/* QNIS UI/UX Enhancement Stylesheet - Billion-Dollar Polish */
+
+/* Enhanced Layout Flow */
+.qnis-optimized-layout {
+    padding: 0;
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%);
+    min-height: 100vh;
+}
+
+/* Streamlined Hero Section */
+.nexus-hero-section {
+    background: linear-gradient(135deg, rgba(30, 144, 255, 0.1) 0%, rgba(75, 0, 130, 0.1) 100%);
+    padding: 3rem 2rem 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.nexus-hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.nexus-brand-header {
+    margin-bottom: 2rem;
+}
+
+.nexus-brand-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #1e90ff, #4b0082);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 30px rgba(30, 144, 255, 0.3);
+}
+
+.nexus-brand-icon {
+    margin-right: 1rem;
+    animation: nexus-pulse 2s infinite;
+}
+
+.nexus-brand-tagline {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+/* Compact High-Priority Metrics */
+.nexus-priority-metrics {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.nexus-metric-compact {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    min-width: 160px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.nexus-metric-compact::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #007bff, #6f42c1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.nexus-metric-compact:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 123, 255, 0.2);
+}
+
+.nexus-metric-compact:hover::before {
+    opacity: 1;
+}
+
+.nexus-metric-primary::before { background: linear-gradient(90deg, #007bff, #0056b3); }
+.nexus-metric-success::before { background: linear-gradient(90deg, #28a745, #1e7e34); }
+.nexus-metric-info::before { background: linear-gradient(90deg, #17a2b8, #138496); }
+
+.nexus-status-indicator-inline {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #28a745;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    animation: nexus-pulse-success 2s infinite;
+}
+
+/* Section Headers with Professional Styling */
+.nexus-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+}
+
+.nexus-section-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.nexus-module-count {
+    background: rgba(30, 144, 255, 0.2);
+    color: #1e90ff;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+}
+
+/* View Controls */
+.nexus-view-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.nexus-view-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.nexus-view-btn:hover,
+.nexus-view-active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+/* Enhanced Module Grid Layout */
+.nexus-grid-primary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.nexus-grid-secondary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+}
+
+/* Collapsible Containers */
+.nexus-advanced-modules {
+    margin: 3rem 0;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nexus-collapsible-header {
+    padding: 1.5rem 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.3s ease;
+}
+
+.nexus-collapsible-header:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.nexus-collapse-btn {
+    background: none;
+    border: none;
+    color: #007bff;
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.nexus-collapsible-content {
+    padding: 2rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+}
+
+.nexus-collapsible-content.expanded {
+    max-height: 1000px;
+    padding: 2rem;
+}
+
+/* Premium Module Styling */
+.nexus-module-premium {
+    position: relative;
+    overflow: hidden;
+}
+
+.nexus-module-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 40px 40px 0;
+    border-color: transparent #ffd700 transparent transparent;
+    z-index: 2;
+}
+
+.nexus-module-premium::after {
+    content: '★';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: #000;
+    font-size: 16px;
+    z-index: 3;
+}
+
+/* Bottom Panel Enhancement */
+.nexus-bottom-panel {
+    background: linear-gradient(135deg, rgba(30, 144, 255, 0.1) 0%, rgba(107, 66, 193, 0.1) 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    margin-top: 3rem;
+    backdrop-filter: blur(10px);
+}
+
+.nexus-bottom-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.nexus-quick-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.nexus-action-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.nexus-action-primary:hover {
+    background: #007bff;
+    border-color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+
+.nexus-action-secondary:hover {
+    background: #6f42c1;
+    border-color: #6f42c1;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(111, 66, 193, 0.3);
+}
+
+.nexus-system-summary {
+    display: flex;
+    gap: 2rem;
+}
+
+.nexus-summary-item {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+}
+
+.nexus-summary-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 0.2rem;
+}
+
+.nexus-summary-value {
+    font-weight: 600;
+    color: white;
+}
+
+.nexus-text-success {
+    color: #28a745 !important;
+}
+
+/* Animations */
+@keyframes nexus-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes nexus-pulse-success {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+    .nexus-brand-title {
+        font-size: 2.5rem;
+    }
+    
+    .nexus-priority-metrics {
+        gap: 1rem;
+    }
+    
+    .nexus-metric-compact {
+        min-width: 140px;
+        padding: 1rem;
+    }
+    
+    .nexus-grid-primary,
+    .nexus-grid-secondary {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .nexus-bottom-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .nexus-system-summary {
+        justify-content: center;
+    }
+}
+
+/* Scroll Behavior Enhancement */
+html {
+    scroll-behavior: smooth;
+}
+
+.nexus-container {
+    scroll-margin-top: 2rem;
+}
+
+/* Visual Clarity at Scroll Breaks */
+.nexus-primary-modules,
+.nexus-advanced-modules {
+    scroll-margin-top: 2rem;
+    position: relative;
+}
+
+.nexus-primary-modules::before,
+.nexus-advanced-modules::before {
+    content: '';
+    position: absolute;
+    top: -1rem;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
