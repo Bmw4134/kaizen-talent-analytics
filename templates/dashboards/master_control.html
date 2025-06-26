@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %}Master Control{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Master Control Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-danger bg-opacity-10 border-danger">
+                <div class="card-body text-center">
+                    <h1 class="display-4 text-danger mb-3">
+                        <i class="fas fa-shield-alt me-3"></i>
+                        NEXUS Master Control
+                    </h1>
+                    <p class="lead mb-0">Centralized Command & Control Center</p>
+                    <small class="text-muted">Security Level: CLASSIFIED</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Status Grid -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-success bg-opacity-10 border-success">
+                <div class="card-body text-center">
+                    <h3 class="text-success">{{ dashboard_data.system_health }}%</h3>
+                    <p class="mb-0">System Health</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-info bg-opacity-10 border-info">
+                <div class="card-body text-center">
+                    <h3 class="text-info">{{ dashboard_data.active_processes }}</h3>
+                    <p class="mb-0">Active Processes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-warning bg-opacity-10 border-warning">
+                <div class="card-body text-center">
+                    <h3 class="text-warning">{{ dashboard_data.security_alerts }}</h3>
+                    <p class="mb-0">Security Alerts</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-primary bg-opacity-10 border-primary">
+                <div class="card-body text-center">
+                    <h3 class="text-primary">{{ dashboard_data.uptime }}</h3>
+                    <p class="mb-0">System Uptime</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Control Panels -->
+    <div class="row">
+        <!-- System Operations -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cogs me-2"></i>
+                        System Operations
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" onclick="refreshAllDashboards()">
+                            <i class="fas fa-sync me-2"></i>Refresh All Systems
+                        </button>
+                        <button class="btn btn-success" onclick="systemHealthCheck()">
+                            <i class="fas fa-heart me-2"></i>Health Check
+                        </button>
+                        <button class="btn btn-warning" onclick="optimizeSystem()">
+                            <i class="fas fa-rocket me-2"></i>Optimize Performance
+                        </button>
+                        <button class="btn btn-danger" onclick="emergencyShutdown()">
+                            <i class="fas fa-power-off me-2"></i>Emergency Shutdown
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Automation Control -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-robot me-2"></i>
+                        Automation Control
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for rule in dashboard_data.automation_rules %}
+                        <div class="col-12 mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>{{ rule.name }}</span>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" 
+                                           {% if rule.active %}checked{% endif %}
+                                           onchange="toggleAutomation('{{ rule.id }}')">
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monitoring Dashboard -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>
+                        System Monitoring
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-4 mb-3">
+                            <h6>CPU Usage</h6>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-success" style="width: {{ dashboard_data.cpu_usage }}%"></div>
+                            </div>
+                            <small class="text-muted">{{ dashboard_data.cpu_usage }}%</small>
+                        </div>
+                        <div class="col-lg-4 mb-3">
+                            <h6>Memory Usage</h6>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-info" style="width: {{ dashboard_data.memory_usage }}%"></div>
+                            </div>
+                            <small class="text-muted">{{ dashboard_data.memory_usage }}%</small>
+                        </div>
+                        <div class="col-lg-4 mb-3">
+                            <h6>Network I/O</h6>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-warning" style="width: {{ dashboard_data.network_io }}%"></div>
+                            </div>
+                            <small class="text-muted">{{ dashboard_data.network_io }}%</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Command Log -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-terminal me-2"></i>
+                        Command Log
+                    </h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary me-2" onclick="viewLogs()">
+                            <i class="fas fa-eye me-1"></i>View All
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary" onclick="exportSystemData()">
+                            <i class="fas fa-download me-1"></i>Export
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="terminal-output bg-dark p-3 rounded" style="height: 200px; overflow-y: auto;">
+                        {% for log in dashboard_data.recent_logs %}
+                        <div class="text-light font-monospace small">
+                            <span class="text-muted">[{{ log.timestamp }}]</span>
+                            <span class="text-{{ log.level }}">{{ log.level.upper() }}</span>
+                            {{ log.message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Master Control JavaScript Functions
+function refreshAllDashboards() {
+    showControlNotification('Refreshing all dashboard systems...', 'info');
+    fetch('/api/refresh-all')
+        .then(response => response.json())
+        .then(data => {
+            showControlNotification('All systems refreshed successfully', 'success');
+        })
+        .catch(error => {
+            showControlNotification('Refresh failed: ' + error.message, 'danger');
+        });
+}
+
+function systemHealthCheck() {
+    showControlNotification('Performing system health check...', 'info');
+    fetch('/api/health-check')
+        .then(response => response.json())
+        .then(data => {
+            createHealthModal(data);
+        })
+        .catch(error => {
+            showControlNotification('Health check failed: ' + error.message, 'danger');
+        });
+}
+
+function optimizeSystem() {
+    if (confirm('This will optimize system performance. Continue?')) {
+        showControlNotification('Optimizing system performance...', 'warning');
+        fetch('/api/optimize', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                showControlNotification('System optimization complete', 'success');
+            })
+            .catch(error => {
+                showControlNotification('Optimization failed: ' + error.message, 'danger');
+            });
+    }
+}
+
+function emergencyShutdown() {
+    if (confirm('EMERGENCY SHUTDOWN - This will stop all systems. Are you sure?')) {
+        showControlNotification('Initiating emergency shutdown...', 'danger');
+        fetch('/api/emergency-shutdown', { method: 'POST' })
+            .then(response => {
+                showControlNotification('Emergency shutdown initiated', 'danger');
+            })
+            .catch(error => {
+                showControlNotification('Shutdown command failed: ' + error.message, 'danger');
+            });
+    }
+}
+
+function toggleAutomation(ruleId) {
+    fetch(`/api/automation/${ruleId}/toggle`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            showControlNotification(`Automation rule ${data.status}`, 'info');
+        })
+        .catch(error => {
+            showControlNotification('Toggle failed: ' + error.message, 'danger');
+        });
+}
+</script>
+{% endblock %}
