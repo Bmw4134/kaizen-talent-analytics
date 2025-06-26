@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}{{ dashboard_name.upper() }} Dashboard - Nexus Unified{% endblock %}
+
+{% block content %}
+<div data-dashboard-name="{{ dashboard_name }}" class="fade-in">
+    <!-- Dashboard Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6 mb-2">
+                        <i class="fas fa-{% if dashboard_name == 'traxovo' %}activity{% elif dashboard_name == 'dwc' %}layers{% elif dashboard_name == 'jdd' %}database{% else %}chart-line{% endif %} me-3"></i>
+                        {{ dashboard_name.upper() }} Dashboard
+                    </h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                            <li class="breadcrumb-item">Dashboards</li>
+                            <li class="breadcrumb-item active">{{ dashboard_name.upper() }}</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex gap-2">
+                    <button id="refresh-dashboard" class="btn btn-primary">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button id="dashboard-settings" class="btn btn-outline-secondary">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                    <button id="export-data" class="btn btn-outline-info">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Navigation -->
+    <div class="dashboard-nav">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('dashboard', dashboard_name='traxovo') }}">
+                    <i class="fas fa-activity me-1"></i>TRAXOVO
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard', dashboard_name='dwc') }}">
+                    <i class="fas fa-layers me-1"></i>DWC
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard', dashboard_name='jdd') }}">
+                    <i class="fas fa-database me-1"></i>JDD
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard', dashboard_name='crypto_nexus_trade') }}">
+                    <i class="fas fa-chart-line me-1"></i>CryptoNexus
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Error Container -->
+    <div id="error-container"></div>
+
+    <!-- Dashboard Status -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Dashboard Status</h6>
+                            <span id="dashboard-status" class="badge bg-success">ACTIVE</span>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">Auto-refresh: 
+                                <div class="form-check form-switch d-inline-block ms-2">
+                                    <input class="form-check-input" type="checkbox" id="auto-refresh-toggle" checked>
+                                </div>
+                            </small>
+                            <div id="last-refresh" class="small text-muted">Last updated: --</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intelligence Insights -->
+    <div id="intelligence-insights" class="mb-4"></div>
+
+    <!-- QNI Metadata -->
+    <div id="qni-metadata" class="mb-4"></div>
+
+    <!-- Dashboard Content Container -->
+    <div id="dashboard-content">
+        <!-- Content will be loaded dynamically -->
+        <div class="text-center py-5">
+            <div class="loading-spinner mb-3"></div>
+            <h5>Loading {{ dashboard_name.upper() }} Dashboard...</h5>
+            <p class="text-muted">Initializing dashboard data and intelligence systems</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+// Update nav pills to show active dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    const currentDashboard = '{{ dashboard_name }}';
+    const navLinks = document.querySelectorAll('.dashboard-nav .nav-link');
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.href.includes(currentDashboard)) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>
+{% endblock %}
