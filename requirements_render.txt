@@ -1,0 +1,7 @@
+pydantic
+pandas
+scikit-learn
+sqlalchemy
+dash
+dash-bootstrap-components
+gunicorn
