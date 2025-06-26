@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "netflix-insights-landing",
+  "builds": [
+    { "src": "landing_page/index.html", "use": "@vercel/static-build" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "/landing_page/index.html" }
+  ]
+}
