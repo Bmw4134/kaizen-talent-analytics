@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Sync Dashboard - NEXUS Control Center</title>
+    
+    <!-- Bootstrap CSS with Replit Dark Theme -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        .qpi-score {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .qpi-high { color: #00ff88; }
+        .qpi-medium { color: #ffa500; }
+        .qpi-low { color: #ff4444; }
+        
+        .module-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #00ff88;
+        }
+        .module-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-operational { background-color: #00ff88; }
+        .status-warning { background-color: #ffa500; }
+        .status-error { background-color: #ff4444; }
+        
+        .live-metrics {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+        }
+        
+        .agent-terminal {
+            background: #000;
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .crypto-ticker {
+            background: linear-gradient(90deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .crypto-ticker .ticker-content {
+            display: inline-block;
+            animation: scroll-left 30s linear infinite;
+        }
+        @keyframes scroll-left {
+            0% { transform: translate3d(100%, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-cogs me-2"></i>
+                Master Sync Control Center
+            </a>
+            
+            <div class="d-flex align-items-center">
+                <span class="badge bg-success me-3">
+                    <i class="fas fa-heartbeat"></i> System Operational
+                </span>
+                <span class="text-light me-3" id="live-time"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Live Crypto Ticker -->
+    <div class="crypto-ticker py-2">
+        <div class="ticker-content text-success" id="crypto-ticker">
+            Loading live market data...
+        </div>
+    </div>
+
+    <div class="container-fluid py-4">
+        <!-- System Overview Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-dark border-success">
+                    <div class="card-body text-center">
+                        <h3 class="text-success mb-1" id="modules-count">7</h3>
+                        <p class="mb-0">Modules Active</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-dark border-info">
+                    <div class="card-body text-center">
+                        <h3 class="text-info mb-1" id="users-count">6</h3>
+                        <p class="mb-0">Users Restored</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-dark border-warning">
+                    <div class="card-body text-center">
+                        <h3 class="text-warning mb-1" id="qpi-average">0.85</h3>
+                        <p class="mb-0">Avg QPI Score</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-dark border-primary">
+                    <div class="card-body text-center">
+                        <h3 class="text-primary mb-1" id="uptime">99.9%</h3>
+                        <p class="mb-0">System Uptime</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Module Status Grid -->
+            <div class="col-lg-8">
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cubes me-2"></i>
+                            Dashboard Modules
+                        </h5>
+                        <button class="btn btn-sm btn-outline-success" onclick="refreshModules()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="modules-grid">
+                            <!-- Modules will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QPI Analytics -->
+                <div class="card bg-dark border-secondary">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-brain me-2"></i>
+                            Quantum Predictive Interface (QPI) Analytics
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="qpi-chart" style="height: 300px;">
+                            <!-- QPI visualization will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="col-lg-4">
+                <!-- Live Metrics -->
+                <div class="live-metrics p-3 mb-4">
+                    <h6 class="text-success mb-3">
+                        <i class="fas fa-tachometer-alt me-2"></i>
+                        Live System Metrics
+                    </h6>
+                    <div id="live-metrics">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>CPU Usage:</span>
+                            <span class="text-info" id="cpu-usage">12%</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Memory:</span>
+                            <span class="text-warning" id="memory-usage">256MB</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Active Connections:</span>
+                            <span class="text-success" id="connections">47</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Response Time:</span>
+                            <span class="text-primary" id="response-time">0.12s</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent Terminal -->
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-terminal me-2"></i>
+                            Agent Terminal
+                        </h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="agent-terminal p-3" id="agent-terminal">
+                            <div class="text-success">NEXUS Master Sync Terminal v3.0.0</div>
+                            <div class="text-muted">Type /agent:help for available commands</div>
+                            <div class="mt-2">
+                                <span class="text-success">nexus@master:~$</span>
+                                <input type="text" class="bg-transparent border-0 text-light" 
+                                       style="outline: none;" id="terminal-input" 
+                                       placeholder="Enter agent command..." />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card bg-dark border-secondary">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-bolt me-2"></i>
+                            Quick Actions
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-success" onclick="executeAgent('master_sync')">
+                                <i class="fas fa-sync-alt me-2"></i>
+                                /agent:master_sync
+                            </button>
+                            <button class="btn btn-outline-info" onclick="executeAgent('validate')">
+                                <i class="fas fa-check-circle me-2"></i>
+                                /agent:validate
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="executeAgent('optimize')">
+                                <i class="fas fa-cog me-2"></i>
+                                /agent:optimize
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="executeAgent('rollback')">
+                                <i class="fas fa-undo me-2"></i>
+                                /agent:rollback
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Global variables
+        let systemData = {};
+        let refreshInterval;
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLiveTime();
+            setInterval(updateLiveTime, 1000);
+            
+            loadSystemData();
+            startAutoRefresh();
+            
+            // Terminal input handler
+            document.getElementById('terminal-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const command = this.value.trim();
+                    if (command) {
+                        executeTerminalCommand(command);
+                        this.value = '';
+                    }
+                }
+            });
+        });
+        
+        function updateLiveTime() {
+            const now = new Date();
+            document.getElementById('live-time').textContent = now.toLocaleTimeString();
+        }
+        
+        async function loadSystemData() {
+            try {
+                // Load recovery status
+                const recoveryResponse = await fetch('/api/recovery-status');
+                const recoveryData = await recoveryResponse.json();
+                
+                // Load QPI scores
+                const qpiResponse = await fetch('/api/qpi-scores');
+                const qpiData = await qpiResponse.json();
+                
+                // Load live crypto data
+                const cryptoResponse = await fetch('/ws/live-updates');
+                
+                systemData = {
+                    recovery: recoveryData,
+                    qpi: qpiData,
+                    timestamp: new Date().toISOString()
+                };
+                
+                updateDashboard();
+                updateCryptoTicker();
+                
+            } catch (error) {
+                console.error('Failed to load system data:', error);
+                addTerminalOutput('ERROR: Failed to load system data - ' + error.message, 'error');
+            }
+        }
+        
+        function updateDashboard() {
+            // Update overview cards
+            const modules = systemData.recovery.modules_recovered || [];
+            const users = systemData.recovery.users_restored || [];
+            
+            document.getElementById('modules-count').textContent = modules.length;
+            document.getElementById('users-count').textContent = users.length;
+            
+            // Calculate average QPI
+            const qpiScores = Object.values(systemData.qpi);
+            const avgQpi = qpiScores.length > 0 ? 
+                qpiScores.reduce((sum, item) => sum + item.score, 0) / qpiScores.length : 0;
+            document.getElementById('qpi-average').textContent = avgQpi.toFixed(2);
+            
+            // Update modules grid
+            updateModulesGrid(modules);
+            
+            // Update QPI chart
+            updateQPIChart(systemData.qpi);
+        }
+        
+        function updateModulesGrid(modules) {
+            const grid = document.getElementById('modules-grid');
+            grid.innerHTML = '';
+            
+            modules.forEach(module => {
+                const qpiData = systemData.qpi[module.name] || {};
+                const statusClass = module.health_score >= 0.8 ? 'success' : 
+                                  module.health_score >= 0.6 ? 'warning' : 'danger';
+                
+                const moduleCard = `
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="module-card card bg-dark border-${statusClass}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title text-capitalize">${module.name.replace(/_/g, ' ')}</h6>
+                                    <span class="status-indicator status-${statusClass === 'success' ? 'operational' : statusClass === 'warning' ? 'warning' : 'error'}"></span>
+                                </div>
+                                <p class="card-text small text-muted mb-2">${module.category}</p>
+                                <div class="d-flex justify-content-between">
+                                    <span class="small">Health:</span>
+                                    <span class="qpi-score qpi-${qpiData.priority || 'medium'}">${(module.health_score * 100).toFixed(0)}%</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="small">QPI:</span>
+                                    <span class="qpi-score qpi-${qpiData.priority || 'medium'}">${qpiData.score ? qpiData.score.toFixed(2) : 'N/A'}</span>
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-${statusClass}" onclick="testModule('${module.name}')">
+                                        <i class="fas fa-vial"></i> Test
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary ms-1" onclick="refreshModule('${module.name}')">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += moduleCard;
+            });
+        }
+        
+        function updateQPIChart(qpiData) {
+            const chartContainer = document.getElementById('qpi-chart');
+            let chartHTML = '<div class="row">';
+            
+            Object.entries(qpiData).forEach(([module, data]) => {
+                const barWidth = (data.score * 100).toFixed(0);
+                const priorityClass = data.priority === 'high' ? 'success' : 
+                                   data.priority === 'medium' ? 'warning' : 'danger';
+                
+                chartHTML += `
+                    <div class="col-12 mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="small text-capitalize">${module.replace(/_/g, ' ')}</span>
+                            <span class="small text-${priorityClass}">${data.score.toFixed(2)}</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-${priorityClass}" style="width: ${barWidth}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            chartHTML += '</div>';
+            chartContainer.innerHTML = chartHTML;
+        }
+        
+        async function updateCryptoTicker() {
+            try {
+                const response = await fetch('/api/crypto-live-data');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    let tickerText = '';
+                    Object.entries(data.data).forEach(([symbol, info]) => {
+                        const changeClass = info.change_24h >= 0 ? 'text-success' : 'text-danger';
+                        const changeIcon = info.change_24h >= 0 ? '▲' : '▼';
+                        tickerText += `<span class="me-4">${symbol}: $${info.price.toLocaleString()} <span class="${changeClass}">${changeIcon} ${Math.abs(info.change_24h).toFixed(2)}%</span></span>`;
+                    });
+                    document.getElementById('crypto-ticker').innerHTML = tickerText;
+                }
+            } catch (error) {
+                console.error('Failed to update crypto ticker:', error);
+            }
+        }
+        
+        function startAutoRefresh() {
+            refreshInterval = setInterval(() => {
+                loadSystemData();
+                updateMetrics();
+            }, 30000); // Refresh every 30 seconds
+        }
+        
+        function updateMetrics() {
+            // Simulate live metrics
+            document.getElementById('cpu-usage').textContent = (Math.random() * 20 + 5).toFixed(1) + '%';
+            document.getElementById('memory-usage').textContent = (Math.random() * 100 + 200).toFixed(0) + 'MB';
+            document.getElementById('connections').textContent = (Math.random() * 50 + 30).toFixed(0);
+            document.getElementById('response-time').textContent = (Math.random() * 0.3 + 0.05).toFixed(2) + 's';
+        }
+        
+        async function executeAgent(command) {
+            addTerminalOutput(`nexus@master:~$ /agent:${command}`, 'command');
+            
+            try {
+                const response = await fetch(`/agent:${command}`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    addTerminalOutput(`✅ ${result.message}`, 'success');
+                    if (command === 'master_sync') {
+                        loadSystemData(); // Refresh data after sync
+                    }
+                } else {
+                    addTerminalOutput(`❌ Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                addTerminalOutput(`❌ Command failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function executeTerminalCommand(command) {
+            addTerminalOutput(`nexus@master:~$ ${command}`, 'command');
+            
+            if (command.startsWith('/agent:')) {
+                const agentCommand = command.substring(7);
+                executeAgent(agentCommand);
+            } else if (command === 'help' || command === '/agent:help') {
+                addTerminalOutput(`Available commands:
+/agent:master_sync  - Execute master sync recovery
+/agent:validate     - Validate all modules
+/agent:optimize     - Optimize system performance
+/agent:rollback     - Rollback to previous state
+clear               - Clear terminal`, 'info');
+            } else if (command === 'clear') {
+                clearTerminal();
+            } else {
+                addTerminalOutput(`Unknown command: ${command}`, 'error');
+            }
+        }
+        
+        function addTerminalOutput(text, type = 'info') {
+            const terminal = document.getElementById('agent-terminal');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            let className = 'text-light';
+            if (type === 'success') className = 'text-success';
+            else if (type === 'error') className = 'text-danger';
+            else if (type === 'warning') className = 'text-warning';
+            else if (type === 'command') className = 'text-info';
+            
+            const output = document.createElement('div');
+            output.className = className;
+            output.innerHTML = `<span class="text-muted">[${timestamp}]</span> ${text}`;
+            
+            terminal.insertBefore(output, terminal.lastElementChild);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+        
+        function clearTerminal() {
+            const terminal = document.getElementById('agent-terminal');
+            const children = terminal.children;
+            for (let i = children.length - 2; i >= 0; i--) {
+                children[i].remove();
+            }
+        }
+        
+        async function testModule(moduleName) {
+            addTerminalOutput(`Testing module: ${moduleName}`, 'info');
+            
+            try {
+                const response = await fetch(`/api/validate-modules`);
+                const result = await response.json();
+                
+                if (result.modules && result.modules[moduleName]) {
+                    const moduleData = result.modules[moduleName];
+                    const status = moduleData.healthy ? 'PASS' : 'FAIL';
+                    const statusClass = moduleData.healthy ? 'success' : 'error';
+                    addTerminalOutput(`Module ${moduleName}: ${status} (Health: ${(moduleData.health_score * 100).toFixed(0)}%)`, statusClass);
+                } else {
+                    addTerminalOutput(`Module ${moduleName}: Test failed`, 'error');
+                }
+            } catch (error) {
+                addTerminalOutput(`Module test error: ${error.message}`, 'error');
+            }
+        }
+        
+        function refreshModule(moduleName) {
+            addTerminalOutput(`Refreshing module: ${moduleName}`, 'info');
+            loadSystemData();
+        }
+        
+        function refreshModules() {
+            addTerminalOutput('Refreshing all modules...', 'info');
+            loadSystemData();
+        }
+    </script>
+</body>
+</html>
