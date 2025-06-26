@@ -1,0 +1,459 @@
+/* NEXUS Enterprise Unified Styling - Premium Grade */
+:root {
+    /* Enterprise Color Palette */
+    --nexus-primary: #007bff;
+    --nexus-secondary: #6c757d;
+    --nexus-success: #28a745;
+    --nexus-warning: #ffc107;
+    --nexus-danger: #dc3545;
+    --nexus-info: #17a2b8;
+    --nexus-light: #f8f9fa;
+    --nexus-dark: #343a40;
+    
+    /* Premium Gradients */
+    --nexus-gradient-primary: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    --nexus-gradient-success: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    --nexus-gradient-dark: linear-gradient(135deg, #343a40 0%, #1a1e21 100%);
+    
+    /* Enterprise Spacing */
+    --nexus-space-xs: 0.25rem;
+    --nexus-space-sm: 0.5rem;
+    --nexus-space-md: 1rem;
+    --nexus-space-lg: 1.5rem;
+    --nexus-space-xl: 3rem;
+    
+    /* Premium Typography */
+    --nexus-font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --nexus-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    
+    /* Enterprise Shadows */
+    --nexus-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --nexus-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --nexus-shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.15);
+    --nexus-shadow-xl: 0 16px 50px rgba(0, 0, 0, 0.2);
+    
+    /* Animation Timing */
+    --nexus-transition-fast: 0.2s ease;
+    --nexus-transition-smooth: 0.3s ease;
+    --nexus-transition-slow: 0.5s ease;
+}
+
+/* Global Enterprise Styling */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--nexus-font-primary);
+    line-height: 1.6;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    background: #f8f9fa;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enterprise Container System */
+.nexus-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--nexus-space-md);
+}
+
+.nexus-container-fluid {
+    width: 100%;
+    padding: 0 var(--nexus-space-md);
+}
+
+/* Premium Card Components */
+.nexus-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: var(--nexus-shadow-md);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all var(--nexus-transition-smooth);
+    overflow: hidden;
+}
+
+.nexus-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--nexus-shadow-lg);
+}
+
+.nexus-card-header {
+    padding: var(--nexus-space-lg);
+    background: var(--nexus-gradient-primary);
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nexus-card-body {
+    padding: var(--nexus-space-lg);
+}
+
+.nexus-card-footer {
+    padding: var(--nexus-space-md) var(--nexus-space-lg);
+    background: #f8f9fa;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Enterprise Buttons */
+.nexus-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--nexus-transition-fast);
+    font-family: var(--nexus-font-primary);
+    font-size: 0.875rem;
+    line-height: 1;
+    gap: 0.5rem;
+}
+
+.nexus-btn-primary {
+    background: var(--nexus-gradient-primary);
+    color: white;
+    box-shadow: var(--nexus-shadow-sm);
+}
+
+.nexus-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--nexus-shadow-md);
+    text-decoration: none;
+    color: white;
+}
+
+.nexus-btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.nexus-btn-success {
+    background: var(--nexus-gradient-success);
+    color: white;
+}
+
+.nexus-btn-outline {
+    background: transparent;
+    border: 2px solid var(--nexus-primary);
+    color: var(--nexus-primary);
+}
+
+.nexus-btn-outline:hover {
+    background: var(--nexus-primary);
+    color: white;
+}
+
+/* Enterprise Navigation */
+.nexus-navbar {
+    background: var(--nexus-gradient-dark);
+    padding: var(--nexus-space-md) 0;
+    box-shadow: var(--nexus-shadow-md);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nexus-navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nexus-navbar-nav {
+    display: flex;
+    gap: var(--nexus-space-lg);
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nexus-nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all var(--nexus-transition-fast);
+}
+
+.nexus-nav-link:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+}
+
+/* Dashboard Module Cards */
+.nexus-module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--nexus-space-lg);
+    margin: var(--nexus-space-xl) 0;
+}
+
+.nexus-module-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--nexus-shadow-md);
+    overflow: hidden;
+    transition: all var(--nexus-transition-smooth);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.nexus-module-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--nexus-shadow-xl);
+}
+
+.nexus-module-header {
+    padding: var(--nexus-space-lg);
+    background: var(--nexus-gradient-primary);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.nexus-module-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transform: translate(30px, -30px);
+}
+
+.nexus-module-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    position: relative;
+    z-index: 1;
+}
+
+.nexus-module-description {
+    opacity: 0.9;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.nexus-module-body {
+    padding: var(--nexus-space-lg);
+}
+
+.nexus-module-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--nexus-space-md);
+    margin: var(--nexus-space-md) 0;
+}
+
+.nexus-metric {
+    text-align: center;
+    padding: var(--nexus-space-md);
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.nexus-metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--nexus-primary);
+    margin-bottom: 0.25rem;
+}
+
+.nexus-metric-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Status Indicators */
+.nexus-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.nexus-status-active {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.nexus-status-warning {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.nexus-status-error {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.nexus-status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Form Components */
+.nexus-form-group {
+    margin-bottom: var(--nexus-space-lg);
+}
+
+.nexus-form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.nexus-form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all var(--nexus-transition-fast);
+    background: white;
+}
+
+.nexus-form-control:focus {
+    outline: none;
+    border-color: var(--nexus-primary);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nexus-container {
+        padding: 0 var(--nexus-space-sm);
+    }
+    
+    .nexus-module-grid {
+        grid-template-columns: 1fr;
+        gap: var(--nexus-space-md);
+    }
+    
+    .nexus-navbar-nav {
+        flex-direction: column;
+        gap: var(--nexus-space-sm);
+    }
+    
+    .nexus-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .nexus-module-header {
+        padding: var(--nexus-space-md);
+    }
+    
+    .nexus-module-body {
+        padding: var(--nexus-space-md);
+    }
+    
+    .nexus-module-metrics {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Dark Theme Support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --nexus-bg: #1a1a1a;
+        --nexus-surface: #2d2d2d;
+        --nexus-text: #ffffff;
+        --nexus-text-secondary: #b0b0b0;
+    }
+    
+    body {
+        background: var(--nexus-bg);
+        color: var(--nexus-text);
+    }
+    
+    .nexus-card {
+        background: var(--nexus-surface);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .nexus-form-control {
+        background: var(--nexus-surface);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: var(--nexus-text);
+    }
+}
+
+/* Loading States */
+.nexus-loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Enterprise Notifications */
+.nexus-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: var(--nexus-shadow-lg);
+    border-left: 4px solid var(--nexus-primary);
+    z-index: 9999;
+    transform: translateX(400px);
+    transition: transform var(--nexus-transition-smooth);
+}
+
+.nexus-notification.show {
+    transform: translateX(0);
+}
+
+.nexus-notification-success {
+    border-left-color: var(--nexus-success);
+}
+
+.nexus-notification-warning {
+    border-left-color: var(--nexus-warning);
+}
+
+.nexus-notification-error {
+    border-left-color: var(--nexus-danger);
+}
