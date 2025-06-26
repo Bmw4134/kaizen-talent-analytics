@@ -1,0 +1,506 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<div data-dashboard-name="jdd" class="fade-in">
+    <!-- Dashboard Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6 mb-2">
+                        <i class="fas fa-database me-3 text-primary"></i>
+                        JDD Dashboard
+                    </h1>
+                    <p class="text-muted">Joint Data Dashboard</p>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                            <li class="breadcrumb-item">Dashboards</li>
+                            <li class="breadcrumb-item active">JDD</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex gap-2">
+                    <button id="refresh-dashboard" class="btn btn-primary">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button id="dashboard-settings" class="btn btn-outline-secondary">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                    <button id="export-data" class="btn btn-outline-info">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Navigation -->
+    <div class="dashboard-nav">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard', dashboard_name='traxovo') }}">
+                    <i class="fas fa-activity me-1"></i>TRAXOVO
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard', dashboard_name='dwc') }}">
+                    <i class="fas fa-layers me-1"></i>DWC
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('dashboard', dashboard_name='jdd') }}">
+                    <i class="fas fa-database me-1"></i>JDD
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard', dashboard_name='crypto_nexus_trade') }}">
+                    <i class="fas fa-chart-line me-1"></i>CryptoNexus
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Error Container -->
+    <div id="error-container"></div>
+
+    <!-- Dashboard Status -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Dashboard Status</h6>
+                            <span id="dashboard-status" class="badge bg-success">
+                                {% if dashboard_data and dashboard_data.status %}
+                                    {{ dashboard_data.status.upper() }}
+                                {% else %}
+                                    INITIALIZING
+                                {% endif %}
+                            </span>
+                            {% if dashboard_data and dashboard_data.version %}
+                                <span class="badge bg-secondary ms-2">v{{ dashboard_data.version }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">Auto-refresh: 
+                                <div class="form-check form-switch d-inline-block ms-2">
+                                    <input class="form-check-input" type="checkbox" id="auto-refresh-toggle" checked>
+                                </div>
+                            </small>
+                            <div id="last-refresh" class="small text-muted">
+                                Last updated: 
+                                {% if dashboard_data and dashboard_data.timestamp %}
+                                    {{ dashboard_data.timestamp }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intelligence Insights -->
+    {% if dashboard_data and dashboard_data.intelligence %}
+    <div id="intelligence-insights" class="mb-4">
+        <div class="alert alert-primary">
+            <h6><i class="fas fa-brain me-2"></i>Quantum Nexus Intelligence</h6>
+            <p class="mb-1">{{ dashboard_data.intelligence.insights }}</p>
+            <small class="text-muted">
+                Optimization Score: {{ dashboard_data.intelligence.optimization_score | round(2) }}
+                | Processed: {{ dashboard_data.intelligence.processed_at }}
+            </small>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Data Metrics -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h5 class="mb-3">
+                <i class="fas fa-chart-pie me-2"></i>
+                Data Metrics
+            </h5>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value" id="connected-sources">
+                    {% if dashboard_data and dashboard_data.data_sources %}
+                        {{ dashboard_data.data_sources.connected_sources or 0 }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </div>
+                <div class="metric-label">Connected Sources</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value" id="total-records">
+                    {% if dashboard_data and dashboard_data.analytics %}
+                        {{ dashboard_data.analytics.total_records or 0 }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </div>
+                <div class="metric-label">Total Records</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value" id="processing-queue">
+                    {% if dashboard_data and dashboard_data.analytics %}
+                        {{ dashboard_data.analytics.processing_queue or 0 }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </div>
+                <div class="metric-label">Processing Queue</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value" id="data-quality-score">
+                    {% if dashboard_data and dashboard_data.data_sources %}
+                        {{ (dashboard_data.data_sources.data_quality_score or 0) | round(2) }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </div>
+                <div class="metric-label">Data Quality Score</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Sources -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-plug me-2"></i>
+                        Data Sources
+                    </h6>
+                    <button class="btn btn-outline-primary btn-sm" onclick="addDataSource()">
+                        <i class="fas fa-plus me-1"></i>
+                        Add Source
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="data-sources">
+                        {% if dashboard_data and dashboard_data.data_sources and dashboard_data.data_sources.sources %}
+                            {% for source in dashboard_data.data_sources.sources %}
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ source.name or 'Unnamed Source' }}</h6>
+                                            <p class="text-muted mb-0 small">{{ source.type or 'Unknown type' }}</p>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-{{ 'success' if source.status == 'connected' else 'warning' }}">
+                                                {{ source.status or 'unknown' }}
+                                            </span>
+                                            <div class="btn-group btn-group-sm ms-2">
+                                                <button class="btn btn-outline-secondary" onclick="testConnection('{{ source.id or '' }}')">
+                                                    <i class="fas fa-link"></i>
+                                                </button>
+                                                <button class="btn btn-outline-info" onclick="viewSourceData('{{ source.id or '' }}')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-database fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No data sources connected</p>
+                                <button class="btn btn-primary" onclick="addDataSource()">
+                                    <i class="fas fa-plus me-1"></i>
+                                    Connect First Source
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-sync me-2"></i>
+                        Sync Status
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if dashboard_data and dashboard_data.data_sources %}
+                    <div class="mb-3">
+                        <label class="form-label small">Sync Status</label>
+                        <div>
+                            <span class="badge bg-{{ 'success' if dashboard_data.data_sources.sync_status == 'ready' else 'warning' }}">
+                                {{ dashboard_data.data_sources.sync_status or 'Unknown' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small">Last Update</label>
+                        <div class="small text-muted">{{ dashboard_data.data_sources.last_update or 'Never' }}</div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Sync data not available</p>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm" onclick="forceSyncAll()">
+                            <i class="fas fa-sync me-1"></i>
+                            Force Sync All
+                        </button>
+                        <button class="btn btn-outline-info btn-sm" onclick="viewSyncLog()">
+                            <i class="fas fa-list me-1"></i>
+                            View Sync Log
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Dashboard -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Analytics & Insights
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="analytics-data">
+                        {% if dashboard_data and dashboard_data.analytics %}
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="metric-card">
+                                    <div class="metric-value">{{ dashboard_data.analytics.insights_generated or 0 }}</div>
+                                    <div class="metric-label">Insights Generated</div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <h6>Analytics Status</h6>
+                                <p class="text-info">{{ dashboard_data.analytics.analytics_status or 'Unknown' }}</p>
+                                
+                                {% if dashboard_data.analytics.data_trends %}
+                                <h6 class="mt-3">Data Trends</h6>
+                                <div class="row">
+                                    {% for trend in dashboard_data.analytics.data_trends %}
+                                    <div class="col-md-6 mb-2">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ trend.name or 'Trend' }}</h6>
+                                                <p class="card-text small">{{ trend.description or 'No description' }}</p>
+                                                <span class="badge bg-{{ 'success' if trend.direction == 'up' else 'danger' if trend.direction == 'down' else 'secondary' }}">
+                                                    {{ trend.change or '0%' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No analytics data available</p>
+                            <button class="btn btn-primary" onclick="generateAnalytics()">
+                                <i class="fas fa-play me-1"></i>
+                                Generate Analytics
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Visualizations -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-chart-area me-2"></i>
+                        Data Visualizations
+                    </h6>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-secondary" onclick="switchView('chart')">
+                            <i class="fas fa-chart-bar"></i>
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="switchView('table')">
+                            <i class="fas fa-table"></i>
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="switchView('map')">
+                            <i class="fas fa-map"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if dashboard_data and dashboard_data.analytics and dashboard_data.analytics.visualizations %}
+                        <div class="row">
+                            {% for viz in dashboard_data.analytics.visualizations %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ viz.title or 'Visualization' }}</h6>
+                                        <p class="card-text small text-muted">{{ viz.description or 'No description' }}</p>
+                                        <div class="text-center py-3 bg-light rounded">
+                                            <i class="fas fa-chart-{{ viz.type or 'bar' }} fa-2x text-muted"></i>
+                                            <p class="mt-2 mb-0 small">{{ viz.type or 'Chart' }} Visualization</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-chart-area fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No visualizations available</p>
+                            <button class="btn btn-primary" onclick="createVisualization()">
+                                <i class="fas fa-plus me-1"></i>
+                                Create Visualization
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QNI Metadata -->
+    {% if dashboard_data and dashboard_data.qni_metadata %}
+    <div id="qni-metadata" class="mb-4">
+        <div class="card border-primary">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="fas fa-brain me-2"></i>
+                    QNI Processing Information
+                </h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <small class="text-muted">Processing Time</small>
+                        <div>{{ dashboard_data.qni_metadata.processing_time_ms or 0 }}ms</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Confidence Score</small>
+                        <div>{{ (dashboard_data.qni_metadata.confidence_score or 0) | round(2) }}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Last Processed</small>
+                        <div>{{ dashboard_data.qni_metadata.timestamp or 'Unknown' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Error State -->
+    {% if dashboard_data and dashboard_data.error %}
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-danger">
+                <h6>
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    Dashboard Error
+                </h6>
+                <p class="mb-0">{{ dashboard_data.error }}</p>
+                <button class="btn btn-outline-danger btn-sm mt-2" onclick="window.location.reload()">
+                    <i class="fas fa-redo me-1"></i>
+                    Retry
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function addDataSource() {
+    showNotification('Data source connection interface coming soon!', 'info');
+}
+
+function testConnection(sourceId) {
+    showNotification(`Testing connection for source ${sourceId}`, 'info');
+}
+
+function viewSourceData(sourceId) {
+    showNotification(`Viewing data for source ${sourceId}`, 'info');
+}
+
+function forceSyncAll() {
+    showNotification('Force sync initiated for all data sources', 'warning');
+}
+
+function viewSyncLog() {
+    showNotification('Sync log viewer coming soon!', 'info');
+}
+
+function generateAnalytics() {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Generating...';
+    
+    setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        showNotification('Analytics generation completed successfully', 'success');
+    }, 3000);
+}
+
+function createVisualization() {
+    showNotification('Visualization builder coming soon!', 'info');
+}
+
+function switchView(viewType) {
+    showNotification(`Switched to ${viewType} view`, 'info');
+    
+    // Update button states
+    document.querySelectorAll('.btn-group .btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+}
+
+function showNotification(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.top = '20px';
+    alertDiv.style.right = '20px';
+    alertDiv.style.zIndex = '9999';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alertDiv);
+
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.parentNode.removeChild(alertDiv);
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}
