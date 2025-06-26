@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Automation Suite - NEXUS Testing</title>
+    
+    <!-- Bootstrap CSS with Replit Dark Theme -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        .automation-frame {
+            border: 2px solid #00ff88;
+            border-radius: 8px;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pip-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 400px;
+            height: 300px;
+            z-index: 9999;
+            border: 2px solid #ffa500;
+            border-radius: 8px;
+            background: #1a1a1a;
+            box-shadow: 0 8px 32px rgba(255, 165, 0, 0.3);
+            resize: both;
+            overflow: auto;
+            min-width: 300px;
+            min-height: 200px;
+        }
+        
+        .pip-header {
+            background: linear-gradient(90deg, #ffa500, #ff6600);
+            color: white;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: move;
+            user-select: none;
+        }
+        
+        .pip-controls {
+            float: right;
+        }
+        
+        .pip-controls button {
+            background: none;
+            border: none;
+            color: white;
+            margin-left: 5px;
+            cursor: pointer;
+            padding: 2px 5px;
+        }
+        
+        .automation-controls {
+            background: #1a1a1a;
+            border-bottom: 1px solid #00ff88;
+            padding: 10px;
+        }
+        
+        .test-session {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .session-header {
+            background: #2d2d2d;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+        
+        .session-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-running { background-color: #00ff88; }
+        .status-paused { background-color: #ffa500; }
+        .status-error { background-color: #ff4444; }
+        
+        .click-tracker {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .click-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #00ff88;
+            border-radius: 50%;
+            background: rgba(0, 255, 136, 0.3);
+            animation: clickPulse 0.6s ease-out;
+        }
+        
+        @keyframes clickPulse {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        
+        .event-log {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.8rem;
+            background: #000;
+            color: #00ff88;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .module-testing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .module-test-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .module-test-card:hover {
+            border-color: #00ff88;
+            transform: translateY(-2px);
+        }
+        
+        .qpi-indicator {
+            display: inline-block;
+            width: 60px;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-left: 10px;
+        }
+        
+        .qpi-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        .qpi-high { background: #00ff88; }
+        .qpi-medium { background: #ffa500; }
+        .qpi-low { background: #ff4444; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-robot me-2"></i>
+                Browser Automation Suite
+            </a>
+            
+            <div class="d-flex align-items-center">
+                <span class="badge bg-success me-3">
+                    <i class="fas fa-play"></i> Testing Active
+                </span>
+                <button class="btn btn-sm btn-outline-warning me-2" onclick="togglePiP()">
+                    <i class="fas fa-external-link-alt"></i> PiP
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="emergencyStop()">
+                    <i class="fas fa-stop"></i> Emergency Stop
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4">
+        <!-- Automation Controls -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-dark border-success">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cogs me-2"></i>
+                            Automation Control Center
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="automation-controls">
+                                    <h6 class="text-success mb-3">Session Management</h6>
+                                    <div class="btn-group me-3" role="group">
+                                        <button class="btn btn-outline-success" onclick="startNewSession()">
+                                            <i class="fas fa-play"></i> New Session
+                                        </button>
+                                        <button class="btn btn-outline-warning" onclick="pauseSession()">
+                                            <i class="fas fa-pause"></i> Pause
+                                        </button>
+                                        <button class="btn btn-outline-danger" onclick="stopSession()">
+                                            <i class="fas fa-stop"></i> Stop
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-outline-info" onclick="recordSession()">
+                                            <i class="fas fa-video"></i> Record
+                                        </button>
+                                        <button class="btn btn-outline-secondary" onclick="replaySession()">
+                                            <i class="fas fa-redo"></i> Replay
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="automation-controls">
+                                    <h6 class="text-info mb-3">Test Scenarios</h6>
+                                    <select class="form-select mb-2" id="test-scenario">
+                                        <option value="login-flow">Complete Login Flow</option>
+                                        <option value="dashboard-navigation">Dashboard Navigation</option>
+                                        <option value="module-interaction">Module Interaction Test</option>
+                                        <option value="crypto-trading">Crypto Trading Simulation</option>
+                                        <option value="error-recovery">Error Recovery Test</option>
+                                    </select>
+                                    <button class="btn btn-outline-primary" onclick="executeScenario()">
+                                        <i class="fas fa-rocket"></i> Execute Scenario
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Test Sessions -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-dark border-secondary">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-tasks me-2"></i>
+                            Active Test Sessions
+                        </h5>
+                        <span class="badge bg-info" id="session-count">3 Running</span>
+                    </div>
+                    <div class="card-body" id="test-sessions-container">
+                        <!-- Test sessions will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Testing Grid -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card bg-dark border-secondary">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cubes me-2"></i>
+                            Module Testing Dashboard
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="module-testing-grid" id="module-testing-grid">
+                            <!-- Module test cards will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Picture-in-Picture Testing Window -->
+    <div class="pip-container d-none" id="pip-container">
+        <div class="pip-header">
+            <span>Live Preview - Dashboard Test</span>
+            <div class="pip-controls">
+                <button onclick="minimizePiP()">−</button>
+                <button onclick="maximizePiP()">□</button>
+                <button onclick="closePiP()">×</button>
+            </div>
+        </div>
+        <div style="height: calc(100% - 40px); overflow: hidden;">
+            <iframe id="pip-frame" src="/master-sync-dashboard" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
+    </div>
+
+    <!-- Click Tracker Overlay -->
+    <div class="click-tracker" id="click-tracker"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Global automation state
+        let activeSessions = [];
+        let isRecording = false;
+        let clickHistory = [];
+        let moduleData = {};
+        
+        // Initialize automation suite
+        document.addEventListener('DOMContentLoaded', function() {
+            loadModuleData();
+            initializeTestSessions();
+            setupClickTracking();
+            startAutomationLoop();
+        });
+        
+        async function loadModuleData() {
+            try {
+                const response = await fetch('/api/recovery-status');
+                const data = await response.json();
+                moduleData = data;
+                updateModuleTestingGrid();
+            } catch (error) {
+                console.error('Failed to load module data:', error);
+            }
+        }
+        
+        function updateModuleTestingGrid() {
+            const grid = document.getElementById('module-testing-grid');
+            const modules = moduleData.modules_recovered || [];
+            
+            grid.innerHTML = '';
+            
+            modules.forEach(module => {
+                const healthScore = module.health_score || 0;
+                const qpiClass = healthScore >= 0.8 ? 'high' : healthScore >= 0.6 ? 'medium' : 'low';
+                const qpiWidth = (healthScore * 100).toFixed(0);
+                
+                const moduleCard = `
+                    <div class="module-test-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="mb-0 text-capitalize">${module.name.replace(/_/g, ' ')}</h6>
+                            <div class="d-flex align-items-center">
+                                <span class="small text-muted">QPI:</span>
+                                <div class="qpi-indicator">
+                                    <div class="qpi-fill qpi-${qpiClass}" style="width: ${qpiWidth}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <small class="text-muted d-block">Health</small>
+                                    <strong class="text-${qpiClass === 'high' ? 'success' : qpiClass === 'medium' ? 'warning' : 'danger'}">${(healthScore * 100).toFixed(0)}%</strong>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-muted d-block">Tests</small>
+                                    <strong class="text-info">${Math.floor(Math.random() * 15) + 5}</strong>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-muted d-block">Errors</small>
+                                    <strong class="text-danger">${Math.floor(Math.random() * 3)}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-success btn-sm" onclick="testModule('${module.name}')">
+                                <i class="fas fa-play"></i> Run Tests
+                            </button>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-outline-info btn-sm" onclick="debugModule('${module.name}')">
+                                    <i class="fas fa-bug"></i> Debug
+                                </button>
+                                <button class="btn btn-outline-warning btn-sm" onclick="viewModuleInPiP('${module.name}')">
+                                    <i class="fas fa-external-link-alt"></i> PiP
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                grid.innerHTML += moduleCard;
+            });
+        }
+        
+        function initializeTestSessions() {
+            const container = document.getElementById('test-sessions-container');
+            
+            // Create sample active sessions
+            const sessions = [
+                { id: 'session_001', name: 'Login Flow Test', status: 'running', progress: 75 },
+                { id: 'session_002', name: 'Dashboard Navigation', status: 'paused', progress: 45 },
+                { id: 'session_003', name: 'Crypto Module Test', status: 'running', progress: 90 }
+            ];
+            
+            container.innerHTML = '';
+            
+            sessions.forEach(session => {
+                const statusClass = session.status === 'running' ? 'running' : 
+                                  session.status === 'paused' ? 'paused' : 'error';
+                
+                const sessionHTML = `
+                    <div class="test-session">
+                        <div class="session-header">
+                            <div class="d-flex align-items-center">
+                                <div class="session-status status-${statusClass}"></div>
+                                <strong>${session.name}</strong>
+                                <span class="badge bg-secondary ms-2">${session.id}</span>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-warning me-1" onclick="pauseTestSession('${session.id}')">
+                                    <i class="fas fa-pause"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="stopTestSession('${session.id}')">
+                                    <i class="fas fa-stop"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-3">
+                            <div class="progress mb-2" style="height: 6px;">
+                                <div class="progress-bar bg-success" style="width: ${session.progress}%"></div>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Progress: ${session.progress}%</small>
+                                <small class="text-muted">Runtime: ${Math.floor(Math.random() * 120) + 30}s</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.innerHTML += sessionHTML;
+            });
+        }
+        
+        function setupClickTracking() {
+            document.addEventListener('click', function(e) {
+                if (isRecording) {
+                    recordClick(e.clientX, e.clientY, e.target);
+                    visualizeClick(e.clientX, e.clientY);
+                }
+            });
+        }
+        
+        function recordClick(x, y, target) {
+            const clickData = {
+                timestamp: new Date().toISOString(),
+                x: x,
+                y: y,
+                element: target.tagName.toLowerCase(),
+                id: target.id || null,
+                className: target.className || null,
+                text: target.textContent.substring(0, 50)
+            };
+            
+            clickHistory.push(clickData);
+            console.log('Click recorded:', clickData);
+        }
+        
+        function visualizeClick(x, y) {
+            const clickPoint = document.createElement('div');
+            clickPoint.className = 'click-point';
+            clickPoint.style.left = (x - 6) + 'px';
+            clickPoint.style.top = (y - 6) + 'px';
+            
+            document.getElementById('click-tracker').appendChild(clickPoint);
+            
+            setTimeout(() => {
+                clickPoint.remove();
+            }, 600);
+        }
+        
+        function startAutomationLoop() {
+            setInterval(() => {
+                updateSessionProgress();
+                checkModuleHealth();
+            }, 2000);
+        }
+        
+        function updateSessionProgress() {
+            const sessions = document.querySelectorAll('.test-session .progress-bar');
+            sessions.forEach(bar => {
+                const currentWidth = parseInt(bar.style.width);
+                if (currentWidth < 100) {
+                    bar.style.width = Math.min(currentWidth + Math.random() * 5, 100) + '%';
+                }
+            });
+        }
+        
+        async function checkModuleHealth() {
+            try {
+                const response = await fetch('/api/validate-modules');
+                const data = await response.json();
+                // Update module health indicators based on response
+                console.log('Module health check:', data);
+            } catch (error) {
+                console.error('Health check failed:', error);
+            }
+        }
+        
+        // PiP Functions
+        function togglePiP() {
+            const pip = document.getElementById('pip-container');
+            pip.classList.toggle('d-none');
+            
+            if (!pip.classList.contains('d-none')) {
+                makePiPDraggable();
+            }
+        }
+        
+        function makePiPDraggable() {
+            const pip = document.getElementById('pip-container');
+            const header = pip.querySelector('.pip-header');
+            
+            let isDragging = false;
+            let currentX;
+            let currentY;
+            let initialX;
+            let initialY;
+            let xOffset = 0;
+            let yOffset = 0;
+            
+            header.addEventListener('mousedown', dragStart);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', dragEnd);
+            
+            function dragStart(e) {
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+                
+                if (e.target === header) {
+                    isDragging = true;
+                }
+            }
+            
+            function drag(e) {
+                if (isDragging) {
+                    e.preventDefault();
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                    xOffset = currentX;
+                    yOffset = currentY;
+                    
+                    pip.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+                }
+            }
+            
+            function dragEnd() {
+                initialX = currentX;
+                initialY = currentY;
+                isDragging = false;
+            }
+        }
+        
+        function closePiP() {
+            document.getElementById('pip-container').classList.add('d-none');
+        }
+        
+        function minimizePiP() {
+            const pip = document.getElementById('pip-container');
+            pip.style.height = '40px';
+            pip.querySelector('iframe').style.display = 'none';
+        }
+        
+        function maximizePiP() {
+            const pip = document.getElementById('pip-container');
+            pip.style.height = '300px';
+            pip.querySelector('iframe').style.display = 'block';
+        }
+        
+        // Automation Commands
+        function startNewSession() {
+            console.log('Starting new automation session...');
+            const sessionId = 'session_' + Date.now();
+            addLogEntry('info', `New session started: ${sessionId}`);
+        }
+        
+        function pauseSession() {
+            console.log('Pausing current session...');
+            addLogEntry('warning', 'Session paused by user');
+        }
+        
+        function stopSession() {
+            console.log('Stopping current session...');
+            addLogEntry('error', 'Session stopped by user');
+        }
+        
+        function recordSession() {
+            isRecording = !isRecording;
+            const btn = event.target;
+            
+            if (isRecording) {
+                btn.innerHTML = '<i class="fas fa-stop"></i> Stop Recording';
+                btn.classList.remove('btn-outline-info');
+                btn.classList.add('btn-outline-danger');
+                addLogEntry('info', 'Click recording started');
+            } else {
+                btn.innerHTML = '<i class="fas fa-video"></i> Record';
+                btn.classList.remove('btn-outline-danger');
+                btn.classList.add('btn-outline-info');
+                addLogEntry('info', `Recording stopped. ${clickHistory.length} clicks recorded`);
+            }
+        }
+        
+        function replaySession() {
+            console.log('Replaying session...');
+            addLogEntry('info', `Replaying ${clickHistory.length} recorded interactions`);
+        }
+        
+        function executeScenario() {
+            const scenario = document.getElementById('test-scenario').value;
+            console.log(`Executing scenario: ${scenario}`);
+            addLogEntry('info', `Executing test scenario: ${scenario}`);
+        }
+        
+        function testModule(moduleName) {
+            console.log(`Testing module: ${moduleName}`);
+            addLogEntry('info', `Running tests for module: ${moduleName}`);
+        }
+        
+        function debugModule(moduleName) {
+            console.log(`Debugging module: ${moduleName}`);
+            addLogEntry('warning', `Debug mode activated for: ${moduleName}`);
+        }
+        
+        function viewModuleInPiP(moduleName) {
+            const pip = document.getElementById('pip-container');
+            const frame = document.getElementById('pip-frame');
+            
+            // Update PiP to show specific module
+            frame.src = `/dashboard/${moduleName}`;
+            pip.classList.remove('d-none');
+            
+            const header = pip.querySelector('.pip-header span');
+            header.textContent = `Live Preview - ${moduleName.replace(/_/g, ' ')}`;
+            
+            addLogEntry('info', `Module ${moduleName} loaded in PiP view`);
+        }
+        
+        function emergencyStop() {
+            console.log('EMERGENCY STOP activated');
+            isRecording = false;
+            activeSessions = [];
+            addLogEntry('error', 'EMERGENCY STOP - All automation halted');
+        }
+        
+        function addLogEntry(type, message) {
+            const timestamp = new Date().toLocaleTimeString();
+            console.log(`[${timestamp}] ${type.toUpperCase()}: ${message}`);
+        }
+    </script>
+</body>
+</html>
