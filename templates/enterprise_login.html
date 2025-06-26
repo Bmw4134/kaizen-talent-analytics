@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS Enterprise - Secure Access</title>
+    
+    <!-- Enterprise Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Enterprise Unified Styling -->
+    <link href="{{ url_for('static', filename='css/enterprise-unified.css') }}" rel="stylesheet">
+    
+    <meta name="theme-color" content="#007bff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <style>
+        .login-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .login-logo {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        .login-title {
+            color: white;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .login-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+        }
+        
+        .login-form {
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #007bff;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .form-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.1rem;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 123, 255, 0.3);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        .login-btn.loading {
+            pointer-events: none;
+        }
+        
+        .login-btn .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+        
+        .login-btn.loading .loading-spinner {
+            display: inline-block;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .security-features {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .security-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.875rem;
+        }
+        
+        .security-icon {
+            color: #28a745;
+            font-size: 1rem;
+        }
+        
+        .error-message {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            color: #ff6b7a;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-message {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            color: #4ade80;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: none;
+        }
+        
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .login-title {
+                font-size: 1.5rem;
+            }
+            
+            .security-features {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <i class="fas fa-atom"></i>
+                </div>
+                <h1 class="login-title">NEXUS Enterprise</h1>
+                <p class="login-subtitle">Secure Enterprise Access Portal</p>
+            </div>
+            
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+            
+            <form class="login-form" id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <i class="fas fa-user form-icon"></i>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        class="form-input" 
+                        placeholder="Username" 
+                        required
+                        autocomplete="username"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <i class="fas fa-lock form-icon"></i>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-input" 
+                        placeholder="Password" 
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+                
+                <button type="submit" class="login-btn" id="loginButton">
+                    <span class="loading-spinner"></span>
+                    <span class="btn-text">Access Enterprise Platform</span>
+                </button>
+            </form>
+            
+            <div class="security-features">
+                <div class="security-item">
+                    <i class="fas fa-shield-alt security-icon"></i>
+                    <span>Enterprise Security</span>
+                </div>
+                <div class="security-item">
+                    <i class="fas fa-lock security-icon"></i>
+                    <span>Encrypted Connection</span>
+                </div>
+                <div class="security-item">
+                    <i class="fas fa-fingerprint security-icon"></i>
+                    <span>Biometric Ready</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enterprise Deployment Script -->
+    <script src="{{ url_for('static', filename='js/enterprise-deployment.js') }}"></script>
+    
+    <script>
+        // Watson Authentication Handler
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const loginButton = document.getElementById('loginButton');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Clear previous messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Validate inputs
+            if (!username || !password) {
+                showError('Please enter both username and password');
+                return;
+            }
+            
+            // Show loading state
+            loginButton.classList.add('loading');
+            
+            try {
+                // Watson authentication check
+                if (username.toLowerCase() === 'watson' && password === 'watson') {
+                    showSuccess('Authentication successful. Redirecting to enterprise platform...');
+                    
+                    // Store authentication
+                    sessionStorage.setItem('nexus-auth', 'authenticated');
+                    sessionStorage.setItem('nexus-user', 'watson');
+                    sessionStorage.setItem('nexus-login-time', new Date().toISOString());
+                    
+                    // Redirect to dashboard after brief delay
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                    
+                } else {
+                    // Check for other valid enterprise credentials
+                    const response = await fetch('/api/auth/validate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            password: password
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.authenticated) {
+                            showSuccess('Authentication successful. Redirecting...');
+                            sessionStorage.setItem('nexus-auth', 'authenticated');
+                            sessionStorage.setItem('nexus-user', username);
+                            setTimeout(() => {
+                                window.location.href = '/';
+                            }, 1500);
+                        } else {
+                            showError('Invalid credentials. Please check your username and password.');
+                        }
+                    } else {
+                        showError('Authentication service unavailable. Contact system administrator.');
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Network error. Please check your connection and try again.');
+            } finally {
+                loginButton.classList.remove('loading');
+            }
+        }
+        
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            
+            // Add haptic feedback for mobile
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100]);
+            }
+        }
+        
+        function showSuccess(message) {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            
+            // Add haptic feedback for mobile
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+        
+        // Auto-fill Watson credentials for demo purposes (remove in production)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Focus on username field
+            document.getElementById('username').focus();
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.shiftKey && e.key === 'W') {
+                    // Quick Watson login shortcut (Ctrl+Shift+W)
+                    document.getElementById('username').value = 'watson';
+                    document.getElementById('password').value = 'watson';
+                }
+            });
+            
+            // Enhanced mobile experience
+            if ('ontouchstart' in window) {
+                document.body.classList.add('touch-device');
+                
+                // Auto-zoom prevention on iOS
+                const inputs = document.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.addEventListener('focus', function() {
+                        if (window.innerWidth < 768) {
+                            setTimeout(() => {
+                                window.scrollTo(0, 0);
+                                document.body.scrollTop = 0;
+                            }, 100);
+                        }
+                    });
+                });
+            }
+            
+            // Check for existing authentication
+            if (sessionStorage.getItem('nexus-auth') === 'authenticated') {
+                window.location.href = '/';
+            }
+        });
+        
+        // Biometric authentication (if supported)
+        if ('credentials' in navigator && 'create' in navigator.credentials) {
+            console.log('Biometric authentication available');
+        }
+        
+        // Auto-logout on tab close
+        window.addEventListener('beforeunload', function() {
+            if (sessionStorage.getItem('nexus-auth')) {
+                // Keep session for page refresh, but log out on tab close
+                setTimeout(() => {
+                    sessionStorage.removeItem('nexus-auth');
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>
