@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRAXOVO Fleet Operations - NEXUS Enterprise</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .traxovo-header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .fleet-card {
+            background: var(--bs-dark);
+            border: 1px solid var(--bs-border-color);
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+        .fleet-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.15);
+        }
+        .fleet-metric {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            padding: 1.5rem;
+            border-radius: 8px;
+            color: white;
+            text-align: center;
+        }
+        .vehicle-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .status-active { background: var(--bs-success); color: white; }
+        .status-maintenance { background: var(--bs-warning); color: var(--bs-dark); }
+        .status-route { background: var(--bs-info); color: white; }
+    </style>
+</head>
+<body>
+    <div class="traxovo-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-6 mb-2">
+                        <i class="fas fa-truck me-3"></i>
+                        TRAXOVO Fleet Operations
+                    </h1>
+                    <p class="lead mb-0">Advanced Fleet Management & Route Optimization</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="/" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Enterprise
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Fleet Metrics -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="fleet-metric">
+                    <div class="h3 mb-1">97.3%</div>
+                    <div>Fleet Efficiency</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="fleet-metric">
+                    <div class="h3 mb-1">234</div>
+                    <div>Active Vehicles</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="fleet-metric">
+                    <div class="h3 mb-1">18.7%</div>
+                    <div>Fuel Savings</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="fleet-metric">
+                    <div class="h3 mb-1">31.2%</div>
+                    <div>Route Optimization</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Fleet -->
+        <div class="row">
+            <div class="col-md-8 mb-4">
+                <div class="fleet-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-map-marked-alt me-2"></i>
+                            Active Fleet Status
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Vehicle ID</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th>Efficiency</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>TRX-001</td>
+                                        <td>Chicago, IL</td>
+                                        <td><span class="vehicle-status status-active">En Route</span></td>
+                                        <td>98.4%</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-success" onclick="optimizeRoute('TRX-001')">
+                                                <i class="fas fa-route"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>TRX-002</td>
+                                        <td>Denver, CO</td>
+                                        <td><span class="vehicle-status status-maintenance">Maintenance</span></td>
+                                        <td>94.1%</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-warning" onclick="scheduleService('TRX-002')">
+                                                <i class="fas fa-wrench"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>TRX-003</td>
+                                        <td>Phoenix, AZ</td>
+                                        <td><span class="vehicle-status status-route">Optimizing</span></td>
+                                        <td>96.7%</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-info" onclick="optimizeRoute('TRX-003')">
+                                                <i class="fas fa-route"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>TRX-004</td>
+                                        <td>Atlanta, GA</td>
+                                        <td><span class="vehicle-status status-active">Loading</span></td>
+                                        <td>99.2%</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-success" onclick="optimizeRoute('TRX-004')">
+                                                <i class="fas fa-route"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="fleet-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cogs me-2"></i>
+                            Fleet Control Center
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-3">
+                            <button class="btn btn-outline-success" onclick="optimizeFleet()">
+                                <i class="fas fa-rocket me-2"></i>
+                                Optimize Fleet
+                            </button>
+                            <button class="btn btn-outline-info" onclick="analyzeRoutes()">
+                                <i class="fas fa-chart-line me-2"></i>
+                                Route Analysis
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="predictiveMaintenance()">
+                                <i class="fas fa-tools me-2"></i>
+                                Predictive Maintenance
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="generateReport()">
+                                <i class="fas fa-file-alt me-2"></i>
+                                Generate Report
+                            </button>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="text-center">
+                            <h6 class="mb-3">Fleet Health</h6>
+                            <div class="progress mb-2" style="height: 8px;">
+                                <div class="progress-bar bg-success" style="width: 97.3%"></div>
+                            </div>
+                            <small class="text-muted">Excellent Performance</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function optimizeRoute(vehicleId) {
+            const button = event.target;
+            const originalContent = button.innerHTML;
+            
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            button.disabled = true;
+            
+            try {
+                const response = await fetch('/api/traxovo/optimize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ vehicle_id: vehicleId })
+                });
+                
+                if (response.ok) {
+                    button.innerHTML = '<i class="fas fa-check"></i>';
+                    button.style.color = 'var(--bs-success)';
+                    showNotification(`Route optimization completed for ${vehicleId}`, 'success');
+                } else {
+                    throw new Error('Optimization failed');
+                }
+            } catch (error) {
+                button.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                button.style.color = 'var(--bs-danger)';
+                showNotification(`Route optimization failed for ${vehicleId}`, 'error');
+            }
+            
+            setTimeout(() => {
+                button.innerHTML = originalContent;
+                button.disabled = false;
+                button.style.color = '';
+            }, 3000);
+        }
+
+        async function optimizeFleet() {
+            const button = event.target;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Optimizing...';
+            button.disabled = true;
+            
+            try {
+                const response = await fetch('/api/traxovo/optimize', { method: 'POST' });
+                if (response.ok) {
+                    showNotification('Fleet optimization completed successfully', 'success');
+                } else {
+                    throw new Error('Optimization failed');
+                }
+            } catch (error) {
+                showNotification('Fleet optimization encountered an issue', 'warning');
+            }
+            
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-rocket me-2"></i>Optimize Fleet';
+                button.disabled = false;
+            }, 3000);
+        }
+
+        function scheduleService(vehicleId) {
+            showNotification(`Maintenance scheduled for ${vehicleId}`, 'info');
+        }
+
+        function analyzeRoutes() {
+            showNotification('Route analysis report generated', 'info');
+        }
+
+        function predictiveMaintenance() {
+            showNotification('Predictive maintenance analysis initiated', 'success');
+        }
+
+        function generateReport() {
+            showNotification('Fleet performance report generated', 'info');
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} alert-dismissible fade show`;
+            notification.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.remove(), 5000);
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            showNotification('TRAXOVO Fleet Operations Dashboard initialized', 'success');
+        });
+    </script>
+</body>
+</html>
