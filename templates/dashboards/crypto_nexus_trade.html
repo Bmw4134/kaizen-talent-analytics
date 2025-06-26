@@ -1,0 +1,602 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<div data-dashboard-name="crypto_nexus_trade" class="fade-in">
+    <!-- Dashboard Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6 mb-2">
+                        <i class="fas fa-chart-line me-3 text-primary"></i>
+                        CryptoNexusTrade Dashboard
+                    </h1>
+                    <p class="text-muted">Cryptocurrency Trading Platform</p>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                            <li class="breadcrumb-item">Dashboards</li>
+                            <li class="breadcrumb-item active">CryptoNexusTrade</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex gap-2">
+                    <button id="refresh-dashboard" class="btn btn-primary">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button id="dashboard-settings" class="btn btn-outline-secondary">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                    <button id="export-data" class="btn btn-outline-info">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Navigation -->
+    <div class="dashboard-nav">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard', dashboard_name='traxovo') }}">
+                    <i class="fas fa-activity me-1"></i>TRAXOVO
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard', dashboard_name='dwc') }}">
+                    <i class="fas fa-layers me-1"></i>DWC
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard', dashboard_name='jdd') }}">
+                    <i class="fas fa-database me-1"></i>JDD
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('dashboard', dashboard_name='crypto_nexus_trade') }}">
+                    <i class="fas fa-chart-line me-1"></i>CryptoNexus
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Error Container -->
+    <div id="error-container"></div>
+
+    <!-- Dashboard Status -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Dashboard Status</h6>
+                            <span id="dashboard-status" class="badge bg-success">
+                                {% if dashboard_data and dashboard_data.status %}
+                                    {{ dashboard_data.status.upper() }}
+                                {% else %}
+                                    INITIALIZING
+                                {% endif %}
+                            </span>
+                            {% if dashboard_data and dashboard_data.version %}
+                                <span class="badge bg-secondary ms-2">v{{ dashboard_data.version }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">Auto-refresh: 
+                                <div class="form-check form-switch d-inline-block ms-2">
+                                    <input class="form-check-input" type="checkbox" id="auto-refresh-toggle" checked>
+                                </div>
+                            </small>
+                            <div id="last-refresh" class="small text-muted">
+                                Last updated: 
+                                {% if dashboard_data and dashboard_data.timestamp %}
+                                    {{ dashboard_data.timestamp }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intelligence Insights -->
+    {% if dashboard_data and dashboard_data.intelligence %}
+    <div id="intelligence-insights" class="mb-4">
+        <div class="alert alert-primary">
+            <h6><i class="fas fa-brain me-2"></i>Quantum Nexus Intelligence</h6>
+            <p class="mb-1">{{ dashboard_data.intelligence.insights }}</p>
+            <small class="text-muted">
+                Optimization Score: {{ dashboard_data.intelligence.optimization_score | round(2) }}
+                | Processed: {{ dashboard_data.intelligence.processed_at }}
+            </small>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Market Overview -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h5 class="mb-3">
+                <i class="fas fa-globe me-2"></i>
+                Market Overview
+            </h5>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value" id="portfolio-value">
+                    {% if dashboard_data and dashboard_data.market %}
+                        ${{ "{:,.2f}".format(dashboard_data.market.portfolio_value or 0) }}
+                    {% else %}
+                        $--
+                    {% endif %}
+                </div>
+                <div class="metric-label">Portfolio Value</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value" id="daily-change">
+                    {% if dashboard_data and dashboard_data.market %}
+                        {{ (dashboard_data.market.daily_change or 0) | round(2) }}%
+                    {% else %}
+                        --%
+                    {% endif %}
+                </div>
+                <div class="metric-label">Daily Change</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value" id="active-trades">
+                    {% if dashboard_data and dashboard_data.market %}
+                        {{ dashboard_data.market.active_trades or 0 }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </div>
+                <div class="metric-label">Active Trades</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value" id="market-status">
+                    {% if dashboard_data and dashboard_data.market %}
+                        {{ (dashboard_data.market.market_status or 'closed').upper() }}
+                    {% else %}
+                        UNKNOWN
+                    {% endif %}
+                </div>
+                <div class="metric-label">Market Status</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trading Performance -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-chart-area me-2"></i>
+                        Trading Performance
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="trading-data">
+                        {% if dashboard_data and dashboard_data.trading and dashboard_data.trading.performance_metrics %}
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-value">
+                                        ${{ "{:,.2f}".format(dashboard_data.trading.performance_metrics.total_profit_loss or 0) }}
+                                    </div>
+                                    <div class="metric-label">Total P&L</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-value">
+                                        {{ (dashboard_data.trading.performance_metrics.win_rate or 0) | round(2) }}%
+                                    </div>
+                                    <div class="metric-label">Win Rate</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-value">
+                                        {{ dashboard_data.trading.performance_metrics.total_trades or 0 }}
+                                    </div>
+                                    <div class="metric-label">Total Trades</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-value">
+                                        {{ dashboard_data.trading.performance_metrics.avg_trade_duration or '0h' }}
+                                    </div>
+                                    <div class="metric-label">Avg Duration</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No trading performance data available</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Risk Management
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if dashboard_data and dashboard_data.trading and dashboard_data.trading.risk_management %}
+                    <div class="mb-3">
+                        <label class="form-label small">Portfolio Risk</label>
+                        <div class="progress">
+                            <div class="progress-bar bg-{{ 'danger' if dashboard_data.trading.risk_management.portfolio_risk > 0.7 else 'warning' if dashboard_data.trading.risk_management.portfolio_risk > 0.4 else 'success' }}" 
+                                 style="width: {{ (dashboard_data.trading.risk_management.portfolio_risk or 0) * 100 }}%">
+                                {{ (dashboard_data.trading.risk_management.portfolio_risk or 0) | round(2) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small">Max Drawdown</label>
+                        <div>{{ (dashboard_data.trading.risk_management.max_drawdown or 0) | round(2) }}%</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small">Risk Score</label>
+                        <div>
+                            <span class="badge bg-{{ 'success' if dashboard_data.trading.risk_management.risk_score == 'low' else 'warning' if dashboard_data.trading.risk_management.risk_score == 'medium' else 'danger' }}">
+                                {{ (dashboard_data.trading.risk_management.risk_score or 'unknown').upper() }}
+                            </span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Risk management data not available</p>
+                    {% endif %}
+                    
+                    <div class="d-grid">
+                        <button class="btn btn-outline-warning btn-sm" onclick="adjustRiskSettings()">
+                            <i class="fas fa-cog me-1"></i>
+                            Adjust Risk Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Open Positions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-coins me-2"></i>
+                        Open Positions
+                    </h6>
+                    <button class="btn btn-outline-primary btn-sm" onclick="openNewPosition()">
+                        <i class="fas fa-plus me-1"></i>
+                        New Position
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if dashboard_data and dashboard_data.trading and dashboard_data.trading.open_positions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>Type</th>
+                                        <th>Size</th>
+                                        <th>Entry Price</th>
+                                        <th>Current Price</th>
+                                        <th>P&L</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for position in dashboard_data.trading.open_positions %}
+                                    <tr>
+                                        <td><strong>{{ position.symbol or 'N/A' }}</strong></td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if position.type == 'long' else 'danger' }}">
+                                                {{ (position.type or 'unknown').upper() }}
+                                            </span>
+                                        </td>
+                                        <td>{{ position.size or '0' }}</td>
+                                        <td>${{ "{:,.2f}".format(position.entry_price or 0) }}</td>
+                                        <td>${{ "{:,.2f}".format(position.current_price or 0) }}</td>
+                                        <td class="text-{{ 'success' if (position.pnl or 0) > 0 else 'danger' if (position.pnl or 0) < 0 else 'muted' }}">
+                                            ${{ "{:,.2f}".format(position.pnl or 0) }}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-warning" onclick="modifyPosition('{{ position.id or '' }}')">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger" onclick="closePosition('{{ position.id or '' }}')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-coins fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No open positions</p>
+                            <button class="btn btn-primary" onclick="openNewPosition()">
+                                <i class="fas fa-plus me-1"></i>
+                                Open First Position
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Market Data & Alerts -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-chart-candlestick me-2"></i>
+                        Market Data
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="market-data">
+                        {% if dashboard_data and dashboard_data.market %}
+                        <div class="alert alert-info">
+                            <h6>Market Status: {{ (dashboard_data.market.market_status or 'closed').upper() }}</h6>
+                            <p class="mb-0">Last Update: {{ dashboard_data.market.last_update or 'Unknown' }}</p>
+                        </div>
+                        
+                        {% if dashboard_data.market.markets %}
+                        <div class="list-group">
+                            {% for market in dashboard_data.market.markets %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ market.symbol or 'N/A' }}</h6>
+                                    <small class="text-muted">{{ market.name or 'Unknown' }}</small>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold">${{ "{:,.2f}".format(market.price or 0) }}</div>
+                                    <small class="text-{{ 'success' if (market.change or 0) > 0 else 'danger' if (market.change or 0) < 0 else 'muted' }}">
+                                        {{ (market.change or 0) | round(2) }}%
+                                    </small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-muted">No market data available</p>
+                        {% endif %}
+                        {% else %}
+                        <p class="text-muted">Market data not available</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-bell me-2"></i>
+                        Alerts & Notifications
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if dashboard_data and dashboard_data.market and dashboard_data.market.alerts %}
+                        {% for alert in dashboard_data.market.alerts %}
+                        <div class="alert alert-{{ alert.type or 'info' }} alert-dismissible">
+                            <strong>{{ alert.title or 'Alert' }}</strong>
+                            <p class="mb-0">{{ alert.message or 'No message' }}</p>
+                            <small class="text-muted">{{ alert.timestamp or 'Unknown time' }}</small>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-3">
+                            <i class="fas fa-bell fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">No active alerts</p>
+                            <button class="btn btn-outline-primary btn-sm" onclick="createAlert()">
+                                <i class="fas fa-plus me-1"></i>
+                                Create Alert
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trading Strategies -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-robot me-2"></i>
+                        Trading Strategies
+                    </h6>
+                    <button class="btn btn-outline-primary btn-sm" onclick="createStrategy()">
+                        <i class="fas fa-plus me-1"></i>
+                        New Strategy
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if dashboard_data and dashboard_data.trading and dashboard_data.trading.strategies %}
+                        <div class="row">
+                            {% for strategy in dashboard_data.trading.strategies %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ strategy.name or 'Unnamed Strategy' }}</h6>
+                                        <p class="card-text small">{{ strategy.description or 'No description' }}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-{{ 'success' if strategy.status == 'active' else 'secondary' }}">
+                                                {{ (strategy.status or 'inactive').upper() }}
+                                            </span>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-secondary" onclick="editStrategy('{{ strategy.id or '' }}')">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-outline-primary" onclick="runStrategy('{{ strategy.id or '' }}')">
+                                                    <i class="fas fa-play"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-robot fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No trading strategies configured</p>
+                            <button class="btn btn-primary" onclick="createStrategy()">
+                                <i class="fas fa-plus me-1"></i>
+                                Create First Strategy
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QNI Metadata -->
+    {% if dashboard_data and dashboard_data.qni_metadata %}
+    <div id="qni-metadata" class="mb-4">
+        <div class="card border-primary">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="fas fa-brain me-2"></i>
+                    QNI Processing Information
+                </h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <small class="text-muted">Processing Time</small>
+                        <div>{{ dashboard_data.qni_metadata.processing_time_ms or 0 }}ms</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Confidence Score</small>
+                        <div>{{ (dashboard_data.qni_metadata.confidence_score or 0) | round(2) }}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Last Processed</small>
+                        <div>{{ dashboard_data.qni_metadata.timestamp or 'Unknown' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Error State -->
+    {% if dashboard_data and dashboard_data.error %}
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-danger">
+                <h6>
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    Dashboard Error
+                </h6>
+                <p class="mb-0">{{ dashboard_data.error }}</p>
+                <button class="btn btn-outline-danger btn-sm mt-2" onclick="window.location.reload()">
+                    <i class="fas fa-redo me-1"></i>
+                    Retry
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function openNewPosition() {
+    showNotification('Position creation interface coming soon!', 'info');
+}
+
+function modifyPosition(positionId) {
+    showNotification(`Modifying position ${positionId}`, 'info');
+}
+
+function closePosition(positionId) {
+    if (confirm('Are you sure you want to close this position?')) {
+        showNotification(`Position ${positionId} closed`, 'warning');
+    }
+}
+
+function adjustRiskSettings() {
+    showNotification('Risk settings panel coming soon!', 'info');
+}
+
+function createAlert() {
+    showNotification('Alert creation interface coming soon!', 'info');
+}
+
+function createStrategy() {
+    showNotification('Strategy builder coming soon!', 'info');
+}
+
+function editStrategy(strategyId) {
+    showNotification(`Editing strategy ${strategyId}`, 'info');
+}
+
+function runStrategy(strategyId) {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    
+    setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        showNotification(`Strategy ${strategyId} executed successfully`, 'success');
+    }, 2000);
+}
+
+function showNotification(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.top = '20px';
+    alertDiv.style.right = '20px';
+    alertDiv.style.zIndex = '9999';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alertDiv);
+
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.parentNode.removeChild(alertDiv);
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}
