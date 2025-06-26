@@ -1,0 +1,772 @@
+<!-- AI Website Reinvention Demo Module -->
+<div class="ai-website-demo">
+    <div class="demo-header">
+        <h3><i class="fas fa-magic"></i> Let Us Reinvent Your Website</h3>
+        <div class="demo-subtitle">AI-Powered Website Analysis, Redesign & Optimization</div>
+    </div>
+
+    <div class="demo-workflow">
+        <!-- Step 1: URL Input -->
+        <div class="workflow-step active" id="step-1">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <h4>Enter Your Website URL</h4>
+            </div>
+            <div class="step-content">
+                <div class="url-input-section">
+                    <input type="url" id="website-url" class="form-control form-control-lg" 
+                           placeholder="https://yourwebsite.com" 
+                           onkeypress="handleUrlInput(event)">
+                    <button class="btn btn-primary btn-lg" onclick="analyzeWebsite()">
+                        <i class="fas fa-search"></i> Analyze Website
+                    </button>
+                </div>
+                <div class="demo-examples">
+                    <span>Try these examples:</span>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="setDemoUrl('https://oldcompany.com')">
+                        Old Company Site
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="setDemoUrl('https://startup.io')">
+                        Startup Homepage
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: AI Analysis -->
+        <div class="workflow-step" id="step-2">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <h4>AI Analysis Results</h4>
+            </div>
+            <div class="step-content">
+                <div class="analysis-grid" id="analysis-results">
+                    <!-- Analysis results will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Redesign Preview -->
+        <div class="workflow-step" id="step-3">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <h4>AI-Generated Redesign</h4>
+            </div>
+            <div class="step-content">
+                <div class="redesign-preview" id="redesign-preview">
+                    <!-- Redesign preview will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Investor Funnel -->
+        <div class="workflow-step" id="step-4">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <h4>Investment Opportunity</h4>
+            </div>
+            <div class="step-content">
+                <div class="investor-cta">
+                    <div class="investment-pitch">
+                        <h5>Transform Your Digital Presence</h5>
+                        <p>Our AI-driven website optimization has helped companies increase conversion rates by up to 340% and reduce bounce rates by 65%.</p>
+                        
+                        <div class="roi-calculator">
+                            <h6>ROI Calculator</h6>
+                            <div class="calculator-inputs">
+                                <div class="input-group">
+                                    <label>Current Monthly Visitors:</label>
+                                    <input type="number" id="monthly-visitors" class="form-control" value="10000" onchange="calculateROI()">
+                                </div>
+                                <div class="input-group">
+                                    <label>Average Order Value:</label>
+                                    <input type="number" id="avg-order-value" class="form-control" value="150" onchange="calculateROI()">
+                                </div>
+                                <div class="input-group">
+                                    <label>Current Conversion Rate:</label>
+                                    <input type="number" id="conversion-rate" class="form-control" value="2.5" step="0.1" onchange="calculateROI()">
+                                </div>
+                            </div>
+                            <div class="roi-results" id="roi-results">
+                                <!-- ROI calculations will appear here -->
+                            </div>
+                        </div>
+
+                        <div class="investment-packages">
+                            <div class="package">
+                                <h6>Starter Package</h6>
+                                <div class="package-price">$2,500</div>
+                                <ul>
+                                    <li>AI Website Analysis</li>
+                                    <li>Basic Redesign</li>
+                                    <li>Performance Optimization</li>
+                                </ul>
+                                <button class="btn btn-outline-primary w-100" onclick="selectPackage('starter')">
+                                    Select Package
+                                </button>
+                            </div>
+                            <div class="package featured">
+                                <h6>Professional Package</h6>
+                                <div class="package-price">$7,500</div>
+                                <ul>
+                                    <li>Everything in Starter</li>
+                                    <li>Advanced AI Optimization</li>
+                                    <li>Custom Integrations</li>
+                                    <li>6 Months Support</li>
+                                </ul>
+                                <button class="btn btn-primary w-100" onclick="selectPackage('professional')">
+                                    Select Package
+                                </button>
+                            </div>
+                            <div class="package">
+                                <h6>Enterprise Package</h6>
+                                <div class="package-price">$15,000</div>
+                                <ul>
+                                    <li>Everything in Professional</li>
+                                    <li>Multi-site Optimization</li>
+                                    <li>Dedicated Account Manager</li>
+                                    <li>12 Months Support</li>
+                                </ul>
+                                <button class="btn btn-outline-primary w-100" onclick="selectPackage('enterprise')">
+                                    Select Package
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="progress-indicator">
+        <div class="progress-step active" data-step="1">1</div>
+        <div class="progress-step" data-step="2">2</div>
+        <div class="progress-step" data-step="3">3</div>
+        <div class="progress-step" data-step="4">4</div>
+    </div>
+</div>
+
+<style>
+.ai-website-demo {
+    background: #1a1a2e;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.demo-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #333;
+}
+
+.demo-header h3 {
+    color: #00ff88;
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+}
+
+.demo-subtitle {
+    color: #999;
+    font-size: 1.1rem;
+}
+
+.demo-workflow {
+    margin-bottom: 2rem;
+}
+
+.workflow-step {
+    display: none;
+    margin-bottom: 2rem;
+}
+
+.workflow-step.active {
+    display: block;
+}
+
+.step-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: #00ff88;
+    color: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 1rem;
+}
+
+.step-header h4 {
+    color: #fff;
+    margin: 0;
+}
+
+.url-input-section {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    max-width: 600px;
+}
+
+.url-input-section input {
+    flex: 1;
+}
+
+.demo-examples {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #999;
+    font-size: 0.9rem;
+}
+
+.analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.analysis-card {
+    background: #16213e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.analysis-card h5 {
+    color: #00ff88;
+    margin-bottom: 1rem;
+}
+
+.analysis-score {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.analysis-score.good { color: #28a745; }
+.analysis-score.average { color: #ffc107; }
+.analysis-score.poor { color: #dc3545; }
+
+.redesign-preview {
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    min-height: 300px;
+}
+
+.investor-cta {
+    background: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%);
+    border: 1px solid #00ff88;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.investment-pitch h5 {
+    color: #00ff88;
+    margin-bottom: 1rem;
+}
+
+.roi-calculator {
+    background: #0a0e1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.roi-calculator h6 {
+    color: #00bfff;
+    margin-bottom: 1rem;
+}
+
+.calculator-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.input-group label {
+    display: block;
+    color: #ccc;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.roi-results {
+    background: #16213e;
+    border-radius: 8px;
+    padding: 1rem;
+    border-left: 4px solid #00ff88;
+}
+
+.investment-packages {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.package {
+    background: #0a0e1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.package.featured {
+    border-color: #00ff88;
+    background: #16213e;
+}
+
+.package h6 {
+    color: #00ff88;
+    margin-bottom: 1rem;
+}
+
+.package-price {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.package ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.package li {
+    padding: 0.25rem 0;
+    color: #ccc;
+}
+
+.package li::before {
+    content: "✓ ";
+    color: #00ff88;
+    font-weight: bold;
+}
+
+.progress-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.progress-step {
+    width: 40px;
+    height: 40px;
+    background: #333;
+    color: #999;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.progress-step.active {
+    background: #00ff88;
+    color: #000;
+}
+
+.progress-step.completed {
+    background: #28a745;
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .url-input-section {
+        flex-direction: column;
+    }
+    
+    .demo-examples {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .calculator-inputs {
+        grid-template-columns: 1fr;
+    }
+    
+    .investment-packages {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+let currentStep = 1;
+let analysisData = {};
+
+function handleUrlInput(event) {
+    if (event.key === 'Enter') {
+        analyzeWebsite();
+    }
+}
+
+function setDemoUrl(url) {
+    document.getElementById('website-url').value = url;
+}
+
+async function analyzeWebsite() {
+    const url = document.getElementById('website-url').value.trim();
+    if (!url) {
+        alert('Please enter a website URL');
+        return;
+    }
+
+    // Show loading state
+    showStep(2);
+    document.getElementById('analysis-results').innerHTML = `
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Analyzing...</span>
+            </div>
+            <p class="mt-3">Analyzing website with AI...</p>
+        </div>
+    `;
+
+    try {
+        // Simulate API call to analyze website
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        
+        // Generate analysis results
+        generateAnalysisResults(url);
+        
+        setTimeout(() => {
+            generateRedesign();
+            showStep(3);
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Analysis failed:', error);
+        document.getElementById('analysis-results').innerHTML = `
+            <div class="alert alert-danger">
+                Analysis failed. Please try again or contact support.
+            </div>
+        `;
+    }
+}
+
+function generateAnalysisResults(url) {
+    const scores = {
+        performance: Math.floor(Math.random() * 40) + 40, // 40-80
+        seo: Math.floor(Math.random() * 50) + 30, // 30-80
+        accessibility: Math.floor(Math.random() * 60) + 20, // 20-80
+        ux: Math.floor(Math.random() * 45) + 35 // 35-80
+    };
+
+    analysisData = {
+        url: url,
+        scores: scores,
+        recommendations: [
+            'Optimize image loading and compression',
+            'Improve mobile responsiveness',
+            'Add semantic HTML structure',
+            'Implement modern design patterns',
+            'Enhance call-to-action buttons'
+        ]
+    };
+
+    function getScoreClass(score) {
+        if (score >= 70) return 'good';
+        if (score >= 50) return 'average';
+        return 'poor';
+    }
+
+    document.getElementById('analysis-results').innerHTML = `
+        <div class="analysis-card">
+            <h5><i class="fas fa-tachometer-alt"></i> Performance</h5>
+            <div class="analysis-score ${getScoreClass(scores.performance)}">${scores.performance}/100</div>
+            <p>Page load speed and optimization</p>
+        </div>
+        <div class="analysis-card">
+            <h5><i class="fas fa-search"></i> SEO</h5>
+            <div class="analysis-score ${getScoreClass(scores.seo)}">${scores.seo}/100</div>
+            <p>Search engine optimization</p>
+        </div>
+        <div class="analysis-card">
+            <h5><i class="fas fa-universal-access"></i> Accessibility</h5>
+            <div class="analysis-score ${getScoreClass(scores.accessibility)}">${scores.accessibility}/100</div>
+            <p>Web accessibility standards</p>
+        </div>
+        <div class="analysis-card">
+            <h5><i class="fas fa-user"></i> User Experience</h5>
+            <div class="analysis-score ${getScoreClass(scores.ux)}">${scores.ux}/100</div>
+            <p>Overall user experience</p>
+        </div>
+        <div class="analysis-card" style="grid-column: 1 / -1;">
+            <h5><i class="fas fa-lightbulb"></i> AI Recommendations</h5>
+            <ul class="list-unstyled">
+                ${analysisData.recommendations.map(rec => `<li><i class="fas fa-arrow-right text-primary me-2"></i>${rec}</li>`).join('')}
+            </ul>
+        </div>
+    `;
+}
+
+function generateRedesign() {
+    document.getElementById('redesign-preview').innerHTML = `
+        <div class="redesign-content">
+            <h5><i class="fas fa-magic"></i> AI-Generated Redesign Preview</h5>
+            <div class="redesign-mockup">
+                <div class="mockup-browser">
+                    <div class="browser-header">
+                        <div class="browser-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <div class="browser-url">${analysisData.url}</div>
+                    </div>
+                    <div class="browser-content">
+                        <div class="hero-section">
+                            <h4>Redesigned Hero Section</h4>
+                            <p>Modern, conversion-optimized layout</p>
+                            <button class="btn btn-primary">Get Started</button>
+                        </div>
+                        <div class="features-section">
+                            <div class="feature-card">Feature 1</div>
+                            <div class="feature-card">Feature 2</div>
+                            <div class="feature-card">Feature 3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="redesign-improvements">
+                <h6>Expected Improvements:</h6>
+                <div class="improvement-grid">
+                    <div class="improvement-item">
+                        <div class="improvement-value">+340%</div>
+                        <div class="improvement-label">Conversion Rate</div>
+                    </div>
+                    <div class="improvement-item">
+                        <div class="improvement-value">-65%</div>
+                        <div class="improvement-label">Bounce Rate</div>
+                    </div>
+                    <div class="improvement-item">
+                        <div class="improvement-value">+95%</div>
+                        <div class="improvement-label">Page Speed</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-success btn-lg mt-3" onclick="showInvestorFunnel()">
+                <i class="fas fa-rocket"></i> See Investment Opportunity
+            </button>
+        </div>
+    `;
+    
+    calculateROI();
+}
+
+function showInvestorFunnel() {
+    showStep(4);
+}
+
+function calculateROI() {
+    const visitors = parseInt(document.getElementById('monthly-visitors')?.value || 10000);
+    const orderValue = parseInt(document.getElementById('avg-order-value')?.value || 150);
+    const conversionRate = parseFloat(document.getElementById('conversion-rate')?.value || 2.5);
+    
+    const currentRevenue = visitors * (conversionRate / 100) * orderValue;
+    const improvedConversionRate = conversionRate * 2.4; // 140% improvement
+    const newRevenue = visitors * (improvedConversionRate / 100) * orderValue;
+    const monthlyIncrease = newRevenue - currentRevenue;
+    const yearlyIncrease = monthlyIncrease * 12;
+    
+    const resultsElement = document.getElementById('roi-results');
+    if (resultsElement) {
+        resultsElement.innerHTML = `
+            <div class="roi-summary">
+                <h6>Projected Revenue Increase</h6>
+                <div class="roi-metric">
+                    <span class="roi-label">Monthly Increase:</span>
+                    <span class="roi-value">$${monthlyIncrease.toLocaleString()}</span>
+                </div>
+                <div class="roi-metric">
+                    <span class="roi-label">Yearly Increase:</span>
+                    <span class="roi-value">$${yearlyIncrease.toLocaleString()}</span>
+                </div>
+                <div class="roi-metric highlight">
+                    <span class="roi-label">ROI on $7,500 investment:</span>
+                    <span class="roi-value">${Math.round((yearlyIncrease / 7500) * 100)}%</span>
+                </div>
+            </div>
+        `;
+    }
+}
+
+function selectPackage(packageType) {
+    alert(`Selected ${packageType} package. A sales representative will contact you within 24 hours.`);
+    
+    // Track conversion in investor mode
+    if (window.updateInvestorMetrics) {
+        window.updateInvestorMetrics('package_selected', packageType);
+    }
+}
+
+function showStep(stepNumber) {
+    // Hide all steps
+    document.querySelectorAll('.workflow-step').forEach(step => {
+        step.classList.remove('active');
+    });
+    
+    // Show current step
+    document.getElementById(`step-${stepNumber}`).classList.add('active');
+    
+    // Update progress indicator
+    document.querySelectorAll('.progress-step').forEach((step, index) => {
+        const stepNum = index + 1;
+        step.classList.remove('active', 'completed');
+        
+        if (stepNum < stepNumber) {
+            step.classList.add('completed');
+        } else if (stepNum === stepNumber) {
+            step.classList.add('active');
+        }
+    });
+    
+    currentStep = stepNumber;
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    calculateROI();
+});
+</script>
+
+<style>
+.mockup-browser {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 1rem 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.browser-header {
+    background: #f0f0f0;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.browser-dots {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.dot.red { background: #ff5f56; }
+.dot.yellow { background: #ffbd2e; }
+.dot.green { background: #27ca3f; }
+
+.browser-url {
+    background: #fff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #666;
+    flex: 1;
+}
+
+.browser-content {
+    padding: 2rem;
+    color: #333;
+}
+
+.hero-section {
+    text-align: center;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.features-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.feature-card {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #dee2e6;
+}
+
+.improvement-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.improvement-item {
+    text-align: center;
+    padding: 1rem;
+    background: #16213e;
+    border-radius: 8px;
+}
+
+.improvement-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #00ff88;
+}
+
+.improvement-label {
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.roi-summary {
+    color: #fff;
+}
+
+.roi-metric {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #333;
+}
+
+.roi-metric.highlight {
+    background: rgba(0, 255, 136, 0.1);
+    padding: 0.75rem;
+    border-radius: 4px;
+    border-bottom: none;
+    margin-top: 1rem;
+}
+
+.roi-value {
+    font-weight: bold;
+    color: #00ff88;
+}
+</style>
