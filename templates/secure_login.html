@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS UF - Secure Access</title>
+    
+    <!-- Bootstrap CSS with Replit Dark Theme -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .auth-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 102, 204, 0.1) 0%, transparent 50%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .nexus-brand {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .brand-logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00ff88, #0066cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        
+        .brand-tagline {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 0.25rem;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .auth-tab.active {
+            background: linear-gradient(135deg, #00ff88, #0066cc);
+            color: white;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .form-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .form-control {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #00ff88;
+            box-shadow: 0 0 0 0.2rem rgba(0, 255, 136, 0.25);
+            outline: none;
+        }
+        
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: 1rem;
+            top: 2.5rem;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .auth-button {
+            width: 100%;
+            background: linear-gradient(135deg, #00ff88, #0066cc);
+            border: none;
+            border-radius: 8px;
+            padding: 0.875rem;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+        
+        .auth-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+        }
+        
+        .auth-button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            position: relative;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .divider span {
+            background: #1a1a2e;
+            padding: 0 1rem;
+        }
+        
+        .quick-access {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .quick-user {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+        
+        .quick-user:hover {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: #00ff88;
+        }
+        
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00ff88, #0066cc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .security-info {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .alert-success {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            color: #00ff88;
+        }
+        
+        .alert-danger {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid rgba(255, 68, 68, 0.3);
+            color: #ff4444;
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+            z-index: 20;
+        }
+        
+        .back-link:hover {
+            color: #00ff88;
+        }
+        
+        @media (max-width: 768px) {
+            .login-container {
+                margin: 1rem;
+                padding: 2rem;
+            }
+            
+            .brand-logo {
+                font-size: 2rem;
+            }
+            
+            .back-link {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-background"></div>
+    
+    <a href="/" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        Back to Landing
+    </a>
+    
+    <div class="login-container">
+        <div class="nexus-brand">
+            <div class="brand-logo">NEXUS UF</div>
+            <div class="brand-tagline">Secure Access Portal</div>
+        </div>
+        
+        <!-- Authentication Tabs -->
+        <div class="auth-tabs">
+            <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+            <button class="auth-tab" onclick="switchTab('admin')">Admin</button>
+            <button class="auth-tab" onclick="switchTab('demo')">Demo</button>
+        </div>
+        
+        <!-- Login Form -->
+        <form class="auth-form active" id="login-form">
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" placeholder="Enter your username" required>
+                <div class="input-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                <div class="input-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+            </div>
+            
+            <button type="submit" class="auth-button">
+                <i class="fas fa-sign-in-alt me-2"></i>
+                Access Dashboard
+            </button>
+        </form>
+        
+        <!-- Admin Form -->
+        <form class="auth-form" id="admin-form">
+            <div class="form-group">
+                <label class="form-label">Admin Token</label>
+                <input type="password" class="form-control" id="admin-token" placeholder="Enter admin security token" required>
+                <div class="input-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Two-Factor Code</label>
+                <input type="text" class="form-control" id="tfa-code" placeholder="000000" maxlength="6" required>
+                <div class="input-icon">
+                    <i class="fas fa-key"></i>
+                </div>
+            </div>
+            
+            <button type="submit" class="auth-button">
+                <i class="fas fa-user-shield me-2"></i>
+                Admin Access
+            </button>
+        </form>
+        
+        <!-- Demo Form -->
+        <div class="auth-form" id="demo-form">
+            <div class="divider">
+                <span>Quick Demo Access</span>
+            </div>
+            
+            <div class="quick-access">
+                <div class="quick-user" onclick="quickLogin('Watson', 'admin')">
+                    <div class="user-avatar">W</div>
+                    <div>Watson</div>
+                    <small class="text-muted">Admin</small>
+                </div>
+                <div class="quick-user" onclick="quickLogin('Brett', 'trader')">
+                    <div class="user-avatar">B</div>
+                    <div>Brett</div>
+                    <small class="text-muted">Trader</small>
+                </div>
+                <div class="quick-user" onclick="quickLogin('SystemAdmin', 'developer')">
+                    <div class="user-avatar">SA</div>
+                    <div>SysAdmin</div>
+                    <small class="text-muted">Developer</small>
+                </div>
+            </div>
+            
+            <button class="auth-button" onclick="guestAccess()">
+                <i class="fas fa-eye me-2"></i>
+                Guest Preview
+            </button>
+        </div>
+        
+        <div class="security-info">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Demo Credentials:</strong><br>
+            <small>
+                • <strong>Watson:</strong> watson / nexus2024<br>
+                • <strong>Brett:</strong> brett / trader123<br>
+                • <strong>Admin:</strong> admin / admin123<br>
+                • <strong>Admin Token:</strong> nexus-admin-2024 / 123456
+            </small>
+        </div>
+        
+        <!-- Alert Container -->
+        <div id="alert-container"></div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Global state
+        let isAuthenticating = false;
+        
+        // Tab switching
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update forms
+            document.querySelectorAll('.auth-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-form`).classList.add('active');
+            
+            clearAlerts();
+        }
+        
+        // Form submissions
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            await authenticateUser({
+                type: 'login',
+                username: username,
+                password: password
+            });
+        });
+        
+        document.getElementById('admin-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const token = document.getElementById('admin-token').value;
+            const tfaCode = document.getElementById('tfa-code').value;
+            
+            await authenticateUser({
+                type: 'admin',
+                token: token,
+                tfa_code: tfaCode
+            });
+        });
+        
+        // Quick login for demo users
+        async function quickLogin(username, role) {
+            await authenticateUser({
+                type: 'demo',
+                username: username,
+                role: role
+            });
+        }
+        
+        // Guest access
+        function guestAccess() {
+            showAlert('Guest access enabled. Redirecting to dashboard...', 'success');
+            setTimeout(() => {
+                window.location.href = '/dashboard?role=guest';
+            }, 1500);
+        }
+        
+        // Authentication handler
+        async function authenticateUser(credentials) {
+            if (isAuthenticating) return;
+            
+            isAuthenticating = true;
+            const submitButton = document.querySelector('.auth-button');
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Authenticating...';
+            
+            try {
+                // Simulate authentication delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Validate credentials
+                const isValid = validateCredentials(credentials);
+                
+                if (isValid) {
+                    showAlert('Authentication successful! Redirecting...', 'success');
+                    
+                    // Store session data
+                    sessionStorage.setItem('nexus_user', JSON.stringify({
+                        username: credentials.username || 'Admin',
+                        role: credentials.role || 'admin',
+                        authenticated: true,
+                        login_time: new Date().toISOString()
+                    }));
+                    
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        const role = credentials.role || 'admin';
+                        window.location.href = `/dashboard?role=${role}`;
+                    }, 2000);
+                    
+                } else {
+                    showAlert('Invalid credentials. Please try again.', 'danger');
+                }
+                
+            } catch (error) {
+                showAlert('Authentication failed. Please try again.', 'danger');
+            } finally {
+                isAuthenticating = false;
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Access Dashboard';
+            }
+        }
+        
+        // Credential validation
+        function validateCredentials(credentials) {
+            const validUsers = {
+                'watson': { password: 'nexus2024', role: 'admin' },
+                'Watson': { password: 'nexus2024', role: 'admin' },
+                'brett': { password: 'trader123', role: 'trader' },
+                'Brett': { password: 'trader123', role: 'trader' },
+                'admin': { password: 'admin123', role: 'admin' },
+                'Admin': { password: 'admin123', role: 'admin' },
+                'systemadmin': { password: 'admin2024', role: 'developer' },
+                'SystemAdmin': { password: 'admin2024', role: 'developer' },
+                'nexus': { password: 'nexus123', role: 'admin' },
+                'Nexus': { password: 'nexus123', role: 'admin' },
+                'mastercontrol': { password: 'master123', role: 'admin' },
+                'MasterControl': { password: 'master123', role: 'admin' }
+            };
+            
+            if (credentials.type === 'demo') {
+                return true; // Demo access always allowed
+            }
+            
+            if (credentials.type === 'admin') {
+                return credentials.token === 'nexus-admin-2024' && credentials.tfa_code === '123456';
+            }
+            
+            if (credentials.type === 'login') {
+                const user = validUsers[credentials.username];
+                return user && user.password === credentials.password;
+            }
+            
+            return false;
+        }
+        
+        // Alert system
+        function showAlert(message, type) {
+            clearAlerts();
+            
+            const alertContainer = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+                ${message}
+            `;
+            
+            alertContainer.appendChild(alert);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+        
+        function clearAlerts() {
+            document.getElementById('alert-container').innerHTML = '';
+        }
+        
+        // Auto-focus first input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('username').focus();
+        });
+        
+        // Enter key handling for tab switching
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.tagName !== 'BUTTON' && e.target.type !== 'submit') {
+                const activeForm = document.querySelector('.auth-form.active');
+                const submitButton = activeForm.querySelector('.auth-button');
+                if (submitButton && !submitButton.disabled) {
+                    submitButton.click();
+                }
+            }
+        });
+        
+        // Prevent form submission on disabled button
+        document.querySelectorAll('.auth-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (this.disabled) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
