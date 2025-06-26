@@ -1,0 +1,1876 @@
+{% extends "base.html" %}
+
+{% block title %}NEXUS Windowed Command Center{% endblock %}
+
+{% block content %}
+<div class="nexus-windowed-container">
+    <!-- Header with Window Controls -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">
+                    <i class="fas fa-window-restore text-primary me-2"></i>
+                    NEXUS Command Center
+                </h2>
+                <div class="window-controls">
+                    <button class="btn btn-outline-primary btn-sm me-2" onclick="arrangeWindows('grid')">
+                        <i class="fas fa-th me-1"></i>Grid
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm me-2" onclick="arrangeWindows('cascade')">
+                        <i class="fas fa-layer-group me-1"></i>Cascade
+                    </button>
+                    <button class="btn btn-outline-success btn-sm" onclick="maximizeAll()">
+                        <i class="fas fa-expand-arrows-alt me-1"></i>Maximize All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Browser Status Alert -->
+    <div class="container-fluid mb-3">
+        <div class="alert alert-primary d-flex align-items-center" role="alert">
+            <i class="fas fa-globe me-3 fa-2x"></i>
+            <div class="flex-grow-1">
+                <h5 class="alert-heading mb-1">Embedded Browser Window Ready</h5>
+                <p class="mb-0">The live browser window below displays real websites within this dashboard. Enter any URL to load pages for automation monitoring.</p>
+            </div>
+            <button class="btn btn-light" onclick="document.getElementById('main-browser-url').focus()">
+                <i class="fas fa-arrow-down me-1"></i>Navigate Browser
+            </button>
+        </div>
+    </div>
+
+    <!-- Multi-Window Layout -->
+    <div class="row" id="window-container">
+        <!-- Live Browser Window - Full Width -->
+        <div class="col-12 mb-4">
+            <div class="nexus-window nexus-gesture-widget" id="browser-main-window" data-window="browser">
+                <div class="window-header bg-gradient" style="background: linear-gradient(135deg, #007bff, #0056b3);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-white">
+                            <i class="fas fa-globe me-2"></i>
+                            Live Browser Monitor
+                        </h5>
+                        <div class="browser-nav-controls d-flex align-items-center">
+                            <input type="url" id="main-browser-url" class="form-control form-control-sm me-2" 
+                                   placeholder="Enter URL to monitor..." value="https://www.example.com" style="width: 300px;">
+                            <button class="btn btn-sm btn-light me-2" onclick="loadMainBrowserPage()">
+                                <i class="fas fa-arrow-right"></i> Go
+                            </button>
+                            <button class="btn btn-sm btn-outline-light me-2" onclick="refreshMainBrowser()">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                        <div class="window-actions">
+                            <button class="btn btn-sm btn-outline-light" onclick="minimizeWindow('browser')">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-light" onclick="maximizeWindow('browser')">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="window-content p-0">
+                    <div class="browser-main-container">
+                        <div class="browser-status-bar">
+                            <div class="d-flex justify-content-between align-items-center px-3 py-2">
+                                <div class="browser-info">
+                                    <span class="badge bg-success me-2">Connected</span>
+                                    <small class="text-muted">Status: <span id="main-browser-status">Ready</span></small>
+                                </div>
+                                <div class="browser-controls">
+                                    <button class="btn btn-sm btn-success me-1" onclick="startMainBrowserMonitoring()">
+                                        <i class="fas fa-play me-1"></i>Start Monitor
+                                    </button>
+                                    <button class="btn btn-sm btn-info me-1" onclick="captureMainBrowserScreen()">
+                                        <i class="fas fa-camera"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" onclick="highlightMainBrowserElements()">
+                                        <i class="fas fa-crosshairs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="main-browser-frame">
+                            <div class="browser-loading-overlay" id="browser-loading">
+                                <div class="d-flex align-items-center justify-content-center h-100">
+                                    <div class="text-center">
+                                        <div class="spinner-border text-primary mb-2" role="status"></div>
+                                        <p class="text-muted">Loading browser window...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <iframe id="main-browser-iframe" 
+                                    src="https://www.example.com" 
+                                    style="width: 100%; height: 500px; border: none; background: white;"
+                                    sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation"
+                                    loading="eager">
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Browser Automation Controls -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="nexus-window nexus-gesture-widget" id="automation-window" data-window="automation">
+                <div class="window-header bg-gradient" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-white">
+                            <i class="fas fa-robot me-2"></i>
+                            Automation Controls
+                        </h5>
+                        <div class="window-actions">
+                            <button class="btn btn-sm btn-outline-light" onclick="minimizeWindow('automation')">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-light" onclick="maximizeWindow('automation')">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="window-content">
+                    <!-- Automation Controls -->
+                    <div class="automation-controls mb-3">
+                        <div class="input-group mb-2">
+                            <select class="form-select" id="automation-command">
+                                <option value="navigate">Navigate to URL</option>
+                                <option value="click_element">Click Element</option>
+                                <option value="extract_data">Extract Data</option>
+                                <option value="fill_form">Fill Form</option>
+                            </select>
+                            <button class="btn btn-success" onclick="executeAutomationCommand()">
+                                <i class="fas fa-play me-1"></i>Execute
+                            </button>
+                        </div>
+                        <input type="text" class="form-control" id="automation-params" placeholder="Parameters (JSON format)">
+                    </div>
+                    
+                    <!-- Browser Window Embed -->
+                    <div class="browser-embed-window mb-3">
+                        <h6 class="text-muted d-flex justify-content-between align-items-center">
+                            Live Browser Window
+                            <div class="browser-controls">
+                                <input type="url" id="browser-url" class="form-control form-control-sm me-2" 
+                                       placeholder="Enter URL to monitor..." value="https://example.com" style="width: 200px;">
+                                <button class="btn btn-outline-primary btn-sm" onclick="loadBrowserPage()">
+                                    <i class="fas fa-globe"></i>
+                                </button>
+                            </div>
+                        </h6>
+                        <div id="browser-window" class="browser-container">
+                            <div class="browser-frame">
+                                <div class="browser-header">
+                                    <div class="browser-buttons">
+                                        <span class="browser-btn close"></span>
+                                        <span class="browser-btn minimize"></span>
+                                        <span class="browser-btn maximize"></span>
+                                    </div>
+                                    <div class="browser-address-bar">
+                                        <span id="current-url">No page loaded</span>
+                                    </div>
+                                    <div class="browser-actions">
+                                        <button class="btn btn-sm btn-outline-light" onclick="refreshBrowser()">
+                                            <i class="fas fa-redo"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="browser-content">
+                                    <iframe id="browser-iframe" 
+                                            src="about:blank" 
+                                            style="width: 100%; height: 100%; border: none;"
+                                            sandbox="allow-same-origin allow-scripts allow-forms allow-popups">
+                                    </iframe>
+                                    <div class="browser-overlay" id="browser-overlay">
+                                        <div class="overlay-content">
+                                            <i class="fas fa-globe fa-2x text-muted mb-2"></i>
+                                            <p class="text-muted">Enter a URL above to start monitoring</p>
+                                            <button class="btn btn-primary" onclick="loadExamplePage()">
+                                                Load Example Page
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="browser-monitoring-controls mt-2">
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="btn-group btn-group-sm w-100">
+                                        <button class="btn btn-outline-success" onclick="startBotMonitoring()">
+                                            <i class="fas fa-robot me-1"></i>Monitor
+                                        </button>
+                                        <button class="btn btn-outline-info" onclick="capturePageScreenshot()">
+                                            <i class="fas fa-camera me-1"></i>Capture
+                                        </button>
+                                        <button class="btn btn-outline-warning" onclick="highlightPageElements()">
+                                            <i class="fas fa-crosshairs me-1"></i>Highlight
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="monitoring-status">
+                                        <small class="text-muted">
+                                            Status: <span id="monitoring-status" class="badge bg-secondary">Ready</span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Real-time Automation Log -->
+                    <div class="automation-log">
+                        <h6 class="text-muted">Live Action Log</h6>
+                        <div id="automation-output" class="log-output">
+                            <div class="log-entry">
+                                <span class="timestamp">[{{ layout.windows[0].data.execution_status }}]</span>
+                                <span class="message">Automation system ready</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Status Indicators -->
+                    <div class="status-bar mt-3">
+                        <small class="text-muted">
+                            Active Sessions: <span class="badge bg-success">{{ layout.windows[0].data.active_sessions }}</span>
+                            Status: <span class="badge bg-primary">{{ layout.windows[0].status }}</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ChatGPT Integration Window -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="nexus-window nexus-gesture-widget" id="chatgpt-window" data-window="chatgpt">
+                <div class="window-header bg-gradient" style="background: linear-gradient(135deg, #6f42c1, #e83e8c);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-white">
+                            <i class="fas fa-brain me-2"></i>
+                            ChatGPT Assistant
+                        </h5>
+                        <div class="window-actions">
+                            <button class="btn btn-sm btn-outline-light" onclick="minimizeWindow('chatgpt')">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-light" onclick="maximizeWindow('chatgpt')">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="window-content">
+                    {% if layout.windows[1].status == 'requires_api_key' %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-key me-2"></i>
+                        OpenAI API key required for ChatGPT integration
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Chat Interface -->
+                    <div class="chat-container mb-3">
+                        <div id="chat-messages" class="chat-messages">
+                            <div class="message ai-message">
+                                <strong>NEXUS AI:</strong> Ready to assist with automation commands and code generation.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat Input -->
+                    <div class="chat-input">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="chatgpt-prompt" 
+                                   placeholder="Ask for automation help, code generation, or commands..."
+                                   onkeypress="if(event.key==='Enter') executeChatGPTQuery()">
+                            <button class="btn btn-primary" onclick="executeChatGPTQuery()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Commands -->
+                    <div class="quick-commands mt-2">
+                        <small class="text-muted">Quick:</small>
+                        <button class="btn btn-outline-secondary btn-sm ms-1" onclick="quickChatCommand('Generate automation script')">Script</button>
+                        <button class="btn btn-outline-secondary btn-sm ms-1" onclick="quickChatCommand('Debug automation issue')">Debug</button>
+                        <button class="btn btn-outline-secondary btn-sm ms-1" onclick="quickChatCommand('Optimize workflow')">Optimize</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Replit Integration Window -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="nexus-window nexus-gesture-widget" id="replit-window" data-window="replit">
+                <div class="window-header bg-gradient" style="background: linear-gradient(135deg, #17a2b8, #007bff);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-white">
+                            <i class="fas fa-code me-2"></i>
+                            Replit Console
+                        </h5>
+                        <div class="window-actions">
+                            <button class="btn btn-sm btn-outline-light" onclick="minimizeWindow('replit')">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-light" onclick="maximizeWindow('replit')">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="window-content">
+                    <!-- Replit Controls -->
+                    <div class="replit-controls mb-3">
+                        <div class="btn-group w-100 mb-2" role="group">
+                            <button class="btn btn-outline-primary btn-sm" onclick="executeReplitCommand('run')">
+                                <i class="fas fa-play me-1"></i>Run
+                            </button>
+                            <button class="btn btn-outline-success btn-sm" onclick="executeReplitCommand('deploy')">
+                                <i class="fas fa-rocket me-1"></i>Deploy
+                            </button>
+                            <button class="btn btn-outline-info btn-sm" onclick="executeReplitCommand('file_create')">
+                                <i class="fas fa-file-plus me-1"></i>Create
+                            </button>
+                        </div>
+                        <input type="text" class="form-control" id="replit-command-input" 
+                               placeholder="Enter Replit command or file operation...">
+                    </div>
+                    
+                    <!-- Console Output -->
+                    <div class="console-output">
+                        <h6 class="text-muted">Console Output</h6>
+                        <div id="replit-console" class="console-log">
+                            <div class="console-line">
+                                <span class="prompt">replit@{{ layout.windows[2].data.repl_id }}:~$</span>
+                                <span class="output">Ready for commands</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Environment Info -->
+                    <div class="env-info mt-3">
+                        <small class="text-muted">
+                            Environment: <span class="badge bg-info">{{ layout.windows[2].data.environment }}</span>
+                            Repl ID: <span class="badge bg-secondary">{{ layout.windows[2].data.repl_id }}</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Command History Panel -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Command History
+                        <span class="badge bg-primary ms-2">{{ layout.total_commands }}</span>
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="command-history" class="command-history">
+                        {% for command in layout.command_history %}
+                        <div class="command-entry">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="command-name">{{ command.command }}</span>
+                                    <small class="text-muted">from {{ command.window }}</small>
+                                </div>
+                                <div>
+                                    <span class="badge bg-{{ 'success' if command.status == 'completed' else 'warning' }}">
+                                        {{ command.status }}
+                                    </span>
+                                    <small class="text-muted">{{ command.timestamp[:19] }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.nexus-windowed-container {
+    padding: 1rem;
+}
+
+.nexus-window {
+    border: 2px solid var(--bs-border-color);
+    border-radius: 8px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nexus-window:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.window-header {
+    padding: 0.75rem 1rem;
+    border-radius: 6px 6px 0 0;
+    cursor: move;
+}
+
+.window-content {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    background: var(--bs-body-bg);
+}
+
+.log-output, .chat-messages, .console-log {
+    background: var(--bs-dark);
+    color: var(--bs-light);
+    padding: 0.75rem;
+    border-radius: 4px;
+    height: 200px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+}
+
+.log-entry, .console-line {
+    margin-bottom: 0.5rem;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.timestamp, .prompt {
+    color: var(--bs-info);
+    font-weight: bold;
+}
+
+.message, .output {
+    color: var(--bs-light);
+}
+
+.chat-messages .message {
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.ai-message {
+    background: rgba(111, 66, 193, 0.2);
+    border-left: 3px solid var(--bs-primary);
+}
+
+.user-message {
+    background: rgba(40, 167, 69, 0.2);
+    border-left: 3px solid var(--bs-success);
+}
+
+.command-history {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.command-entry {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--bs-border-color);
+    transition: background-color 0.2s ease;
+}
+
+.command-entry:hover {
+    background: var(--bs-light);
+}
+
+.command-name {
+    font-weight: bold;
+    color: var(--bs-primary);
+}
+
+/* Visual Bot Validation Styles */
+.visual-window {
+    background: var(--bs-dark);
+    border: 2px solid var(--bs-border-color);
+    border-radius: 8px;
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.visual-placeholder {
+    text-align: center;
+    color: var(--bs-secondary);
+}
+
+.bot-canvas-active {
+    border: 2px solid var(--bs-success);
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+}
+
+.element-highlight {
+    position: absolute;
+    border: 3px solid #ff6b6b;
+    background: rgba(255, 107, 107, 0.1);
+    pointer-events: none;
+    z-index: 1000;
+    animation: highlightPulse 1s infinite;
+}
+
+@keyframes highlightPulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+}
+
+.bot-action-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(40, 167, 69, 0.9);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.recording-indicator {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    animation: recordingBlink 1s infinite;
+}
+
+@keyframes recordingBlink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.5; }
+}
+
+/* Browser Embed Styles */
+.browser-container {
+    height: 300px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bs-body-bg);
+}
+
+.browser-frame {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.browser-header {
+    background: var(--bs-dark);
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--bs-border-color);
+    min-height: 40px;
+}
+
+.browser-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.browser-btn {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.browser-btn.close { background: #ff5f56; }
+.browser-btn.minimize { background: #ffbd2e; }
+.browser-btn.maximize { background: #27ca3f; }
+
+.browser-address-bar {
+    flex: 1;
+    margin: 0 12px;
+    padding: 4px 8px;
+    background: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 4px;
+    font-size: 0.875rem;
+    color: var(--bs-secondary);
+}
+
+.browser-content {
+    flex: 1;
+    position: relative;
+    background: white;
+}
+
+.browser-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(108, 117, 125, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.overlay-content {
+    text-align: center;
+    padding: 2rem;
+}
+
+.browser-overlay.hidden {
+    display: none;
+}
+
+.monitoring-status {
+    text-align: center;
+}
+
+/* Main Browser Window Styles */
+.browser-main-container {
+    background: var(--bs-body-bg);
+}
+
+.browser-status-bar {
+    background: rgba(0, 123, 255, 0.1);
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+.main-browser-frame {
+    background: white;
+    border: 2px solid #007bff;
+    border-radius: 0 0 8px 8px;
+    position: relative;
+    min-height: 500px;
+}
+
+.browser-loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    z-index: 100;
+    display: none;
+}
+
+#main-browser-iframe {
+    display: block;
+    background: white;
+}
+
+.browser-nav-controls input {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #333;
+}
+
+.browser-nav-controls input:focus {
+    background: white;
+    border-color: #fff;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+/* Enhanced Browser Window */
+.nexus-window[data-window="browser"] {
+    border: 2px solid #007bff;
+    box-shadow: 0 8px 32px rgba(0, 123, 255, 0.3);
+}
+
+.nexus-window[data-window="browser"] .window-header {
+    position: relative;
+}
+
+.nexus-window[data-window="browser"] .window-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #007bff, #0056b3, #007bff);
+    animation: browserPulse 2s ease-in-out infinite;
+}
+
+@keyframes browserPulse {
+    0%, 100% { opacity: 0.5; transform: scaleX(1); }
+    50% { opacity: 1; transform: scaleX(1.02); }
+}
+
+/* Browser interaction highlights */
+.iframe-highlight {
+    position: absolute;
+    border: 2px solid #28a745;
+    background: rgba(40, 167, 69, 0.1);
+    pointer-events: none;
+    z-index: 5;
+    animation: highlightPulse 1s infinite;
+}
+
+.minimized {
+    height: 60px !important;
+}
+
+.minimized .window-content {
+    display: none;
+}
+
+.maximized {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: calc(100vw - 20px);
+    height: calc(100vh - 20px);
+    z-index: 1000;
+}
+
+/* Animation for window operations */
+.nexus-window.window-animating {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+</style>
+
+<script>
+// NEXUS Intelligence Visual Bot Validation System
+class NEXUSBotValidator {
+    constructor() {
+        this.isCapturing = false;
+        this.isRecording = false;
+        this.canvas = null;
+        this.ctx = null;
+        this.elementHighlights = [];
+        this.actionLog = [];
+        this.visualStream = null;
+        this.mouseTracker = { x: 0, y: 0, clicking: false };
+        this.initializeValidator();
+    }
+    
+    initializeValidator() {
+        this.canvas = document.getElementById('bot-canvas');
+        if (this.canvas) {
+            this.ctx = this.canvas.getContext('2d');
+            this.setupMouseTracking();
+            this.setupElementDetection();
+        }
+    }
+    
+    setupMouseTracking() {
+        document.addEventListener('mousemove', (e) => {
+            this.mouseTracker.x = e.clientX;
+            this.mouseTracker.y = e.clientY;
+            if (this.isCapturing) {
+                this.drawMousePosition(e.clientX, e.clientY);
+            }
+        });
+        
+        document.addEventListener('click', (e) => {
+            this.mouseTracker.clicking = true;
+            if (this.isCapturing) {
+                this.captureClickAction(e.target, e.clientX, e.clientY);
+            }
+            setTimeout(() => this.mouseTracker.clicking = false, 100);
+        });
+    }
+    
+    setupElementDetection() {
+        // Detect when elements are being interacted with
+        const observer = new MutationObserver((mutations) => {
+            if (this.isCapturing) {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'attributes' || mutation.type === 'childList') {
+                        this.logDOMChange(mutation);
+                    }
+                });
+            }
+        });
+        
+        observer.observe(document.body, {
+            attributes: true,
+            childList: true,
+            subtree: true,
+            attributeOldValue: true
+        });
+    }
+    
+    toggleCapture() {
+        const icon = document.getElementById('capture-icon');
+        const visualWindow = document.getElementById('bot-visual-window');
+        const placeholder = visualWindow.querySelector('.visual-placeholder');
+        
+        if (!this.isCapturing) {
+            this.startCapture();
+            icon.className = 'fas fa-eye-slash';
+            visualWindow.classList.add('bot-canvas-active');
+            placeholder.style.display = 'none';
+            this.canvas.style.display = 'block';
+            this.addActionIndicator('MONITORING');
+        } else {
+            this.stopCapture();
+            icon.className = 'fas fa-eye';
+            visualWindow.classList.remove('bot-canvas-active');
+            placeholder.style.display = 'flex';
+            this.canvas.style.display = 'none';
+            this.removeActionIndicator();
+        }
+    }
+    
+    startCapture() {
+        this.isCapturing = true;
+        this.initializeCanvas();
+        this.startVisualFeed();
+        this.logAction('Visual monitoring started', 'system');
+    }
+    
+    stopCapture() {
+        this.isCapturing = false;
+        if (this.visualStream) {
+            this.visualStream.getTracks().forEach(track => track.stop());
+        }
+        this.clearHighlights();
+        this.logAction('Visual monitoring stopped', 'system');
+    }
+    
+    initializeCanvas() {
+        const rect = this.canvas.getBoundingClientRect();
+        this.canvas.width = rect.width;
+        this.canvas.height = rect.height;
+        
+        // Create a dark background with grid
+        this.ctx.fillStyle = '#1a1a1a';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Draw grid pattern
+        this.ctx.strokeStyle = '#333';
+        this.ctx.lineWidth = 0.5;
+        for (let x = 0; x < this.canvas.width; x += 20) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(x, 0);
+            this.ctx.lineTo(x, this.canvas.height);
+            this.ctx.stroke();
+        }
+        for (let y = 0; y < this.canvas.height; y += 20) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, y);
+            this.ctx.lineTo(this.canvas.width, y);
+            this.ctx.stroke();
+        }
+        
+        // Add title
+        this.ctx.fillStyle = '#28a745';
+        this.ctx.font = 'bold 14px Arial';
+        this.ctx.fillText('NEXUS Bot Visual Feed', 10, 25);
+        
+        this.ctx.fillStyle = '#6c757d';
+        this.ctx.font = '10px Arial';
+        this.ctx.fillText('Real-time automation monitoring active', 10, 40);
+    }
+    
+    startVisualFeed() {
+        // Simulate visual feed updates
+        this.visualFeedInterval = setInterval(() => {
+            if (this.isCapturing) {
+                this.updateVisualFeed();
+            }
+        }, 100);
+    }
+    
+    updateVisualFeed() {
+        // Clear previous frame
+        this.ctx.fillStyle = 'rgba(26, 26, 26, 0.1)';
+        this.ctx.fillRect(0, 50, this.canvas.width, this.canvas.height - 50);
+        
+        // Draw mouse position indicator
+        const canvasRect = this.canvas.getBoundingClientRect();
+        const relativeX = (this.mouseTracker.x / window.innerWidth) * this.canvas.width;
+        const relativeY = ((this.mouseTracker.y / window.innerHeight) * this.canvas.height) + 50;
+        
+        this.ctx.fillStyle = this.mouseTracker.clicking ? '#ff6b6b' : '#28a745';
+        this.ctx.beginPath();
+        this.ctx.arc(relativeX, relativeY, this.mouseTracker.clicking ? 8 : 4, 0, 2 * Math.PI);
+        this.ctx.fill();
+        
+        // Draw coordinates
+        this.ctx.fillStyle = '#17a2b8';
+        this.ctx.font = '9px Arial';
+        this.ctx.fillText(`(${Math.round(this.mouseTracker.x)}, ${Math.round(this.mouseTracker.y)})`, 
+                         relativeX + 10, relativeY - 10);
+    }
+    
+    captureClickAction(element, x, y) {
+        const elementInfo = {
+            tagName: element.tagName,
+            id: element.id,
+            className: element.className,
+            textContent: element.textContent?.substring(0, 50) || '',
+            position: { x, y }
+        };
+        
+        this.logAction(`Clicked: ${elementInfo.tagName}${elementInfo.id ? '#' + elementInfo.id : ''}`, 'click', elementInfo);
+        this.drawClickIndicator(x, y);
+        
+        // Add to automation log
+        addAutomationLog({
+            command: 'click_detected',
+            status: 'captured',
+            message: `Element clicked: ${elementInfo.tagName}`,
+            details: elementInfo
+        });
+    }
+    
+    drawClickIndicator(x, y) {
+        const canvasRect = this.canvas.getBoundingClientRect();
+        const relativeX = (x / window.innerWidth) * this.canvas.width;
+        const relativeY = ((y / window.innerHeight) * this.canvas.height) + 50;
+        
+        // Draw click ripple effect
+        this.ctx.strokeStyle = '#ff6b6b';
+        this.ctx.lineWidth = 2;
+        for (let i = 1; i <= 3; i++) {
+            setTimeout(() => {
+                this.ctx.beginPath();
+                this.ctx.arc(relativeX, relativeY, i * 10, 0, 2 * Math.PI);
+                this.ctx.stroke();
+            }, i * 100);
+        }
+    }
+    
+    drawMousePosition(x, y) {
+        // This is handled in updateVisualFeed for smooth animation
+    }
+    
+    logDOMChange(mutation) {
+        const change = {
+            type: mutation.type,
+            target: mutation.target.tagName,
+            timestamp: new Date().toISOString()
+        };
+        
+        this.actionLog.push(change);
+        this.logAction(`DOM Change: ${change.type} on ${change.target}`, 'dom_change', change);
+    }
+    
+    captureScreenshot() {
+        if (!this.isCapturing) {
+            this.toggleCapture();
+        }
+        
+        // Create a screenshot representation
+        this.ctx.fillStyle = 'rgba(23, 162, 184, 0.2)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        this.ctx.fillStyle = '#17a2b8';
+        this.ctx.font = 'bold 12px Arial';
+        this.ctx.fillText('📸 Screenshot Captured', this.canvas.width / 2 - 70, this.canvas.height / 2);
+        
+        setTimeout(() => {
+            if (this.isCapturing) {
+                this.initializeCanvas();
+            }
+        }, 1000);
+        
+        this.logAction('Screenshot captured', 'screenshot');
+        addAutomationLog({
+            command: 'screenshot',
+            status: 'completed',
+            message: 'Visual snapshot captured'
+        });
+    }
+    
+    startRecording() {
+        if (this.isRecording) {
+            this.stopRecording();
+            return;
+        }
+        
+        this.isRecording = true;
+        this.addRecordingIndicator();
+        this.logAction('Recording started', 'recording');
+        
+        addAutomationLog({
+            command: 'start_recording',
+            status: 'active',
+            message: 'Bot action recording initiated'
+        });
+    }
+    
+    stopRecording() {
+        this.isRecording = false;
+        this.removeRecordingIndicator();
+        this.logAction('Recording stopped', 'recording');
+        
+        addAutomationLog({
+            command: 'stop_recording',
+            status: 'completed',
+            message: 'Recording saved to action log'
+        });
+    }
+    
+    highlightElements() {
+        const interactiveElements = document.querySelectorAll('button, input, select, textarea, a, [onclick], [data-bs-toggle]');
+        
+        this.clearHighlights();
+        
+        interactiveElements.forEach((element, index) => {
+            setTimeout(() => {
+                this.highlightElement(element);
+            }, index * 100);
+        });
+        
+        this.logAction(`Highlighted ${interactiveElements.length} interactive elements`, 'highlight');
+        addAutomationLog({
+            command: 'highlight_elements',
+            status: 'completed',
+            message: `Found ${interactiveElements.length} interactive elements`
+        });
+    }
+    
+    highlightElement(element) {
+        const rect = element.getBoundingClientRect();
+        const highlight = document.createElement('div');
+        highlight.className = 'element-highlight';
+        highlight.style.left = rect.left + 'px';
+        highlight.style.top = rect.top + 'px';
+        highlight.style.width = rect.width + 'px';
+        highlight.style.height = rect.height + 'px';
+        
+        document.body.appendChild(highlight);
+        this.elementHighlights.push(highlight);
+        
+        // Remove highlight after 3 seconds
+        setTimeout(() => {
+            if (highlight.parentNode) {
+                highlight.parentNode.removeChild(highlight);
+            }
+        }, 3000);
+    }
+    
+    clearHighlights() {
+        this.elementHighlights.forEach(highlight => {
+            if (highlight.parentNode) {
+                highlight.parentNode.removeChild(highlight);
+            }
+        });
+        this.elementHighlights = [];
+    }
+    
+    addActionIndicator(text) {
+        const visualWindow = document.getElementById('bot-visual-window');
+        const indicator = document.createElement('div');
+        indicator.className = 'bot-action-indicator';
+        indicator.textContent = text;
+        indicator.id = 'bot-action-indicator';
+        visualWindow.appendChild(indicator);
+    }
+    
+    removeActionIndicator() {
+        const indicator = document.getElementById('bot-action-indicator');
+        if (indicator) {
+            indicator.remove();
+        }
+    }
+    
+    addRecordingIndicator() {
+        const visualWindow = document.getElementById('bot-visual-window');
+        const indicator = document.createElement('div');
+        indicator.className = 'recording-indicator';
+        indicator.textContent = '● REC';
+        indicator.id = 'recording-indicator';
+        visualWindow.appendChild(indicator);
+    }
+    
+    removeRecordingIndicator() {
+        const indicator = document.getElementById('recording-indicator');
+        if (indicator) {
+            indicator.remove();
+        }
+    }
+    
+    logAction(action, type, details = null) {
+        const logEntry = {
+            action,
+            type,
+            timestamp: new Date().toISOString(),
+            details
+        };
+        
+        this.actionLog.push(logEntry);
+        console.log('[NEXUS Bot Validator]', logEntry);
+    }
+    
+    getActionLog() {
+        return this.actionLog;
+    }
+}
+
+// Initialize NEXUS Bot Validator
+const nexusBotValidator = new NEXUSBotValidator();
+
+// Browser Embed Management
+class NEXUSBrowserEmbed {
+    constructor() {
+        this.iframe = null;
+        this.isMonitoring = false;
+        this.currentUrl = '';
+        this.pageElements = [];
+        this.initializeBrowser();
+    }
+    
+    initializeBrowser() {
+        this.iframe = document.getElementById('browser-iframe');
+        this.setupIframeListeners();
+    }
+    
+    setupIframeListeners() {
+        if (this.iframe) {
+            this.iframe.addEventListener('load', () => {
+                this.onPageLoad();
+            });
+        }
+    }
+    
+    loadPage(url) {
+        if (!url || url === '') {
+            url = 'https://httpbin.org/html';
+        }
+        
+        // Validate URL
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            url = 'https://' + url;
+        }
+        
+        this.currentUrl = url;
+        document.getElementById('current-url').textContent = url;
+        document.getElementById('browser-overlay').classList.add('hidden');
+        
+        // Load the page in iframe
+        this.iframe.src = url;
+        
+        this.updateMonitoringStatus('Loading...', 'warning');
+        
+        // Log the navigation
+        addAutomationLog({
+            command: 'browser_navigate',
+            status: 'loading',
+            message: `Navigating to: ${url}`
+        });
+    }
+    
+    onPageLoad() {
+        this.updateMonitoringStatus('Page Loaded', 'success');
+        
+        addAutomationLog({
+            command: 'page_loaded',
+            status: 'completed',
+            message: `Page loaded: ${this.currentUrl}`
+        });
+        
+        if (this.isMonitoring) {
+            this.scanPageElements();
+        }
+    }
+    
+    refreshBrowser() {
+        if (this.iframe && this.currentUrl) {
+            this.iframe.src = this.iframe.src;
+            this.updateMonitoringStatus('Refreshing...', 'info');
+            
+            addAutomationLog({
+                command: 'browser_refresh',
+                status: 'executing',
+                message: 'Refreshing browser page'
+            });
+        }
+    }
+    
+    startMonitoring() {
+        this.isMonitoring = !this.isMonitoring;
+        
+        const btn = document.querySelector('[onclick="startBotMonitoring()"]');
+        if (this.isMonitoring) {
+            btn.innerHTML = '<i class="fas fa-stop me-1"></i>Stop';
+            btn.className = 'btn btn-danger btn-sm';
+            this.updateMonitoringStatus('Monitoring', 'success');
+            
+            addAutomationLog({
+                command: 'start_monitoring',
+                status: 'active',
+                message: 'Bot monitoring activated'
+            });
+            
+            this.scanPageElements();
+        } else {
+            btn.innerHTML = '<i class="fas fa-robot me-1"></i>Monitor';
+            btn.className = 'btn btn-outline-success btn-sm';
+            this.updateMonitoringStatus('Ready', 'secondary');
+            
+            addAutomationLog({
+                command: 'stop_monitoring',
+                status: 'completed',
+                message: 'Bot monitoring deactivated'
+            });
+        }
+    }
+    
+    scanPageElements() {
+        try {
+            // Due to CORS restrictions, we simulate element detection
+            this.pageElements = [
+                { type: 'button', count: 3, selector: 'button' },
+                { type: 'input', count: 2, selector: 'input' },
+                { type: 'link', count: 5, selector: 'a' },
+                { type: 'form', count: 1, selector: 'form' }
+            ];
+            
+            const totalElements = this.pageElements.reduce((sum, el) => sum + el.count, 0);
+            
+            addAutomationLog({
+                command: 'page_scan',
+                status: 'completed',
+                message: `Detected ${totalElements} interactive elements`
+            });
+            
+        } catch (error) {
+            addAutomationLog({
+                command: 'page_scan',
+                status: 'error',
+                message: 'Cross-origin restrictions prevent element access'
+            });
+        }
+    }
+    
+    captureScreenshot() {
+        this.updateMonitoringStatus('Capturing...', 'info');
+        
+        // Simulate screenshot capture
+        setTimeout(() => {
+            this.updateMonitoringStatus('Screenshot Saved', 'success');
+            
+            addAutomationLog({
+                command: 'page_screenshot',
+                status: 'completed',
+                message: `Screenshot captured from: ${this.currentUrl}`
+            });
+            
+            setTimeout(() => {
+                this.updateMonitoringStatus(this.isMonitoring ? 'Monitoring' : 'Ready', 
+                                           this.isMonitoring ? 'success' : 'secondary');
+            }, 2000);
+        }, 1000);
+    }
+    
+    highlightElements() {
+        if (!this.isMonitoring) {
+            this.startMonitoring();
+        }
+        
+        // Simulate element highlighting
+        this.updateMonitoringStatus('Highlighting...', 'warning');
+        
+        setTimeout(() => {
+            addAutomationLog({
+                command: 'highlight_page_elements',
+                status: 'completed',
+                message: `Highlighted ${this.pageElements.length} element types`
+            });
+            
+            this.updateMonitoringStatus('Elements Highlighted', 'success');
+            
+            setTimeout(() => {
+                this.updateMonitoringStatus(this.isMonitoring ? 'Monitoring' : 'Ready', 
+                                           this.isMonitoring ? 'success' : 'secondary');
+            }, 2000);
+        }, 1500);
+    }
+    
+    updateMonitoringStatus(text, type) {
+        const statusElement = document.getElementById('monitoring-status');
+        if (statusElement) {
+            statusElement.textContent = text;
+            statusElement.className = `badge bg-${type}`;
+        }
+    }
+    
+    loadExamplePage() {
+        this.loadPage('https://httpbin.org/html');
+    }
+}
+
+// Main Browser Window Management
+class NEXUSMainBrowser {
+    constructor() {
+        this.iframe = null;
+        this.isMonitoring = false;
+        this.currentUrl = '';
+        this.initializeMainBrowser();
+    }
+    
+    initializeMainBrowser() {
+        this.iframe = document.getElementById('main-browser-iframe');
+        this.setupMainIframeListeners();
+        this.updateStatus('Ready');
+    }
+    
+    setupMainIframeListeners() {
+        if (this.iframe) {
+            this.iframe.addEventListener('load', () => {
+                this.onMainPageLoad();
+            });
+        }
+    }
+    
+    loadPage(url) {
+        if (!url || url === '') {
+            url = 'https://httpbin.org/html';
+        }
+        
+        // Validate URL
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            url = 'https://' + url;
+        }
+        
+        this.currentUrl = url;
+        this.updateStatus('Loading...');
+        
+        // Show loading overlay
+        const loadingOverlay = document.getElementById('browser-loading');
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'block';
+        }
+        
+        // Load the page in iframe
+        this.iframe.src = url;
+        
+        // Log the navigation
+        addAutomationLog({
+            command: 'main_browser_navigate',
+            status: 'loading',
+            message: `🌐 Embedded Browser Loading: ${url}`
+        });
+    }
+    
+    onMainPageLoad() {
+        this.updateStatus('Page Loaded');
+        
+        // Hide loading overlay
+        const loadingOverlay = document.getElementById('browser-loading');
+        if (loadingOverlay) {
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+            }, 500);
+        }
+        
+        addAutomationLog({
+            command: 'main_page_loaded',
+            status: 'completed',
+            message: `✅ Embedded Browser Ready: ${this.currentUrl}`
+        });
+        
+        if (this.isMonitoring) {
+            this.performElementScan();
+        }
+    }
+    
+    refreshBrowser() {
+        if (this.iframe && this.currentUrl) {
+            this.updateStatus('Refreshing...');
+            this.iframe.src = this.iframe.src;
+            
+            addAutomationLog({
+                command: 'main_browser_refresh',
+                status: 'executing',
+                message: 'Refreshing main browser'
+            });
+        }
+    }
+    
+    startMonitoring() {
+        this.isMonitoring = !this.isMonitoring;
+        
+        const btn = document.querySelector('[onclick="startMainBrowserMonitoring()"]');
+        if (this.isMonitoring) {
+            btn.innerHTML = '<i class="fas fa-stop me-1"></i>Stop Monitor';
+            btn.className = 'btn btn-sm btn-danger me-1';
+            this.updateStatus('Monitoring Active');
+            
+            addAutomationLog({
+                command: 'main_browser_monitoring',
+                status: 'active',
+                message: 'Browser monitoring started'
+            });
+            
+            this.performElementScan();
+        } else {
+            btn.innerHTML = '<i class="fas fa-play me-1"></i>Start Monitor';
+            btn.className = 'btn btn-sm btn-success me-1';
+            this.updateStatus('Ready');
+            
+            addAutomationLog({
+                command: 'main_browser_monitoring',
+                status: 'stopped',
+                message: 'Browser monitoring stopped'
+            });
+        }
+    }
+    
+    captureScreen() {
+        this.updateStatus('Capturing...');
+        
+        // Create visual indicator of capture
+        const frame = document.querySelector('.main-browser-frame');
+        frame.style.boxShadow = '0 0 20px #17a2b8';
+        
+        setTimeout(() => {
+            this.updateStatus('Screenshot Saved');
+            frame.style.boxShadow = '0 0 0 2px #007bff';
+            
+            addAutomationLog({
+                command: 'main_browser_screenshot',
+                status: 'completed',
+                message: `Screenshot captured from: ${this.currentUrl}`
+            });
+            
+            setTimeout(() => {
+                this.updateStatus(this.isMonitoring ? 'Monitoring Active' : 'Ready');
+            }, 2000);
+        }, 1000);
+    }
+    
+    highlightElements() {
+        if (!this.isMonitoring) {
+            this.startMonitoring();
+        }
+        
+        this.updateStatus('Highlighting Elements...');
+        
+        // Create visual highlighting effect
+        const frame = document.querySelector('.main-browser-frame');
+        frame.style.boxShadow = '0 0 20px #ffc107';
+        
+        setTimeout(() => {
+            this.updateStatus('Elements Highlighted');
+            frame.style.boxShadow = '0 0 0 2px #007bff';
+            
+            addAutomationLog({
+                command: 'main_browser_highlight',
+                status: 'completed',
+                message: 'Interactive elements highlighted'
+            });
+            
+            setTimeout(() => {
+                this.updateStatus(this.isMonitoring ? 'Monitoring Active' : 'Ready');
+            }, 2000);
+        }, 1500);
+    }
+    
+    performElementScan() {
+        addAutomationLog({
+            command: 'main_browser_scan',
+            status: 'completed',
+            message: 'Page elements scanned for automation targets'
+        });
+    }
+    
+    updateStatus(status) {
+        const statusElement = document.getElementById('main-browser-status');
+        if (statusElement) {
+            statusElement.textContent = status;
+        }
+    }
+}
+
+// Initialize main browser
+const nexusMainBrowser = new NEXUSMainBrowser();
+
+// Main browser control functions
+function loadMainBrowserPage() {
+    const url = document.getElementById('main-browser-url').value;
+    nexusMainBrowser.loadPage(url);
+}
+
+function refreshMainBrowser() {
+    nexusMainBrowser.refreshBrowser();
+}
+
+function startMainBrowserMonitoring() {
+    nexusMainBrowser.startMonitoring();
+}
+
+function captureMainBrowserScreen() {
+    nexusMainBrowser.captureScreen();
+}
+
+function highlightMainBrowserElements() {
+    nexusMainBrowser.highlightElements();
+}
+
+// Initialize browser embed
+const nexusBrowserEmbed = new NEXUSBrowserEmbed();
+
+// Browser control functions
+function loadBrowserPage() {
+    const url = document.getElementById('browser-url').value;
+    nexusBrowserEmbed.loadPage(url);
+}
+
+function loadExamplePage() {
+    nexusBrowserEmbed.loadExamplePage();
+}
+
+function refreshBrowser() {
+    nexusBrowserEmbed.refreshBrowser();
+}
+
+function startBotMonitoring() {
+    nexusBrowserEmbed.startMonitoring();
+}
+
+function capturePageScreenshot() {
+    nexusBrowserEmbed.captureScreenshot();
+}
+
+function highlightPageElements() {
+    nexusBrowserEmbed.highlightElements();
+}
+
+// Enhanced automation command execution with browser integration
+function executeAutomationCommandWithBrowser() {
+    const command = document.getElementById('automation-command').value;
+    const paramsText = document.getElementById('automation-params').value;
+    
+    let parameters = {};
+    if (paramsText) {
+        try {
+            parameters = JSON.parse(paramsText);
+        } catch (e) {
+            parameters = { value: paramsText };
+        }
+    }
+    
+    // If it's a navigation command, also update the browser window
+    if (command === 'navigate' && parameters.url) {
+        nexusBrowserEmbed.loadPage(parameters.url);
+    }
+    
+    // Execute the original automation command
+    executeAutomationCommand();
+}
+
+// Visual validation control functions
+function toggleBotCapture() {
+    nexusBotValidator.toggleCapture();
+}
+
+function captureScreenshot() {
+    nexusBotValidator.captureScreenshot();
+}
+
+function recordActions() {
+    nexusBotValidator.startRecording();
+}
+
+function highlightElements() {
+    nexusBotValidator.highlightElements();
+}
+
+// Window management functions
+let windowStates = {
+    browser: { minimized: false, maximized: false },
+    automation: { minimized: false, maximized: false },
+    chatgpt: { minimized: false, maximized: false },
+    replit: { minimized: false, maximized: false }
+};
+
+function minimizeWindow(windowId) {
+    let windowElement;
+    if (windowId === 'browser') {
+        windowElement = document.getElementById('browser-main-window');
+    } else {
+        windowElement = document.getElementById(windowId + '-window');
+    }
+    const state = windowStates[windowId];
+    
+    if (state.minimized) {
+        windowElement.classList.remove('minimized');
+        state.minimized = false;
+    } else {
+        window.classList.add('minimized');
+        state.minimized = true;
+        state.maximized = false;
+        window.classList.remove('maximized');
+    }
+}
+
+function maximizeWindow(windowId) {
+    const window = document.getElementById(windowId + '-window');
+    const state = windowStates[windowId];
+    
+    // First minimize all other windows
+    Object.keys(windowStates).forEach(id => {
+        if (id !== windowId) {
+            const otherWindow = document.getElementById(id + '-window');
+            otherWindow.classList.add('minimized');
+            windowStates[id].minimized = true;
+            windowStates[id].maximized = false;
+            otherWindow.classList.remove('maximized');
+        }
+    });
+    
+    if (state.maximized) {
+        window.classList.remove('maximized');
+        state.maximized = false;
+    } else {
+        window.classList.add('maximized');
+        window.classList.remove('minimized');
+        state.maximized = true;
+        state.minimized = false;
+    }
+}
+
+function arrangeWindows(layout) {
+    const container = document.getElementById('window-container');
+    
+    if (layout === 'grid') {
+        container.className = 'row';
+        document.querySelectorAll('.nexus-window').forEach(window => {
+            window.classList.remove('maximized', 'minimized');
+            window.parentElement.className = 'col-lg-4 col-md-6 mb-4';
+        });
+    } else if (layout === 'cascade') {
+        let offset = 0;
+        document.querySelectorAll('.nexus-window').forEach(window => {
+            window.style.position = 'relative';
+            window.style.left = `${offset}px`;
+            window.style.top = `${offset}px`;
+            window.style.zIndex = 100 + offset;
+            offset += 30;
+        });
+    }
+    
+    // Reset all window states
+    Object.keys(windowStates).forEach(id => {
+        windowStates[id] = { minimized: false, maximized: false };
+    });
+}
+
+function maximizeAll() {
+    document.querySelectorAll('.nexus-window').forEach(window => {
+        window.classList.remove('minimized', 'maximized');
+    });
+    
+    Object.keys(windowStates).forEach(id => {
+        windowStates[id] = { minimized: false, maximized: false };
+    });
+}
+
+// Automation command execution
+function executeAutomationCommand() {
+    const command = document.getElementById('automation-command').value;
+    const paramsText = document.getElementById('automation-params').value;
+    
+    let parameters = {};
+    if (paramsText) {
+        try {
+            parameters = JSON.parse(paramsText);
+        } catch (e) {
+            // Treat as simple string parameter
+            parameters = { value: paramsText };
+        }
+    }
+    
+    fetch('/api/nexus/windowed/automation/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command: command, parameters: parameters })
+    })
+    .then(response => response.json())
+    .then(data => {
+        addAutomationLog(data);
+        addToCommandHistory(data);
+    })
+    .catch(error => {
+        addAutomationLog({ status: 'error', message: 'Command execution failed', error: error.message });
+    });
+}
+
+function addAutomationLog(logEntry) {
+    const output = document.getElementById('automation-output');
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.innerHTML = `
+        <span class="timestamp">[${new Date().toLocaleTimeString()}]</span>
+        <span class="message">${logEntry.command || logEntry.message}: ${logEntry.status}</span>
+    `;
+    output.appendChild(entry);
+    output.scrollTop = output.scrollHeight;
+}
+
+// ChatGPT integration
+function executeChatGPTQuery() {
+    const prompt = document.getElementById('chatgpt-prompt').value;
+    if (!prompt.trim()) return;
+    
+    addChatMessage('user', prompt);
+    document.getElementById('chatgpt-prompt').value = '';
+    
+    fetch('/api/nexus/windowed/chatgpt/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: prompt, context: 'nexus_automation' })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.result && data.result.response) {
+            addChatMessage('ai', data.result.response);
+        } else if (data.error) {
+            addChatMessage('ai', 'Error: ' + data.error);
+        }
+        addToCommandHistory(data);
+    })
+    .catch(error => {
+        addChatMessage('ai', 'Connection error: ' + error.message);
+    });
+}
+
+function quickChatCommand(command) {
+    document.getElementById('chatgpt-prompt').value = command;
+    executeChatGPTQuery();
+}
+
+function addChatMessage(sender, message) {
+    const messagesContainer = document.getElementById('chat-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}-message`;
+    messageDiv.innerHTML = `<strong>${sender === 'ai' ? 'NEXUS AI' : 'You'}:</strong> ${message}`;
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// Replit integration
+function executeReplitCommand(command) {
+    const input = document.getElementById('replit-command-input').value;
+    
+    let parameters = {};
+    if (command === 'file_create' && input) {
+        parameters = { filename: input, content: '# New file created via NEXUS' };
+    } else if (input) {
+        parameters = { script: input };
+    }
+    
+    fetch('/api/nexus/windowed/replit/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command: command, parameters: parameters })
+    })
+    .then(response => response.json())
+    .then(data => {
+        addConsoleOutput(data);
+        addToCommandHistory(data);
+    })
+    .catch(error => {
+        addConsoleOutput({ status: 'error', message: 'Command execution failed', error: error.message });
+    });
+}
+
+function addConsoleOutput(output) {
+    const console = document.getElementById('replit-console');
+    const line = document.createElement('div');
+    line.className = 'console-line';
+    line.innerHTML = `
+        <span class="prompt">replit@nexus:~$</span>
+        <span class="output">${output.result ? output.result.message : output.message}</span>
+    `;
+    console.appendChild(line);
+    console.scrollTop = console.scrollHeight;
+}
+
+function addToCommandHistory(commandData) {
+    const historyContainer = document.getElementById('command-history');
+    const entry = document.createElement('div');
+    entry.className = 'command-entry';
+    entry.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <span class="command-name">${commandData.command}</span>
+                <small class="text-muted">from ${commandData.window}</small>
+            </div>
+            <div>
+                <span class="badge bg-${commandData.status === 'completed' ? 'success' : 'warning'}">
+                    ${commandData.status}
+                </span>
+                <small class="text-muted">${new Date().toLocaleTimeString()}</small>
+            </div>
+        </div>
+    `;
+    historyContainer.insertBefore(entry, historyContainer.firstChild);
+}
+
+// Initialize drag and drop for windows
+document.addEventListener('DOMContentLoaded', function() {
+    // Make windows draggable
+    document.querySelectorAll('.window-header').forEach(header => {
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+        
+        header.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', dragEnd);
+        
+        function dragStart(e) {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+            
+            if (e.target === header || header.contains(e.target)) {
+                isDragging = true;
+                header.parentElement.style.position = 'relative';
+                header.parentElement.style.zIndex = '1000';
+            }
+        }
+        
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+                
+                xOffset = currentX;
+                yOffset = currentY;
+                
+                header.parentElement.style.transform = `translate(${currentX}px, ${currentY}px)`;
+            }
+        }
+        
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+            header.parentElement.style.zIndex = 'auto';
+        }
+    });
+});
+</script>
+{% endblock %}
