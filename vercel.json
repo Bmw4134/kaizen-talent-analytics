@@ -1,10 +1,15 @@
 {
   "version": 2,
-  "name": "netflix-insights-landing",
   "builds": [
-    { "src": "landing_page/index.html", "use": "@vercel/static-build" }
+    {
+      "src": "talent_insights.py",
+      "use": "@vercel/python"
+    }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "/landing_page/index.html" }
+    {
+      "src": "/(.*)",
+      "dest": "talent_insights.py"
+    }
   ]
 }
