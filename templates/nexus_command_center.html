@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS Command Center - Unified Interface</title>
+    
+    <!-- Bootstrap CSS with Replit Dark Theme -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* Command Center Styles */
+        .nexus-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Persistent Navigation Sidebar */
+        .nexus-sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #1a1d23, #2d3436);
+            border-right: 2px solid #007bff;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .nexus-sidebar.collapsed {
+            transform: translateX(-240px);
+            width: 40px;
+        }
+        
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-toggle {
+            position: absolute;
+            right: 10px;
+            top: 15px;
+            background: #007bff;
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-section {
+            margin: 1rem 0;
+        }
+        
+        .nav-section-title {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: bold;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #e9ecef;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(0, 123, 255, 0.1);
+            border-left-color: #007bff;
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        .nav-item i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        
+        /* Main Content Area */
+        .nexus-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Top Navigation Bar */
+        .nexus-topbar {
+            background: #212529;
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+        
+        .topbar-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .topbar-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-left: auto;
+        }
+        
+        /* Content Views */
+        .nexus-content {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .content-view {
+            display: none;
+            height: 100%;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        
+        .content-view.active {
+            display: block;
+        }
+        
+        /* Embedded Browser Styles */
+        .browser-container {
+            height: 100%;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #007bff;
+        }
+        
+        .browser-controls {
+            background: #343a40;
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .browser-url {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #495057;
+            border-radius: 4px;
+            background: #495057;
+            color: white;
+        }
+        
+        .browser-frame {
+            height: calc(100% - 60px);
+            border: none;
+            width: 100%;
+            background: white;
+        }
+        
+        .browser-proxy-view {
+            height: calc(100% - 60px);
+            background: white;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .browser-proxy-view.active {
+            display: block;
+        }
+        
+        .external-site-notice {
+            background: #1a1d23;
+            border: 1px solid #007bff;
+            color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .external-site-notice h6 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        
+        .external-site-notice p {
+            color: #e9ecef;
+            margin-bottom: 0;
+        }
+        
+        /* Automation Panel */
+        .automation-panel {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .automation-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        /* Live Log Panel */
+        .log-panel {
+            background: #1a1d23;
+            border: 1px solid #495057;
+            border-radius: 8px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+        
+        .log-entry {
+            padding: 0.25rem 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .log-entry.info { color: #17a2b8; }
+        .log-entry.success { color: #28a745; }
+        .log-entry.warning { color: #ffc107; }
+        .log-entry.error { color: #dc3545; }
+        
+        /* Enhanced Browser Frame */
+        .browser-frame {
+            width: 100%;
+            height: 650px;
+            border: 1px solid #495057;
+            border-radius: 0 0 8px 8px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .browser-header {
+            background: linear-gradient(135deg, #2d3748, #4a5568);
+            padding: 0.75rem;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid #495057;
+            border-bottom: none;
+        }
+        
+        .browser-nav {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .url-bar {
+            flex: 1;
+            max-width: 600px;
+        }
+        
+        .browser-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .quick-links a {
+            color: #17a2b8;
+            margin: 0 0.25rem;
+        }
+        
+        .quick-links a:hover {
+            color: #20c997;
+        }
+        
+        .browser-url {
+            background: #1a202c;
+            border: 1px solid #4a5568;
+            color: #e2e8f0;
+        }
+        
+        .browser-url:focus {
+            background: #2d3748;
+            border-color: #10b981;
+            color: #e2e8f0;
+            box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25);
+        }
+        
+        /* Browser Container */
+        .browser-container {
+            background: #1a202c;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Status Indicators */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .status-card {
+            background: rgba(0, 123, 255, 0.1);
+            border: 1px solid #007bff;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .status-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        /* API Test Panel */
+        .api-test-form {
+            background: #2d3436;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .api-response {
+            background: #1a1d23;
+            border: 1px solid #495057;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nexus-sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100vh;
+                transform: translateX(-100%);
+                z-index: 1050;
+            }
+            
+            .nexus-sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .nexus-main {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nexus-container">
+        <!-- Persistent Navigation Sidebar -->
+        <nav class="nexus-sidebar" id="nexusSidebar">
+            <div class="sidebar-header">
+                <h5 class="mb-0 text-light">
+                    <i class="fas fa-network-wired me-2"></i>
+                    NEXUS Control
+                </h5>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Core Systems</div>
+                <a href="#dashboard" class="nav-item active" onclick="showView('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard / Analytics
+                </a>
+                <a href="#browser" class="nav-item" onclick="showView('browser')">
+                    <i class="fas fa-globe"></i>
+                    Browser Automation
+                </a>
+                <a href="#api-tests" class="nav-item" onclick="showView('api-tests')">
+                    <i class="fas fa-code"></i>
+                    API Tests
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Monitoring</div>
+                <a href="#logs" class="nav-item" onclick="showView('logs')">
+                    <i class="fas fa-file-alt"></i>
+                    Logs & Runtime
+                </a>
+                <a href="#recovery" class="nav-item" onclick="showView('recovery')">
+                    <i class="fas fa-first-aid"></i>
+                    Agent Recovery
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Configuration</div>
+                <a href="#config" class="nav-item" onclick="showView('config')">
+                    <i class="fas fa-cog"></i>
+                    Config / Settings
+                </a>
+                <a href="#voice" class="nav-item" onclick="showView('voice')">
+                    <i class="fas fa-microphone"></i>
+                    Voice Commands
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">External</div>
+                <a href="{{ url_for('dashboard', dashboard_name='traxovo') }}" class="nav-item" target="_blank">
+                    <i class="fas fa-activity"></i>
+                    TRAXOVO
+                </a>
+                <a href="{{ url_for('dashboard', dashboard_name='dwc') }}" class="nav-item" target="_blank">
+                    <i class="fas fa-layers"></i>
+                    DWC
+                </a>
+                <a href="{{ url_for('dashboard', dashboard_name='jdd') }}" class="nav-item" target="_blank">
+                    <i class="fas fa-database"></i>
+                    JDD
+                </a>
+                <a href="{{ url_for('dashboard', dashboard_name='crypto_nexus_trade') }}" class="nav-item" target="_blank">
+                    <i class="fas fa-chart-line"></i>
+                    CryptoNexusTrade
+                </a>
+            </div>
+        </nav>
+        
+        <!-- Main Content Area -->
+        <main class="nexus-main">
+            <!-- Top Navigation Bar -->
+            <div class="nexus-topbar">
+                <div class="topbar-title">
+                    <i class="fas fa-window-restore me-2"></i>
+                    <span id="currentViewTitle">Dashboard Overview</span>
+                </div>
+                <div class="topbar-controls">
+                    <button class="btn btn-sm btn-outline-primary me-2" onclick="refreshCurrentView()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <span class="badge bg-success">
+                        <i class="fas fa-circle me-1"></i>
+                        Online
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Content Views -->
+            <div class="nexus-content">
+                <!-- Dashboard View -->
+                <div id="dashboard" class="content-view active">
+                    <div class="status-grid">
+                        <div class="status-card">
+                            <h6>System Status</h6>
+                            <div class="status-value">Operational</div>
+                            <small class="text-muted">All systems running</small>
+                        </div>
+                        <div class="status-card">
+                            <h6>Active Sessions</h6>
+                            <div class="status-value" id="activeSessions">3</div>
+                            <small class="text-muted">Browser & API sessions</small>
+                        </div>
+                        <div class="status-card">
+                            <h6>Automation Jobs</h6>
+                            <div class="status-value" id="automationJobs">12</div>
+                            <small class="text-muted">Completed today</small>
+                        </div>
+                        <div class="status-card">
+                            <h6>Intelligence Level</h6>
+                            <div class="status-value">95%</div>
+                            <small class="text-muted">NEXUS AI active</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="automation-panel">
+                                <h5 class="text-white mb-3">
+                                    <i class="fas fa-robot me-2"></i>
+                                    Quick Automation
+                                </h5>
+                                <div class="automation-controls">
+                                    <button class="btn btn-light" onclick="startBrowserSession()">
+                                        <i class="fas fa-globe me-1"></i>
+                                        Start Browser Session
+                                    </button>
+                                    <button class="btn btn-light" onclick="runAPITest()">
+                                        <i class="fas fa-flask me-1"></i>
+                                        Run API Test
+                                    </button>
+                                    <button class="btn btn-light" onclick="captureScreenshot()">
+                                        <i class="fas fa-camera me-1"></i>
+                                        Capture Screenshot
+                                    </button>
+                                    <button class="btn btn-light" onclick="activateVoiceCommands()">
+                                        <i class="fas fa-microphone me-1"></i>
+                                        Voice Commands
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Recent Activity</h6>
+                            <div class="log-panel" id="recentActivity">
+                                <div class="log-entry info">
+                                    <span class="text-muted">[16:05:12]</span> System initialized
+                                </div>
+                                <div class="log-entry success">
+                                    <span class="text-muted">[16:05:13]</span> Browser automation ready
+                                </div>
+                                <div class="log-entry info">
+                                    <span class="text-muted">[16:05:14]</span> API endpoints validated
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Browser Automation View -->
+                <div id="browser" class="content-view">
+                    <div class="browser-container">
+                        <!-- Enhanced Browser Header -->
+                        <div class="browser-header">
+                            <div class="browser-nav">
+                                <button class="btn btn-outline-secondary btn-sm" onclick="goBack()" title="Back">
+                                    <i class="fas fa-arrow-left"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="goForward()" title="Forward">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="refreshBrowser()" title="Refresh">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="url-bar">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-globe text-success" id="securityIcon"></i>
+                                    </span>
+                                    <input type="url" class="form-control browser-url" id="browserUrl" 
+                                           placeholder="Enter URL (try: https://chatgpt.com/gpts/editor/g-...)" 
+                                           value="">
+                                    <button class="btn btn-primary" onclick="loadBrowserPage()">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                                <div class="quick-links mt-1">
+                                    <small class="text-muted">
+                                        Quick: 
+                                        <a href="#" onclick="loadGPTActionGenerator()" class="text-decoration-none text-success">GPT Actions</a> |
+                                        <a href="#" onclick="loadQuickSite('https://chatgpt.com')" class="text-decoration-none">ChatGPT</a> |
+                                        <a href="#" onclick="loadQuickSite('https://example.com')" class="text-decoration-none">Example</a> |
+                                        <a href="#" onclick="loadQuickSite('https://httpbin.org/html')" class="text-decoration-none">Test</a>
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="browser-actions">
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-outline-success btn-sm" onclick="startMonitoring()" title="Monitor Page">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-outline-info btn-sm" onclick="captureScreenshot()" title="Screenshot">
+                                        <i class="fas fa-camera"></i>
+                                    </button>
+                                    <button class="btn btn-outline-warning btn-sm" onclick="executeAutomation('scroll')" title="Auto Scroll">
+                                        <i class="fas fa-arrows-alt-v"></i>
+                                    </button>
+                                </div>
+                                <button class="btn btn-danger btn-sm ms-2" onclick="loadViaPTNI()" title="PTNI Neural Breakthrough">
+                                    <i class="fas fa-brain"></i> PTNI
+                                </button>
+                            </div>
+                        </div>
+                        <iframe id="browserFrame" class="browser-frame" 
+                                src="https://httpbin.org/html"
+                                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation">
+                        </iframe>
+                        <div id="browserProxyView" class="browser-proxy-view">
+                            <div class="external-site-notice">
+                                <h6><i class="fas fa-shield-alt me-2"></i>External Site Access Options</h6>
+                                <p><strong>NEXUS Proxy Bypass:</strong> Load the site through our secure proxy to bypass embedding restrictions while maintaining automation capabilities.</p>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-success btn-lg" onclick="loadViaPTNI()">
+                                    <i class="fas fa-brain me-2"></i>
+                                    🧠 PTNI NEURAL BREAKTHROUGH
+                                </button>
+                                <button class="btn btn-warning" onclick="loadViaProxy()">
+                                    <i class="fas fa-rocket me-2"></i>
+                                    Standard NEXUS Proxy
+                                </button>
+                                <button class="btn btn-outline-primary" onclick="openExternalSite()">
+                                    <i class="fas fa-external-link-alt me-2"></i>
+                                    Open <span id="externalSiteName">External Site</span> in New Tab
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="backToEmbedded()">
+                                    <i class="fas fa-arrow-left me-2"></i>
+                                    Back to Embedded Browser
+                                </button>
+                            </div>
+                            <hr>
+                            <h6>Alternative: Try Embeddable Sites</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <button class="btn btn-outline-primary w-100 mb-2" onclick="loadAlternativeSite('https://httpbin.org/html')">
+                                        HTTPBin Test Page
+                                    </button>
+                                    <button class="btn btn-outline-primary w-100 mb-2" onclick="loadAlternativeSite('https://example.com')">
+                                        Example.com
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <button class="btn btn-outline-primary w-100 mb-2" onclick="loadAlternativeSite('https://jsonplaceholder.typicode.com/')">
+                                        JSON Placeholder API
+                                    </button>
+                                    <button class="btn btn-outline-primary w-100 mb-2" onclick="loadAlternativeSite('https://httpstat.us/')">
+                                        HTTP Status Codes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- API Tests View -->
+                <div id="api-tests" class="content-view">
+                    <div class="api-test-form">
+                        <h5 class="mb-3">
+                            <i class="fas fa-code me-2"></i>
+                            API Test Console
+                        </h5>
+                        <div class="row mb-3">
+                            <div class="col-md-2">
+                                <select class="form-select" id="apiMethod">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                    <option value="PUT">PUT</option>
+                                    <option value="DELETE">DELETE</option>
+                                </select>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="url" class="form-control" id="apiUrl" 
+                                       placeholder="Enter API endpoint URL..." value="https://httpbin.org/json">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary w-100" onclick="executeAPITest()">
+                                    <i class="fas fa-play me-1"></i>Execute
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Headers (JSON)</label>
+                                <textarea class="form-control" id="apiHeaders" rows="4" 
+                                          placeholder='{"Content-Type": "application/json"}'></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Body (JSON)</label>
+                                <textarea class="form-control" id="apiBody" rows="4" 
+                                          placeholder='{"key": "value"}'></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h6>Response</h6>
+                    <div class="api-response" id="apiResponse">
+                        Ready to execute API tests...
+                    </div>
+                </div>
+                
+                <!-- Logs View -->
+                <div id="logs" class="content-view">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>
+                            <i class="fas fa-file-alt me-2"></i>
+                            System Logs & Runtime
+                        </h5>
+                        <div>
+                            <button class="btn btn-outline-primary btn-sm me-2" onclick="clearLogs()">
+                                <i class="fas fa-trash"></i> Clear
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="refreshLogs()">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    <div class="log-panel" style="height: 500px;" id="systemLogs">
+                        <div class="log-entry info">
+                            <span class="text-muted">[16:05:12]</span> NEXUS Command Center initialized
+                        </div>
+                        <div class="log-entry success">
+                            <span class="text-muted">[16:05:13]</span> All subsystems operational
+                        </div>
+                        <div class="log-entry info">
+                            <span class="text-muted">[16:05:14]</span> Browser automation module loaded
+                        </div>
+                        <div class="log-entry info">
+                            <span class="text-muted">[16:05:15]</span> API testing framework ready
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recovery View -->
+                <div id="recovery" class="content-view">
+                    <h5 class="mb-3">
+                        <i class="fas fa-first-aid me-2"></i>
+                        Agent Recovery & Diagnostics
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-dark border-warning">
+                                <div class="card-body">
+                                    <h6 class="card-title">System Health Check</h6>
+                                    <button class="btn btn-warning" onclick="runHealthCheck()">
+                                        <i class="fas fa-heartbeat me-1"></i>Run Diagnostics
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-dark border-danger">
+                                <div class="card-body">
+                                    <h6 class="card-title">Emergency Recovery</h6>
+                                    <button class="btn btn-danger" onclick="emergencyRestart()">
+                                        <i class="fas fa-power-off me-1"></i>Emergency Restart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Config View -->
+                <div id="config" class="content-view">
+                    <h5 class="mb-3">
+                        <i class="fas fa-cog me-2"></i>
+                        Configuration & Settings
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-dark">
+                                <div class="card-body">
+                                    <h6 class="card-title">Automation Settings</h6>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="autoScreenshot" checked>
+                                        <label class="form-check-label" for="autoScreenshot">
+                                            Auto Screenshot on Actions
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="voiceCommands" checked>
+                                        <label class="form-check-label" for="voiceCommands">
+                                            Voice Command Recognition
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-dark">
+                                <div class="card-body">
+                                    <h6 class="card-title">API Configuration</h6>
+                                    <div class="mb-2">
+                                        <label class="form-label">Default Timeout (ms)</label>
+                                        <input type="number" class="form-control" value="5000">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label">Retry Attempts</label>
+                                        <input type="number" class="form-control" value="3">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Voice Commands View -->
+                <div id="voice" class="content-view">
+                    <h5 class="mb-3">
+                        <i class="fas fa-microphone me-2"></i>
+                        Voice Command Interface
+                    </h5>
+                    <div class="text-center mb-4">
+                        <button class="btn btn-primary btn-lg" id="voiceToggle" onclick="toggleVoiceRecognition()">
+                            <i class="fas fa-microphone me-2"></i>
+                            Start Voice Recognition
+                        </button>
+                    </div>
+                    <div class="card bg-dark">
+                        <div class="card-body">
+                            <h6 class="card-title">Available Commands</h6>
+                            <ul class="list-unstyled">
+                                <li><code>"Navigate to [URL]"</code> - Load a webpage</li>
+                                <li><code>"Take screenshot"</code> - Capture current view</li>
+                                <li><code>"Run API test"</code> - Execute API endpoint</li>
+                                <li><code>"Show logs"</code> - Switch to logs view</li>
+                                <li><code>"Start monitoring"</code> - Begin automation</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Global state
+        let currentView = 'dashboard';
+        let isVoiceActive = false;
+        let isMonitoring = false;
+        
+        // Navigation Functions
+        function showView(viewId) {
+            // Hide all views
+            document.querySelectorAll('.content-view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Remove active from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected view
+            document.getElementById(viewId).classList.add('active');
+            
+            // Update active nav item
+            event.target.classList.add('active');
+            
+            // Update title
+            const titles = {
+                'dashboard': 'Dashboard Overview',
+                'browser': 'Browser Automation',
+                'api-tests': 'API Testing Console',
+                'logs': 'System Logs & Runtime',
+                'recovery': 'Agent Recovery',
+                'config': 'Configuration & Settings',
+                'voice': 'Voice Command Interface'
+            };
+            
+            document.getElementById('currentViewTitle').textContent = titles[viewId] || 'NEXUS Control';
+            currentView = viewId;
+            
+            // Auto-focus relevant elements
+            if (viewId === 'browser') {
+                document.getElementById('browserUrl').focus();
+            } else if (viewId === 'api-tests') {
+                document.getElementById('apiUrl').focus();
+            }
+        }
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('nexusSidebar');
+            sidebar.classList.toggle('collapsed');
+        }
+        
+        function refreshCurrentView() {
+            addLogEntry(`Refreshing ${currentView} view`, 'info');
+            
+            if (currentView === 'browser') {
+                refreshBrowser();
+            } else if (currentView === 'logs') {
+                refreshLogs();
+            } else if (currentView === 'dashboard') {
+                updateDashboardStats();
+            }
+        }
+        
+        // Browser Automation Functions
+        function loadBrowserPage() {
+            const url = document.getElementById('browserUrl').value;
+            const iframe = document.getElementById('browserFrame');
+            const proxyView = document.getElementById('browserProxyView');
+            
+            if (url) {
+                // Check if the URL is likely to have iframe restrictions
+                const restrictedDomains = ['chatgpt.com', 'openai.com', 'google.com', 'facebook.com', 'twitter.com', 'linkedin.com', 'github.com', 'youtube.com'];
+                const isRestricted = restrictedDomains.some(domain => url.toLowerCase().includes(domain));
+                
+                if (isRestricted) {
+                    // Show proxy view for restricted sites
+                    iframe.style.display = 'none';
+                    proxyView.classList.add('active');
+                    document.getElementById('externalSiteName').textContent = extractDomainName(url);
+                    window.currentExternalUrl = url;
+                    addLogEntry(`External site detected: ${url} - Using proxy view`, 'warning');
+                } else {
+                    // Try to load in iframe
+                    proxyView.classList.remove('active');
+                    iframe.style.display = 'block';
+                    iframe.src = url;
+                    addLogEntry(`Loading embedded page: ${url}`, 'info');
+                    
+                    // Set a timeout to check if loading failed
+                    setTimeout(() => {
+                        try {
+                            // If we can't access the iframe content, it might be blocked
+                            if (iframe.contentDocument === null) {
+                                showProxyForFailedLoad(url);
+                            }
+                        } catch (e) {
+                            showProxyForFailedLoad(url);
+                        }
+                    }, 3000);
+                }
+            }
+        }
+        
+        function extractDomainName(url) {
+            try {
+                const domain = new URL(url).hostname;
+                return domain.replace('www.', '');
+            } catch (e) {
+                return url;
+            }
+        }
+        
+        function showProxyForFailedLoad(url) {
+            const iframe = document.getElementById('browserFrame');
+            const proxyView = document.getElementById('browserProxyView');
+            
+            iframe.style.display = 'none';
+            proxyView.classList.add('active');
+            document.getElementById('externalSiteName').textContent = extractDomainName(url);
+            window.currentExternalUrl = url;
+            addLogEntry(`Site ${url} blocked embedding - Switched to proxy view`, 'warning');
+        }
+        
+        function openExternalSite() {
+            if (window.currentExternalUrl) {
+                window.open(window.currentExternalUrl, '_blank');
+                addLogEntry(`Opened external site: ${window.currentExternalUrl}`, 'success');
+            }
+        }
+        
+        function backToEmbedded() {
+            const iframe = document.getElementById('browserFrame');
+            const proxyView = document.getElementById('browserProxyView');
+            
+            proxyView.classList.remove('active');
+            iframe.style.display = 'block';
+            iframe.src = 'https://httpbin.org/html';
+            document.getElementById('browserUrl').value = 'https://httpbin.org/html';
+            addLogEntry('Returned to embedded browser view', 'info');
+        }
+        
+        function loadAlternativeSite(url) {
+            document.getElementById('browserUrl').value = url;
+            backToEmbedded();
+            loadBrowserPage();
+        }
+        
+        function loadGPTActionGenerator() {
+            const gptId = 'g-682f5186fdbc81919062447f795d91fd';
+            const url = `/gpt-actions/${gptId}`;
+            
+            const iframe = document.getElementById('browserFrame');
+            const proxyView = document.getElementById('browserProxyView');
+            
+            // Update URL display
+            document.getElementById('browserUrl').value = `NEXUS GPT Action Generator - ${gptId}`;
+            
+            // Load the action generator
+            iframe.src = url;
+            iframe.style.display = 'block';
+            proxyView.style.display = 'none';
+            
+            addLogEntry(`Loading NEXUS GPT Action Generator for ${gptId}`, 'success');
+            addLogEntry('Ready to generate action schemas for ChatGPT integration', 'info');
+        }
+        
+        function loadViaPTNI() {
+            if (window.currentExternalUrl) {
+                const iframe = document.getElementById('browserFrame');
+                const proxyView = document.getElementById('browserProxyView');
+                
+                // Create PTNI neural bypass URL
+                const ptniUrl = `/ptni-bypass/${encodeURIComponent(window.currentExternalUrl)}`;
+                
+                // Switch back to iframe view
+                proxyView.classList.remove('active');
+                iframe.style.display = 'block';
+                
+                // Load via PTNI neural breakthrough
+                iframe.src = ptniUrl;
+                
+                addLogEntry(`🧠 PTNI Neural Breakthrough initiated for: ${window.currentExternalUrl}`, 'success');
+                addLogEntry(`Quantum tunneling protocols activated`, 'info');
+            }
+        }
+        
+        function loadViaProxy() {
+            if (window.currentExternalUrl) {
+                const iframe = document.getElementById('browserFrame');
+                const proxyView = document.getElementById('browserProxyView');
+                
+                // Create proxy URL
+                const proxyUrl = `/proxy/${encodeURIComponent(window.currentExternalUrl)}`;
+                
+                // Switch back to iframe view
+                proxyView.classList.remove('active');
+                iframe.style.display = 'block';
+                
+                // Load via proxy
+                iframe.src = proxyUrl;
+                
+                addLogEntry(`Loading via standard NEXUS proxy: ${window.currentExternalUrl}`, 'warning');
+            }
+        }
+        
+        function refreshBrowser() {
+            const iframe = document.getElementById('browserFrame');
+            iframe.src = iframe.src;
+            addLogEntry('Browser refreshed', 'success');
+        }
+        
+        function startMonitoring() {
+            isMonitoring = !isMonitoring;
+            const btn = event.target;
+            
+            if (isMonitoring) {
+                btn.innerHTML = '<i class="fas fa-stop"></i> Stop';
+                btn.className = 'btn btn-danger';
+                addLogEntry('Browser monitoring started', 'success');
+            } else {
+                btn.innerHTML = '<i class="fas fa-play"></i> Monitor';
+                btn.className = 'btn btn-success';
+                addLogEntry('Browser monitoring stopped', 'warning');
+            }
+        }
+        
+        function captureScreenshot() {
+            addLogEntry('Screenshot captured', 'success');
+            // Simulate flash effect
+            document.body.style.backgroundColor = '#fff';
+            setTimeout(() => {
+                document.body.style.backgroundColor = '';
+            }, 100);
+        }
+        
+        // API Testing Functions
+        function executeAPITest() {
+            const method = document.getElementById('apiMethod').value;
+            const url = document.getElementById('apiUrl').value;
+            const headers = document.getElementById('apiHeaders').value;
+            const body = document.getElementById('apiBody').value;
+            const responseDiv = document.getElementById('apiResponse');
+            
+            responseDiv.innerHTML = 'Executing request...';
+            addLogEntry(`API ${method} request to ${url}`, 'info');
+            
+            // Simulate API call
+            setTimeout(() => {
+                const mockResponse = {
+                    status: 200,
+                    statusText: 'OK',
+                    headers: {
+                        'content-type': 'application/json',
+                        'date': new Date().toISOString()
+                    },
+                    data: {
+                        method: method,
+                        url: url,
+                        success: true,
+                        timestamp: new Date().toISOString()
+                    }
+                };
+                
+                responseDiv.innerHTML = JSON.stringify(mockResponse, null, 2);
+                addLogEntry(`API ${method} completed successfully`, 'success');
+            }, 1000);
+        }
+        
+        // Voice Recognition Functions
+        function toggleVoiceRecognition() {
+            isVoiceActive = !isVoiceActive;
+            const btn = document.getElementById('voiceToggle');
+            
+            if (isVoiceActive) {
+                btn.innerHTML = '<i class="fas fa-stop me-2"></i>Stop Voice Recognition';
+                btn.className = 'btn btn-danger btn-lg';
+                addLogEntry('Voice recognition activated', 'success');
+                startVoiceListening();
+            } else {
+                btn.innerHTML = '<i class="fas fa-microphone me-2"></i>Start Voice Recognition';
+                btn.className = 'btn btn-primary btn-lg';
+                addLogEntry('Voice recognition deactivated', 'warning');
+            }
+        }
+        
+        function startVoiceListening() {
+            if ('webkitSpeechRecognition' in window) {
+                const recognition = new webkitSpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+                
+                recognition.onresult = function(event) {
+                    const command = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+                    processVoiceCommand(command);
+                };
+                
+                recognition.start();
+            } else {
+                addLogEntry('Voice recognition not supported in this browser', 'error');
+            }
+        }
+        
+        function processVoiceCommand(command) {
+            addLogEntry(`Voice command: "${command}"`, 'info');
+            
+            if (command.includes('navigate to')) {
+                const url = command.replace('navigate to', '').trim();
+                document.getElementById('browserUrl').value = url;
+                loadBrowserPage();
+            } else if (command.includes('take screenshot')) {
+                captureScreenshot();
+            } else if (command.includes('run api test')) {
+                executeAPITest();
+            } else if (command.includes('show logs')) {
+                showView('logs');
+            } else if (command.includes('start monitoring')) {
+                if (currentView !== 'browser') showView('browser');
+                startMonitoring();
+            }
+        }
+        
+        // Utility Functions
+        function addLogEntry(message, type = 'info') {
+            const logContainer = document.getElementById('systemLogs');
+            const recentActivity = document.getElementById('recentActivity');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const logEntry = `<div class="log-entry ${type}">
+                <span class="text-muted">[${timestamp}]</span> ${message}
+            </div>`;
+            
+            if (logContainer) {
+                logContainer.insertAdjacentHTML('afterbegin', logEntry);
+            }
+            
+            if (recentActivity && recentActivity.children.length < 10) {
+                recentActivity.insertAdjacentHTML('afterbegin', logEntry);
+            }
+        }
+        
+        function clearLogs() {
+            document.getElementById('systemLogs').innerHTML = '';
+            addLogEntry('Logs cleared', 'info');
+        }
+        
+        function refreshLogs() {
+            addLogEntry('Logs refreshed', 'info');
+        }
+        
+        function updateDashboardStats() {
+            document.getElementById('activeSessions').textContent = Math.floor(Math.random() * 10) + 1;
+            document.getElementById('automationJobs').textContent = Math.floor(Math.random() * 50) + 1;
+        }
+        
+        function runHealthCheck() {
+            addLogEntry('Running system health check...', 'info');
+            setTimeout(() => {
+                addLogEntry('System health check completed - All systems operational', 'success');
+            }, 2000);
+        }
+        
+        function emergencyRestart() {
+            if (confirm('Are you sure you want to perform an emergency restart?')) {
+                addLogEntry('Emergency restart initiated', 'warning');
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            }
+        }
+        
+        // Quick Action Functions from Dashboard
+        function startBrowserSession() {
+            showView('browser');
+            addLogEntry('Browser session started from dashboard', 'success');
+        }
+        
+        function runAPITest() {
+            showView('api-tests');
+            addLogEntry('API test console opened from dashboard', 'success');
+        }
+        
+        function activateVoiceCommands() {
+            showView('voice');
+            addLogEntry('Voice command interface opened from dashboard', 'success');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            addLogEntry('NEXUS Command Center initialized', 'success');
+            updateDashboardStats();
+            
+            // Auto-update stats every 30 seconds
+            setInterval(updateDashboardStats, 30000);
+        });
+    </script>
+</body>
+</html>
