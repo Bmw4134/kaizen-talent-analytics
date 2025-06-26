@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTNI Neural Sweep - NEXUS Enterprise</title>
+    
+    <!-- Enterprise Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Enterprise Unified Styling -->
+    <link href="{{ url_for('static', filename='css/enterprise-unified.css') }}" rel="stylesheet">
+    
+    <style>
+        .ptni-header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .neural-efficiency-score {
+            font-size: 3rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .sweep-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .sweep-metric {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .system-analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .neural-system-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .neural-system-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+        }
+        
+        .system-header {
+            padding: 1.5rem;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .system-body {
+            padding: 1.5rem;
+        }
+        
+        .intelligence-level {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .level-bar {
+            width: 100%;
+            height: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-left: 1rem;
+        }
+        
+        .level-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.8s ease;
+        }
+        
+        .enhancement-potential {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .potential-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #007bff;
+        }
+        
+        .optimization-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+        
+        .optimization-item {
+            padding: 0.7rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, rgba(0, 123, 255, 0.05), rgba(0, 123, 255, 0.02));
+            border-left: 4px solid #007bff;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.9rem;
+        }
+        
+        .breakthrough-opportunities {
+            background: linear-gradient(135deg, #6f42c1 0%, #59359a 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+        
+        .breakthrough-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .breakthrough-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .breakthrough-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+        
+        .breakthrough-potential {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .potential-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .complexity-badge {
+            background: rgba(255, 193, 7, 0.3);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .performance-projections {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+        
+        .projection-timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .projection-phase {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .phase-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .phase-metrics {
+            display: grid;
+            gap: 0.8rem;
+        }
+        
+        .phase-metric {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+        
+        .phase-metric-label {
+            color: #666;
+        }
+        
+        .phase-metric-value {
+            font-weight: 600;
+            color: #007bff;
+        }
+        
+        .implementation-roadmap {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+        
+        .roadmap-header {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            padding: 1.5rem;
+        }
+        
+        .roadmap-phases {
+            padding: 2rem;
+        }
+        
+        .roadmap-phase {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .roadmap-phase:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .phase-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .phase-content {
+            flex: 1;
+        }
+        
+        .phase-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .phase-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .phase-timeline {
+            background: #e9ecef;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: #495057;
+            margin-left: auto;
+        }
+        
+        .enhancement-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+        
+        .enhancement-list li {
+            padding: 0.5rem 0;
+            color: #666;
+            border-left: 3px solid #007bff;
+            padding-left: 1rem;
+            margin-bottom: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .intelligence-gain {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+        
+        .loading-neural {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .neural-glow {
+            box-shadow: 0 0 20px rgba(111, 66, 193, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nexus-navbar">
+        <div class="nexus-container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a class="nexus-navbar-brand" href="/">
+                    <i class="fas fa-brain"></i>
+                    PTNI Neural Sweep
+                </a>
+                <div class="d-flex gap-2">
+                    <a href="/qnis/intelligence-dashboard" class="nexus-btn nexus-btn-outline">
+                        <i class="fas fa-chart-line me-2"></i>QNIS Analysis
+                    </a>
+                    <a href="/" class="nexus-btn nexus-btn-outline">
+                        <i class="fas fa-arrow-left me-2"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- PTNI Header -->
+    <div class="ptni-header">
+        <div class="nexus-container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-3">
+                        <i class="fas fa-atom me-3"></i>
+                        PTNI Neural Processing Core
+                    </h1>
+                    <p class="lead mb-0">
+                        Comprehensive neural sweep analysis with breakthrough opportunity identification and optimization roadmap
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <div class="neural-efficiency-score" id="neuralEfficiency">
+                        <span class="loading-neural"></span>
+                    </div>
+                    <div class="text-center">Neural Efficiency Rating</div>
+                </div>
+            </div>
+            
+            <!-- Sweep Metrics -->
+            <div class="sweep-metrics" id="sweepMetrics">
+                <div class="sweep-metric">
+                    <div class="metric-value" id="optimizationPotential">---%</div>
+                    <div class="metric-label">Optimization Potential</div>
+                </div>
+                <div class="sweep-metric">
+                    <div class="metric-value" id="breakthroughReadiness">---%</div>
+                    <div class="metric-label">Breakthrough Readiness</div>
+                </div>
+                <div class="sweep-metric">
+                    <div class="metric-value" id="intelligenceMultiplier">---x</div>
+                    <div class="metric-label">Intelligence Multiplication</div>
+                </div>
+                <div class="sweep-metric">
+                    <div class="metric-value" id="systemsAnalyzed">---</div>
+                    <div class="metric-label">Systems Analyzed</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="nexus-container">
+        <!-- System Analysis Grid -->
+        <h2 class="mb-4">
+            <i class="fas fa-microchip me-2"></i>
+            Neural System Analysis
+        </h2>
+        <div class="system-analysis-grid" id="systemAnalysis">
+            <div class="text-center">
+                <div class="loading-neural"></div>
+                <p>Executing neural sweep analysis...</p>
+            </div>
+        </div>
+
+        <!-- Breakthrough Opportunities -->
+        <div class="breakthrough-opportunities neural-glow">
+            <h3 class="mb-3">
+                <i class="fas fa-rocket me-2"></i>
+                Revolutionary Breakthrough Opportunities
+            </h3>
+            <p>Identified opportunities for quantum-level intelligence advancement</p>
+            <div class="breakthrough-grid" id="breakthroughGrid">
+                <div class="text-center">
+                    <div class="loading-neural"></div>
+                    <p>Analyzing breakthrough potential...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Projections -->
+        <div class="performance-projections">
+            <h3 class="mb-3">
+                <i class="fas fa-chart-line me-2"></i>
+                Performance Projections After Optimization
+            </h3>
+            <p>Projected system capabilities following neural enhancement implementation</p>
+            <div class="projection-timeline" id="projectionTimeline">
+                <div class="text-center">
+                    <div class="loading-neural"></div>
+                    <p>Calculating performance projections...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Implementation Roadmap -->
+        <div class="implementation-roadmap neural-glow">
+            <div class="roadmap-header">
+                <h3 class="mb-2">
+                    <i class="fas fa-route me-2"></i>
+                    Neural Enhancement Implementation Roadmap
+                </h3>
+                <p class="mb-0">Strategic deployment plan for maximum intelligence gain</p>
+            </div>
+            <div class="roadmap-phases" id="roadmapPhases">
+                <div class="text-center">
+                    <div class="loading-neural"></div>
+                    <p>Generating implementation roadmap...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enterprise Deployment Script -->
+    <script src="{{ url_for('static', filename='js/enterprise-deployment.js') }}"></script>
+    
+    <script>
+        // PTNI Neural Sweep Dashboard Controller
+        class PTNINeuralSweepDashboard {
+            constructor() {
+                this.sweepData = null;
+                this.init();
+            }
+            
+            async init() {
+                await this.loadNeuralSweep();
+                this.renderSweepMetrics();
+                this.renderSystemAnalysis();
+                this.renderBreakthroughOpportunities();
+                this.renderPerformanceProjections();
+                this.renderImplementationRoadmap();
+            }
+            
+            async loadNeuralSweep() {
+                try {
+                    // Execute NEXUS optimization for enhanced metrics
+                    await fetch('/api/nexus/execute-optimization');
+                    
+                    // Load enhanced sweep data and optimized metrics
+                    const [sweepResponse, metricsResponse, projectionsResponse] = await Promise.all([
+                        fetch('/api/ptni/neural-sweep'),
+                        fetch('/api/nexus/optimized-metrics'),
+                        fetch('/api/nexus/performance-projections')
+                    ]);
+                    
+                    if (sweepResponse.ok && metricsResponse.ok && projectionsResponse.ok) {
+                        const sweepData = await sweepResponse.json();
+                        const metricsData = await metricsResponse.json();
+                        const projectionsData = await projectionsResponse.json();
+                        
+                        this.sweepData = sweepData.sweep_report;
+                        this.optimizedMetrics = metricsData.optimized_metrics;
+                        this.performanceProjections = projectionsData.performance_projections;
+                        
+                        // Update main metrics with enhanced values
+                        const enhancedEfficiency = parseFloat(this.optimizedMetrics.neural_efficiency);
+                        document.getElementById('neuralEfficiency').textContent = 
+                            (enhancedEfficiency * 100).toFixed(1) + '%';
+                    } else {
+                        throw new Error('Failed to load enhanced neural sweep');
+                    }
+                } catch (error) {
+                    console.error('PTNI Neural Sweep Error:', error);
+                    this.showError('Unable to load PTNI neural sweep analysis');
+                }
+            }
+            
+            renderSweepMetrics() {
+                // Use enhanced metrics if available
+                if (this.optimizedMetrics) {
+                    document.getElementById('optimizationPotential').textContent = 
+                        (parseFloat(this.optimizedMetrics.optimization_potential) * 100).toFixed(1) + '%';
+                    document.getElementById('breakthroughReadiness').textContent = 
+                        (parseFloat(this.optimizedMetrics.breakthrough_readiness) * 100).toFixed(1) + '%';
+                    document.getElementById('intelligenceMultiplier').textContent = 
+                        this.optimizedMetrics.intelligence_multiplication_factor;
+                    document.getElementById('systemsAnalyzed').textContent = 
+                        this.sweepData.sweep_metadata.systems_analyzed;
+                } else {
+                    // Fallback to original metrics
+                    const summary = this.sweepData.executive_summary;
+                    document.getElementById('optimizationPotential').textContent = 
+                        (summary.optimization_potential * 100).toFixed(1) + '%';
+                    document.getElementById('breakthroughReadiness').textContent = 
+                        (summary.breakthrough_readiness * 100).toFixed(1) + '%';
+                    document.getElementById('intelligenceMultiplier').textContent = 
+                        summary.projected_intelligence_multiplication.toFixed(1) + 'x';
+                    document.getElementById('systemsAnalyzed').textContent = 
+                        this.sweepData.sweep_metadata.systems_analyzed;
+                }
+            }
+            
+            renderSystemAnalysis() {
+                const container = document.getElementById('systemAnalysis');
+                const systems = this.sweepData.detailed_analysis.system_analysis;
+                
+                container.innerHTML = '';
+                
+                Object.entries(systems).forEach(([systemKey, systemData]) => {
+                    const systemName = systemKey.replace('_neural_analysis', '').toUpperCase();
+                    const card = document.createElement('div');
+                    card.className = 'neural-system-card';
+                    
+                    const headerColor = this.getSystemColor(systemName);
+                    
+                    card.innerHTML = `
+                        <div class="system-header" style="background: ${headerColor};">
+                            <i class="fas fa-${this.getSystemIcon(systemName)} me-2"></i>
+                            ${systemName}
+                        </div>
+                        <div class="system-body">
+                            <div class="intelligence-level">
+                                <span>Intelligence Level</span>
+                                <div class="level-bar">
+                                    <div class="level-fill" style="width: ${systemData.current_intelligence_level * 100}%"></div>
+                                </div>
+                                <span class="ms-2">${(systemData.current_intelligence_level * 100).toFixed(1)}%</span>
+                            </div>
+                            
+                            <div class="enhancement-potential">
+                                <div class="potential-value">+${(systemData.neural_enhancement_potential * 100).toFixed(1)}%</div>
+                                <div>Enhancement Potential</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <strong>PTNI Integration Score:</strong> ${(systemData.ptni_integration_score * 100).toFixed(1)}%
+                            </div>
+                            
+                            <div class="mb-3">
+                                <strong>Breakthrough Potential:</strong><br>
+                                <em>${systemData.breakthrough_potential}</em>
+                            </div>
+                            
+                            <h6>Neural Optimization Opportunities:</h6>
+                            <ul class="optimization-list">
+                                ${systemData.optimization_opportunities.map(opp => 
+                                    `<li class="optimization-item">${opp}</li>`
+                                ).join('')}
+                            </ul>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            }
+            
+            renderBreakthroughOpportunities() {
+                const container = document.getElementById('breakthroughGrid');
+                const opportunities = this.sweepData.detailed_analysis.breakthrough_opportunities;
+                
+                container.innerHTML = '';
+                
+                // Render immediate breakthroughs
+                opportunities.immediate_breakthroughs.forEach(opportunity => {
+                    const card = document.createElement('div');
+                    card.className = 'breakthrough-card';
+                    
+                    card.innerHTML = `
+                        <div class="breakthrough-title">${opportunity.opportunity}</div>
+                        <div class="breakthrough-potential">
+                            <span class="potential-badge">${(opportunity.breakthrough_potential * 100).toFixed(1)}% Potential</span>
+                            <span class="complexity-badge">Complexity: ${(opportunity.implementation_complexity * 100).toFixed(0)}%</span>
+                        </div>
+                        <div class="mb-2"><strong>Target:</strong> ${opportunity.target_system}</div>
+                        <div class="mb-2">${opportunity.description}</div>
+                        <div><strong>Impact:</strong> ${opportunity.impact}</div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+                
+                // Render revolutionary breakthroughs
+                opportunities.revolutionary_breakthroughs.forEach(opportunity => {
+                    const card = document.createElement('div');
+                    card.className = 'breakthrough-card';
+                    card.style.border = '2px solid rgba(255, 215, 0, 0.5)';
+                    
+                    card.innerHTML = `
+                        <div class="breakthrough-title">🚀 ${opportunity.opportunity}</div>
+                        <div class="breakthrough-potential">
+                            <span class="potential-badge">${(opportunity.breakthrough_potential * 100).toFixed(1)}% Potential</span>
+                            <span class="complexity-badge">Complexity: ${(opportunity.implementation_complexity * 100).toFixed(0)}%</span>
+                        </div>
+                        <div class="mb-2"><strong>Target:</strong> ${opportunity.target_system}</div>
+                        <div class="mb-2">${opportunity.description}</div>
+                        <div><strong>Impact:</strong> ${opportunity.impact}</div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            }
+            
+            renderPerformanceProjections() {
+                const container = document.getElementById('projectionTimeline');
+                const projections = this.sweepData.detailed_analysis.performance_projections;
+                
+                container.innerHTML = '';
+                
+                const phases = [
+                    { name: 'Current State', data: projections.current_state },
+                    { name: 'Phase 1', data: projections.phase_1_projections },
+                    { name: 'Phase 2', data: projections.phase_2_projections },
+                    { name: 'Phase 3', data: projections.phase_3_projections }
+                ];
+                
+                phases.forEach(phase => {
+                    const card = document.createElement('div');
+                    card.className = 'projection-phase';
+                    
+                    card.innerHTML = `
+                        <div class="phase-title">${phase.name}</div>
+                        <div class="phase-metrics">
+                            <div class="phase-metric">
+                                <span class="phase-metric-label">Intelligence</span>
+                                <span class="phase-metric-value">${(phase.data.overall_intelligence * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="phase-metric">
+                                <span class="phase-metric-label">Efficiency</span>
+                                <span class="phase-metric-value">${(phase.data.processing_efficiency * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="phase-metric">
+                                <span class="phase-metric-label">Coordination</span>
+                                <span class="phase-metric-value">${(phase.data.coordination_effectiveness * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="phase-metric">
+                                <span class="phase-metric-label">Breakthrough</span>
+                                <span class="phase-metric-value">${(phase.data.breakthrough_capability * 100).toFixed(1)}%</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            }
+            
+            renderImplementationRoadmap() {
+                const container = document.getElementById('roadmapPhases');
+                const roadmap = this.sweepData.detailed_analysis.enhancement_roadmap;
+                
+                container.innerHTML = '';
+                
+                Object.entries(roadmap).forEach(([phaseKey, phaseData], index) => {
+                    const phase = document.createElement('div');
+                    phase.className = 'roadmap-phase';
+                    
+                    const phaseName = phaseKey.replace('phase_', 'Phase ').replace('_', ' - ');
+                    
+                    phase.innerHTML = `
+                        <div class="phase-icon">${index + 1}</div>
+                        <div class="phase-content">
+                            <div class="phase-header">
+                                <div class="phase-name">${phaseName.toUpperCase()}</div>
+                                <div class="phase-timeline">${phaseData.timeline}</div>
+                            </div>
+                            <div class="mb-2"><strong>Priority:</strong> ${phaseData.priority}</div>
+                            <h6>Enhancements:</h6>
+                            <ul class="enhancement-list">
+                                ${phaseData.enhancements.map(enhancement => 
+                                    `<li>${enhancement}</li>`
+                                ).join('')}
+                            </ul>
+                            <h6>Success Metrics:</h6>
+                            <ul class="enhancement-list">
+                                ${phaseData.success_metrics.map(metric => 
+                                    `<li>${metric}</li>`
+                                ).join('')}
+                            </ul>
+                            <div class="intelligence-gain">
+                                Intelligence Gain: +${(phaseData.intelligence_gain * 100).toFixed(1)}%
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(phase);
+                });
+            }
+            
+            getSystemColor(systemName) {
+                const colors = {
+                    'TRAXOVO': 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)',
+                    'DWC': 'linear-gradient(135deg, #28a745 0%, #1e7e34 100%)',
+                    'JDD': 'linear-gradient(135deg, #ffc107 0%, #e0a800 100%)',
+                    'CRYPTO': 'linear-gradient(135deg, #17a2b8 0%, #138496 100%)',
+                    'QUANTUM': 'linear-gradient(135deg, #6f42c1 0%, #59359a 100%)',
+                    'MASTER': 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)'
+                };
+                return colors[systemName] || 'linear-gradient(135deg, #6c757d 0%, #495057 100%)';
+            }
+            
+            getSystemIcon(systemName) {
+                const icons = {
+                    'TRAXOVO': 'truck',
+                    'DWC': 'cogs',
+                    'JDD': 'database',
+                    'CRYPTO': 'chart-line',
+                    'QUANTUM': 'brain',
+                    'MASTER': 'crown'
+                };
+                return icons[systemName] || 'cube';
+            }
+            
+            showError(message) {
+                console.error(message);
+            }
+        }
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            new PTNINeuralSweepDashboard();
+        });
+    </script>
+</body>
+</html>
