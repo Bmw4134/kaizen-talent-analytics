@@ -352,7 +352,9 @@
                 document.querySelectorAll('.nav-item').forEach(item => {
                     item.classList.remove('active');
                 });
-                event.target.closest('.nav-item').classList.add('active');
+                if (event && event.target && event.target.closest) {
+                    event.target.closest('.nav-item').classList.add('active');
+                }
                 
                 const contentArea = document.getElementById('main-content');
                 contentArea.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
@@ -400,8 +402,11 @@
                 
             } catch (error) {
                 console.error('Module loading error:', error);
-                document.getElementById('main-content').innerHTML = 
-                    '<div class="alert alert-danger">Failed to load module</div>';
+                const contentArea = document.getElementById('main-content');
+                if (contentArea) {
+                    contentArea.innerHTML = 
+                        '<div class="alert alert-danger">Failed to load module</div>';
+                }
             }
         };
         
