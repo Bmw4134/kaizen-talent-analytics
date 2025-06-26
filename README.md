@@ -29,3 +29,37 @@ See the example workflow in [`examples/sample_workflow.py`](examples/sample_work
 ---
 
 Thank you for reviewing this project as part of my Netflix application.
+
+## Deployment Instructions
+
+### Render Deployment
+
+- Build Command:  
+  `pip install -r requirements_render.txt`
+
+- Start Command:  
+  `python3 talent_insights.py`
+
+- Render configuration is defined in `render.yaml`.
+
+### Vercel Deployment
+
+- Vercel is configured to deploy the Python backend using the `@vercel/python` runtime.
+
+- The `vercel.json` file routes all requests to `talent_insights.py`.
+
+- To deploy on Vercel, ensure you have the Vercel CLI installed and run:  
+  `vercel --prod`
+
+- Vercel will automatically detect the Python runtime and start the app accordingly.
+
+### Notes
+
+- Ensure environment variables and secrets are configured appropriately on both platforms.
+
+- For local testing, you can run:  
+  `python3 talent_insights.py`
+
+- For any issues during deployment, check the platform logs for errors.
+
+---
