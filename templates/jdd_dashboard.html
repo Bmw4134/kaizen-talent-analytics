@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JDD Data Processing - NEXUS Enterprise</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .jdd-header {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .data-card {
+            background: var(--bs-dark);
+            border: 1px solid var(--bs-border-color);
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+        .data-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.15);
+        }
+        .data-metric {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+            padding: 1.5rem;
+            border-radius: 8px;
+            color: white;
+            text-align: center;
+        }
+        .processing-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .status-processing { background: var(--bs-info); color: white; }
+        .status-completed { background: var(--bs-success); color: white; }
+        .status-queued { background: var(--bs-warning); color: var(--bs-dark); }
+    </style>
+</head>
+<body>
+    <div class="jdd-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-6 mb-2 text-dark">
+                        <i class="fas fa-database me-3"></i>
+                        JDD Data Processing
+                    </h1>
+                    <p class="lead mb-0 text-dark">Intelligent Data Discovery & Deep Processing</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="/" class="btn btn-outline-dark">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Enterprise
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Data Processing Metrics -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="data-metric">
+                    <div class="h3 mb-1">2.8TB</div>
+                    <div>Data Processed</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="data-metric">
+                    <div class="h3 mb-1">94.3%</div>
+                    <div>Accuracy Rate</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="data-metric">
+                    <div class="h3 mb-1">147</div>
+                    <div>Active Pipelines</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="data-metric">
+                    <div class="h3 mb-1">42.1%</div>
+                    <div>Quantum Processing</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Data Pipelines -->
+        <div class="row">
+            <div class="col-md-8 mb-4">
+                <div class="data-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-stream me-2"></i>
+                            Active Data Processing Pipelines
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Pipeline ID</th>
+                                        <th>Data Source</th>
+                                        <th>Status</th>
+                                        <th>Progress</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>JDD-P001</td>
+                                        <td>Customer Analytics</td>
+                                        <td><span class="processing-status status-processing">Processing</span></td>
+                                        <td>78%</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-warning" onclick="optimizePipeline('JDD-P001')">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>JDD-P002</td>
+                                        <td>Market Intelligence</td>
+                                        <td><span class="processing-status status-completed">Completed</span></td>
+                                        <td>100%</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-success" onclick="viewResults('JDD-P002')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>JDD-P003</td>
+                                        <td>Neural Pattern Analysis</td>
+                                        <td><span class="processing-status status-processing">Processing</span></td>
+                                        <td>45%</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-warning" onclick="optimizePipeline('JDD-P003')">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>JDD-P004</td>
+                                        <td>Quantum Data Correlation</td>
+                                        <td><span class="processing-status status-queued">Queued</span></td>
+                                        <td>0%</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-info" onclick="startPipeline('JDD-P004')">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="data-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-brain me-2"></i>
+                            Intelligence Controls
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-3">
+                            <button class="btn btn-outline-warning" onclick="optimizeDataProcessing()">
+                                <i class="fas fa-rocket me-2"></i>
+                                Optimize Processing
+                            </button>
+                            <button class="btn btn-outline-info" onclick="quantumAnalysis()">
+                                <i class="fas fa-atom me-2"></i>
+                                Quantum Analysis
+                            </button>
+                            <button class="btn btn-outline-success" onclick="patternRecognition()">
+                                <i class="fas fa-search me-2"></i>
+                                Pattern Recognition
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="exportInsights()">
+                                <i class="fas fa-download me-2"></i>
+                                Export Insights
+                            </button>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="text-center">
+                            <h6 class="mb-3">Processing Health</h6>
+                            <div class="progress mb-2" style="height: 8px;">
+                                <div class="progress-bar bg-warning" style="width: 94.3%"></div>
+                            </div>
+                            <small class="text-muted">High Performance</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function optimizePipeline(pipelineId) {
+            const button = event.target;
+            const originalContent = button.innerHTML;
+            
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            button.disabled = true;
+            
+            try {
+                const response = await fetch('/api/jdd/optimize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pipeline_id: pipelineId })
+                });
+                
+                if (response.ok) {
+                    button.innerHTML = '<i class="fas fa-check"></i>';
+                    button.style.color = 'var(--bs-success)';
+                    showNotification(`Pipeline ${pipelineId} optimized successfully`, 'success');
+                } else {
+                    throw new Error('Optimization failed');
+                }
+            } catch (error) {
+                button.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                button.style.color = 'var(--bs-danger)';
+                showNotification(`Pipeline ${pipelineId} optimization failed`, 'error');
+            }
+            
+            setTimeout(() => {
+                button.innerHTML = originalContent;
+                button.disabled = false;
+                button.style.color = '';
+            }, 3000);
+        }
+
+        async function optimizeDataProcessing() {
+            const button = event.target;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Optimizing...';
+            button.disabled = true;
+            
+            try {
+                const response = await fetch('/api/jdd/optimize', { method: 'POST' });
+                if (response.ok) {
+                    showNotification('Data processing optimization completed successfully', 'success');
+                } else {
+                    throw new Error('Optimization failed');
+                }
+            } catch (error) {
+                showNotification('Data processing optimization encountered an issue', 'warning');
+            }
+            
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-rocket me-2"></i>Optimize Processing';
+                button.disabled = false;
+            }, 3000);
+        }
+
+        function startPipeline(pipelineId) {
+            showNotification(`Pipeline ${pipelineId} started`, 'info');
+        }
+
+        function viewResults(pipelineId) {
+            showNotification(`Viewing results for ${pipelineId}`, 'info');
+        }
+
+        function quantumAnalysis() {
+            showNotification('Quantum data analysis initiated', 'success');
+        }
+
+        function patternRecognition() {
+            showNotification('Pattern recognition analysis started', 'info');
+        }
+
+        function exportInsights() {
+            showNotification('Data insights export initiated', 'info');
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} alert-dismissible fade show`;
+            notification.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.remove(), 5000);
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            showNotification('JDD Data Processing Dashboard initialized', 'success');
+        });
+    </script>
+</body>
+</html>
