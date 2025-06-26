@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kaizen Talent Analytics - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #000;
+      color: #fff;
+    }
+    a {
+      color: #fff;
+      text-decoration: underline;
+    }
+    a:hover {
+      color: #bbb;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+  <header class="mb-12 text-center">
+    <h1 class="text-4xl font-bold mb-2">Kaizen Talent Analytics</h1>
+    <p class="text-lg max-w-xl mx-auto">
+      Modular Python system for predictive hiring analytics.<br />
+      Part of Netflix Analyst, Talent Analytics (ML) application.
+    </p>
+  </header>
+
+  <main class="max-w-4xl w-full space-y-8">
+    <section>
+      <h2 class="text-2xl font-semibold mb-4 border-b border-white pb-2">Core Modules</h2>
+      <ul class="list-disc list-inside space-y-2">
+        <li><strong>Fingerprint Engine:</strong> Generate unique prompt fingerprints.</li>
+        <li><strong>Diff Tracker:</strong> Log differences between outputs.</li>
+        <li><strong>Goal Tracker:</strong> Manage and query goals.</li>
+        <li><strong>Session Audit:</strong> Log session activities.</li>
+        <li><strong>Visual Loop Composer:</strong> Parse markdown to build prompt flow graphs.</li>
+        <li><strong>Predictive Models:</strong> Retention, Time to Hire, Flight Risk detection.</li>
+        <li><strong>Connectors:</strong> ATS adapter for event ingestion.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="text-2xl font-semibold mb-4 border-b border-white pb-2">Example Workflow</h2>
+      <p>
+        See the example usage script: 
+        <a href="../../examples/sample_workflow.py" target="_blank" rel="noopener noreferrer">examples/sample_workflow.py</a>
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-2xl font-semibold mb-4 border-b border-white pb-2">Next Steps</h2>
+      <p>
+        This UI is a placeholder for future dashboard components.<br />
+        Integration with the <code>nexus-UF</code> dashboard framework will enable interactive visualizations and analytics.
+      </p>
+    </section>
+  </main>
+
+  <footer class="mt-auto pt-8 text-center text-sm text-gray-400">
+    &copy; 2025 Kaizen Talent Analytics
+  </footer>
+</body>
+</html>
