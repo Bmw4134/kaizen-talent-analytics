@@ -1,0 +1,500 @@
+{% extends "base.html" %}
+
+{% block title %}NEXUS Enterprise Platform{% endblock %}
+
+{% block content %}
+<!-- Enterprise Hero Section -->
+<div class="enterprise-hero position-relative overflow-hidden">
+    <div class="hero-background"></div>
+    <div class="container position-relative">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <div class="hero-badge mb-4">
+                        <span class="badge bg-primary px-3 py-2">
+                            <i class="fas fa-bolt me-2"></i>Enterprise Grade Platform
+                        </span>
+                    </div>
+                    <h1 class="display-2 fw-bold mb-4 text-gradient">
+                        NEXUS
+                        <span class="text-primary">Enterprise</span>
+                    </h1>
+                    <p class="lead fs-4 mb-5 text-muted">
+                        The world's most advanced unified intelligence platform. 
+                        Seamlessly integrate, automate, and scale your enterprise operations 
+                        with quantum-enhanced AI processing.
+                    </p>
+                    <div class="hero-actions d-flex flex-wrap gap-3 mb-5">
+                        <a href="/auth/login" class="btn btn-primary btn-lg px-5 py-3">
+                            <i class="fas fa-rocket me-2"></i>Launch Platform
+                        </a>
+                        <a href="#enterprise-demo" class="btn btn-outline-primary btn-lg px-5 py-3">
+                            <i class="fas fa-play me-2"></i>Watch Demo
+                        </a>
+                    </div>
+                    <div class="trust-indicators">
+                        <div class="row g-4">
+                            <div class="col-auto">
+                                <div class="trust-metric">
+                                    <div class="metric-value">99.9%</div>
+                                    <div class="metric-label">Uptime SLA</div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="trust-metric">
+                                    <div class="metric-value">SOC 2</div>
+                                    <div class="metric-label">Compliant</div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="trust-metric">
+                                    <div class="metric-value">Enterprise</div>
+                                    <div class="metric-label">Support</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-visual">
+                    <div class="platform-preview">
+                        <div class="preview-window">
+                            <div class="window-header">
+                                <div class="window-controls">
+                                    <span class="control red"></span>
+                                    <span class="control yellow"></span>
+                                    <span class="control green"></span>
+                                </div>
+                                <div class="window-title">NEXUS Enterprise Dashboard</div>
+                            </div>
+                            <div class="window-content">
+                                <div class="dashboard-preview">
+                                    <div class="preview-sidebar">
+                                        <div class="sidebar-item active">
+                                            <i class="fas fa-tachometer-alt"></i>
+                                            <span>Overview</span>
+                                        </div>
+                                        <div class="sidebar-item">
+                                            <i class="fas fa-chart-line"></i>
+                                            <span>Analytics</span>
+                                        </div>
+                                        <div class="sidebar-item">
+                                            <i class="fas fa-cogs"></i>
+                                            <span>Operations</span>
+                                        </div>
+                                        <div class="sidebar-item">
+                                            <i class="fas fa-brain"></i>
+                                            <span>AI Intelligence</span>
+                                        </div>
+                                    </div>
+                                    <div class="preview-main">
+                                        <div class="preview-metrics">
+                                            <div class="metric-card">
+                                                <div class="metric-icon bg-success">
+                                                    <i class="fas fa-arrow-up"></i>
+                                                </div>
+                                                <div class="metric-data">
+                                                    <div class="metric-number">+34.7%</div>
+                                                    <div class="metric-desc">Performance</div>
+                                                </div>
+                                            </div>
+                                            <div class="metric-card">
+                                                <div class="metric-icon bg-primary">
+                                                    <i class="fas fa-users"></i>
+                                                </div>
+                                                <div class="metric-data">
+                                                    <div class="metric-number">2.4M</div>
+                                                    <div class="metric-desc">Active Users</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="preview-chart">
+                                            <div class="chart-placeholder">
+                                                <svg viewBox="0 0 400 200" class="w-100">
+                                                    <path d="M20,180 Q50,120 100,140 T200,100 T300,80 T380,60" 
+                                                          stroke="var(--bs-primary)" stroke-width="3" fill="none"/>
+                                                    <circle cx="380" cy="60" r="4" fill="var(--bs-primary)"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enterprise Features -->
+<section class="enterprise-features py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="display-4 fw-bold mb-4">Enterprise-Grade Capabilities</h2>
+                <p class="lead text-muted">Built for scale, security, and performance at the enterprise level</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>Enterprise Security</h4>
+                    <p>SOC 2 compliant with end-to-end encryption, advanced threat detection, and comprehensive audit trails.</p>
+                    <ul class="feature-list">
+                        <li>Zero-trust architecture</li>
+                        <li>Advanced threat detection</li>
+                        <li>Compliance ready</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h4>Quantum Performance</h4>
+                    <p>Quantum-enhanced processing delivers unprecedented speed and intelligence across all operations.</p>
+                    <ul class="feature-list">
+                        <li>Sub-millisecond response times</li>
+                        <li>Auto-scaling infrastructure</li>
+                        <li>Global edge deployment</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h4>AI Intelligence</h4>
+                    <p>Advanced AI models provide predictive analytics, automated decision-making, and intelligent insights.</p>
+                    <ul class="feature-list">
+                        <li>Predictive analytics</li>
+                        <li>Automated workflows</li>
+                        <li>Real-time insights</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Platform Modules -->
+<section class="platform-modules py-5 bg-dark">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="display-4 fw-bold mb-4">Unified Platform Modules</h2>
+                <p class="lead text-muted">Complete end-to-end enterprise solution</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="module-card text-center">
+                    <div class="module-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h5>TRAXOVO Analytics</h5>
+                    <p>Advanced performance tracking and optimization</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="module-card text-center">
+                    <div class="module-icon">
+                        <i class="fas fa-layers"></i>
+                    </div>
+                    <h5>Dynamic Workflow</h5>
+                    <p>Intelligent process automation and control</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="module-card text-center">
+                    <div class="module-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h5>Joint Data Platform</h5>
+                    <p>Unified data management and analytics</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="module-card text-center">
+                    <div class="module-icon">
+                        <i class="fas fa-bitcoin-sign"></i>
+                    </div>
+                    <h5>Crypto Trading</h5>
+                    <p>Advanced cryptocurrency trading platform</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="enterprise-cta py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="display-4 fw-bold mb-4">Ready to Transform Your Enterprise?</h2>
+                <p class="lead mb-5">Join thousands of enterprises already leveraging NEXUS for competitive advantage</p>
+                <div class="cta-actions">
+                    <a href="/auth/login" class="btn btn-primary btn-lg px-5 py-3 me-3">
+                        <i class="fas fa-rocket me-2"></i>Get Started Now
+                    </a>
+                    <a href="/contact" class="btn btn-outline-primary btn-lg px-5 py-3">
+                        <i class="fas fa-phone me-2"></i>Contact Sales
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.enterprise-hero {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    position: relative;
+}
+
+.hero-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, #fff 0%, #0d6efd 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.trust-metric {
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--bs-primary);
+}
+
+.metric-label {
+    font-size: 0.875rem;
+    color: var(--bs-secondary);
+}
+
+.platform-preview {
+    perspective: 1000px;
+}
+
+.preview-window {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    transform: rotateY(-5deg) rotateX(5deg);
+    transition: transform 0.3s ease;
+}
+
+.preview-window:hover {
+    transform: rotateY(0deg) rotateX(0deg);
+}
+
+.window-header {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 12px 12px 0 0;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.window-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.control {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.control.red { background: #ff5f56; }
+.control.yellow { background: #ffbd2e; }
+.control.green { background: #27ca3f; }
+
+.window-title {
+    font-weight: 600;
+    color: #495057;
+}
+
+.dashboard-preview {
+    display: flex;
+    height: 300px;
+}
+
+.preview-sidebar {
+    width: 200px;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-right: 1px solid #dee2e6;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sidebar-item:hover,
+.sidebar-item.active {
+    background: var(--bs-primary);
+    color: white;
+}
+
+.preview-main {
+    flex: 1;
+    padding: 1rem;
+}
+
+.preview-metrics {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.metric-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    flex: 1;
+}
+
+.metric-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.metric-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #212529;
+}
+
+.metric-desc {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.preview-chart {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    height: 120px;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: white;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+}
+
+.feature-list li {
+    padding: 0.25rem 0;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.feature-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--bs-success);
+    font-weight: bold;
+}
+
+.module-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 2rem;
+    transition: transform 0.3s ease;
+}
+
+.module-card:hover {
+    transform: translateY(-5px);
+}
+
+.module-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--bs-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.enterprise-cta {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%);
+}
+</style>
+{% endblock %}
