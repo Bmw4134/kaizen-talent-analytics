@@ -830,41 +830,55 @@
         
         // Navigation Functions
         function showView(viewId) {
-            // Hide all views
-            document.querySelectorAll('.content-view').forEach(view => {
-                view.classList.remove('active');
-            });
-            
-            // Remove active from all nav items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Show selected view
-            document.getElementById(viewId).classList.add('active');
-            
-            // Update active nav item
-            event.target.classList.add('active');
-            
-            // Update title
-            const titles = {
-                'dashboard': 'Dashboard Overview',
-                'browser': 'Browser Automation',
-                'api-tests': 'API Testing Console',
-                'logs': 'System Logs & Runtime',
-                'recovery': 'Agent Recovery',
-                'config': 'Configuration & Settings',
-                'voice': 'Voice Command Interface'
-            };
-            
-            document.getElementById('currentViewTitle').textContent = titles[viewId] || 'NEXUS Control';
-            currentView = viewId;
-            
-            // Auto-focus relevant elements
-            if (viewId === 'browser') {
-                document.getElementById('browserUrl').focus();
-            } else if (viewId === 'api-tests') {
-                document.getElementById('apiUrl').focus();
+            try {
+                // Hide all views
+                document.querySelectorAll('.content-view').forEach(view => {
+                    view.classList.remove('active');
+                });
+                
+                // Remove active from all nav items
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Show selected view
+                const selectedView = document.getElementById(viewId);
+                if (selectedView) {
+                    selectedView.classList.add('active');
+                }
+                
+                // Update active nav item
+                if (event && event.target) {
+                    event.target.classList.add('active');
+                }
+                
+                // Update title
+                const titles = {
+                    'dashboard': 'Dashboard Overview',
+                    'browser': 'Browser Automation',
+                    'api-tests': 'API Testing Console',
+                    'logs': 'System Logs & Runtime',
+                    'recovery': 'Agent Recovery',
+                    'config': 'Configuration & Settings',
+                    'voice': 'Voice Command Interface'
+                };
+                
+                const titleElement = document.getElementById('currentViewTitle');
+                if (titleElement) {
+                    titleElement.textContent = titles[viewId] || 'NEXUS Control';
+                }
+                currentView = viewId;
+                
+                // Auto-focus relevant elements
+                if (viewId === 'browser') {
+                    const browserUrl = document.getElementById('browserUrl');
+                    if (browserUrl) browserUrl.focus();
+                } else if (viewId === 'api-tests') {
+                    const apiUrl = document.getElementById('apiUrl');
+                    if (apiUrl) apiUrl.focus();
+                }
+            } catch (error) {
+                console.error('Error in showView:', error);
             }
         }
         
