@@ -1,0 +1,353 @@
+{% extends "dashboard.html" %}
+
+{% block content %}
+<div data-dashboard-name="traxovo" class="fade-in">
+    <!-- Dashboard Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-6 mb-2">
+                        <i class="fas fa-activity me-3 text-primary"></i>
+                        TRAXOVO Dashboard
+                    </h1>
+                    <p class="text-muted">Advanced tracking and optimization system</p>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                            <li class="breadcrumb-item">Dashboards</li>
+                            <li class="breadcrumb-item active">TRAXOVO</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex gap-2">
+                    <button id="refresh-dashboard" class="btn btn-primary">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button id="dashboard-settings" class="btn btn-outline-secondary">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                    <button id="export-data" class="btn btn-outline-info">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Navigation -->
+    <div class="dashboard-nav">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('dashboard', dashboard_name='traxovo') }}">
+                    <i class="fas fa-activity me-1"></i>TRAXOVO
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard', dashboard_name='dwc') }}">
+                    <i class="fas fa-layers me-1"></i>DWC
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard', dashboard_name='jdd') }}">
+                    <i class="fas fa-database me-1"></i>JDD
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard', dashboard_name='crypto_nexus_trade') }}">
+                    <i class="fas fa-chart-line me-1"></i>CryptoNexus
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Error Container -->
+    <div id="error-container"></div>
+
+    <!-- Dashboard Status -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Dashboard Status</h6>
+                            <span id="dashboard-status" class="badge bg-success">
+                                {% if dashboard_data and dashboard_data.status %}
+                                    {{ dashboard_data.status.upper() }}
+                                {% else %}
+                                    INITIALIZING
+                                {% endif %}
+                            </span>
+                            {% if dashboard_data and dashboard_data.version %}
+                                <span class="badge bg-secondary ms-2">v{{ dashboard_data.version }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">Auto-refresh: 
+                                <div class="form-check form-switch d-inline-block ms-2">
+                                    <input class="form-check-input" type="checkbox" id="auto-refresh-toggle" checked>
+                                </div>
+                            </small>
+                            <div id="last-refresh" class="small text-muted">
+                                Last updated: 
+                                {% if dashboard_data and dashboard_data.timestamp %}
+                                    {{ dashboard_data.timestamp }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intelligence Insights -->
+    {% if dashboard_data and dashboard_data.intelligence %}
+    <div id="intelligence-insights" class="mb-4">
+        <div class="alert alert-primary">
+            <h6><i class="fas fa-brain me-2"></i>Quantum Nexus Intelligence</h6>
+            <p class="mb-1">{{ dashboard_data.intelligence.insights }}</p>
+            <small class="text-muted">
+                Optimization Score: {{ dashboard_data.intelligence.optimization_score | round(2) }}
+                | Processed: {{ dashboard_data.intelligence.processed_at }}
+            </small>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Key Metrics -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h5 class="mb-3">
+                <i class="fas fa-chart-bar me-2"></i>
+                Key Tracking Metrics
+            </h5>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value" id="active-tracks">
+                    {% if dashboard_data and dashboard_data.metrics %}
+                        {{ dashboard_data.metrics.active_tracks or 0 }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </div>
+                <div class="metric-label">Active Tracks</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value" id="optimization-score">
+                    {% if dashboard_data and dashboard_data.metrics %}
+                        {{ (dashboard_data.metrics.optimization_score or 0) | round(2) }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </div>
+                <div class="metric-label">Optimization Score</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value" id="system-efficiency">
+                    {% if dashboard_data and dashboard_data.metrics %}
+                        {{ (dashboard_data.metrics.system_efficiency or 0) | round(1) }}%
+                    {% else %}
+                        --%
+                    {% endif %}
+                </div>
+                <div class="metric-label">System Efficiency</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="metric-card">
+                <div class="metric-value">
+                    {% if dashboard_data and dashboard_data.metrics and dashboard_data.metrics.alerts %}
+                        {{ dashboard_data.metrics.alerts | length }}
+                    {% else %}
+                        0
+                    {% endif %}
+                </div>
+                <div class="metric-label">Active Alerts</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optimization Recommendations -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        Optimization Recommendations
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="optimization-recommendations">
+                        {% if dashboard_data and dashboard_data.optimization and dashboard_data.optimization.recommendations %}
+                            {% for rec in dashboard_data.optimization.recommendations %}
+                            <div class="alert alert-info">
+                                <strong>{{ rec.title or 'Recommendation' }}</strong>
+                                <p class="mb-0">{{ rec.description or 'No description available' }}</p>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No optimization recommendations available at this time.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-cog me-2"></i>
+                        System Performance
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if dashboard_data and dashboard_data.optimization %}
+                    <div class="mb-3">
+                        <label class="form-label small">Efficiency Rating</label>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: {{ (dashboard_data.optimization.efficiency_rating or 0) * 100 }}%">
+                                {{ (dashboard_data.optimization.efficiency_rating or 0) | round(2) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small">Status</label>
+                        <div>
+                            <span class="badge bg-{{ 'success' if dashboard_data.optimization.status == 'ready' else 'warning' }}">
+                                {{ dashboard_data.optimization.status or 'Unknown' }}
+                            </span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Performance data not available</p>
+                    {% endif %}
+                    
+                    <div class="d-grid">
+                        <button class="btn btn-outline-primary btn-sm" onclick="runOptimization()">
+                            <i class="fas fa-play me-1"></i>
+                            Run Optimization
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Alerts -->
+    {% if dashboard_data and dashboard_data.metrics and dashboard_data.metrics.alerts %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        System Alerts
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% for alert in dashboard_data.metrics.alerts %}
+                    <div class="alert alert-warning">
+                        <strong>{{ alert.title or 'System Alert' }}</strong>
+                        <p class="mb-0">{{ alert.message or 'Alert details not available' }}</p>
+                        <small class="text-muted">{{ alert.timestamp or 'Unknown time' }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- QNI Metadata -->
+    {% if dashboard_data and dashboard_data.qni_metadata %}
+    <div id="qni-metadata" class="mb-4">
+        <div class="card border-primary">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="fas fa-brain me-2"></i>
+                    QNI Processing Information
+                </h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <small class="text-muted">Processing Time</small>
+                        <div>{{ dashboard_data.qni_metadata.processing_time_ms or 0 }}ms</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Confidence Score</small>
+                        <div>{{ (dashboard_data.qni_metadata.confidence_score or 0) | round(2) }}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Last Processed</small>
+                        <div>{{ dashboard_data.qni_metadata.timestamp or 'Unknown' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Error State -->
+    {% if dashboard_data and dashboard_data.error %}
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-danger">
+                <h6>
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    Dashboard Error
+                </h6>
+                <p class="mb-0">{{ dashboard_data.error }}</p>
+                <button class="btn btn-outline-danger btn-sm mt-2" onclick="window.location.reload()">
+                    <i class="fas fa-redo me-1"></i>
+                    Retry
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function runOptimization() {
+    // Placeholder for optimization functionality
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Running...';
+    
+    // Simulate optimization process
+    setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        
+        // Show success message
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-success alert-dismissible fade show';
+        alert.innerHTML = `
+            Optimization analysis completed successfully.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        const container = document.getElementById('optimization-recommendations');
+        container.insertBefore(alert, container.firstChild);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.remove();
+            }
+        }, 5000);
+    }, 2000);
+}
+</script>
+{% endblock %}
