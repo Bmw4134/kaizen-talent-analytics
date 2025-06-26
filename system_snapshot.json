@@ -1,0 +1,170 @@
+{
+  "snapshot_id": "master_sync_1749742970",
+  "timestamp": "2025-06-12T15:42:50.299987",
+  "system_health": {
+    "overall_score": 0.857,
+    "modules_operational": 7,
+    "users_active": 6,
+    "uptime": "99.9%",
+    "version": "3.0.0-master-sync"
+  },
+  "module_status": [
+    {
+      "name": "traxovo",
+      "category": "analytics",
+      "status": "recovered",
+      "health_score": 1.0,
+      "last_validated": "2025-06-12T15:42:48.049922"
+    },
+    {
+      "name": "dwc",
+      "category": "control",
+      "status": "recovered",
+      "health_score": 1.0,
+      "last_validated": "2025-06-12T15:42:48.231276"
+    },
+    {
+      "name": "jdd",
+      "category": "analytics",
+      "status": "recovered",
+      "health_score": 1.0,
+      "last_validated": "2025-06-12T15:42:48.409798"
+    },
+    {
+      "name": "crypto_nexus_trade",
+      "category": "trading",
+      "status": "recovered",
+      "health_score": 1.0,
+      "last_validated": "2025-06-12T15:42:48.588494"
+    },
+    {
+      "name": "quantum_intelligence_engine",
+      "category": "ai",
+      "status": "recovered",
+      "health_score": 1.0,
+      "last_validated": "2025-06-12T15:42:48.766535"
+    },
+    {
+      "name": "master_control",
+      "category": "control",
+      "status": "recovered",
+      "health_score": 0.5,
+      "last_validated": "2025-06-12T15:42:48.943888"
+    },
+    {
+      "name": "codex_intelligence",
+      "category": "ai",
+      "status": "recovered",
+      "health_score": 0.5,
+      "last_validated": "2025-06-12T15:42:49.122126"
+    }
+  ],
+  "user_status": [
+    "Watson (updated)",
+    "Nexus (updated)",
+    "Admin (updated)",
+    "MasterControl (updated)",
+    "Brett (updated)",
+    "SystemAdmin (updated)"
+  ],
+  "qpi_analytics": {
+    "traxovo": {
+      "score": 0.91,
+      "health": 1.0,
+      "usage": 0.8,
+      "performance": 0.9,
+      "priority": "high",
+      "last_calculated": "2025-06-12T15:42:49.836270"
+    },
+    "dwc": {
+      "score": 0.91,
+      "health": 1.0,
+      "usage": 0.8,
+      "performance": 0.9,
+      "priority": "high",
+      "last_calculated": "2025-06-12T15:42:49.836280"
+    },
+    "jdd": {
+      "score": 0.91,
+      "health": 1.0,
+      "usage": 0.8,
+      "performance": 0.9,
+      "priority": "high",
+      "last_calculated": "2025-06-12T15:42:49.836285"
+    },
+    "crypto_nexus_trade": {
+      "score": 0.91,
+      "health": 1.0,
+      "usage": 0.8,
+      "performance": 0.9,
+      "priority": "high",
+      "last_calculated": "2025-06-12T15:42:49.836288"
+    },
+    "quantum_intelligence_engine": {
+      "score": 0.91,
+      "health": 1.0,
+      "usage": 0.8,
+      "performance": 0.9,
+      "priority": "high",
+      "last_calculated": "2025-06-12T15:42:49.836292"
+    },
+    "master_control": {
+      "score": 0.71,
+      "health": 0.5,
+      "usage": 0.8,
+      "performance": 0.9,
+      "priority": "medium",
+      "last_calculated": "2025-06-12T15:42:49.836295"
+    },
+    "codex_intelligence": {
+      "score": 0.71,
+      "health": 0.5,
+      "usage": 0.8,
+      "performance": 0.9,
+      "priority": "medium",
+      "last_calculated": "2025-06-12T15:42:49.836297"
+    }
+  },
+  "live_market_data": {
+    "status": "success",
+    "data": {
+      "BTC": {
+        "price": 107368,
+        "change_24h": -2.21,
+        "volume_24h": 32794396918.69133,
+        "market_cap": 2133808112182.3726,
+        "signal": "Sell",
+        "timestamp": "2025-06-12T15:42:50.299772"
+      },
+      "ADA": {
+        "price": 0.682935,
+        "change_24h": -5.99,
+        "volume_24h": 601291207.7715906,
+        "market_cap": 24669958651.337074,
+        "signal": "Strong Sell",
+        "timestamp": "2025-06-12T15:42:50.299784"
+      },
+      "ETH": {
+        "price": 2754.27,
+        "change_24h": -4.03,
+        "volume_24h": 26125727239.317684,
+        "market_cap": 332562579027.634,
+        "signal": "Sell",
+        "timestamp": "2025-06-12T15:42:50.299788"
+      },
+      "SOL": {
+        "price": 158.5,
+        "change_24h": -4.91,
+        "volume_24h": 4032459862.1961865,
+        "market_cap": 83189399180.57246,
+        "signal": "Sell",
+        "timestamp": "2025-06-12T15:42:50.299791"
+      }
+    },
+    "source": "CoinGecko API",
+    "timestamp": "2025-06-12T15:42:50.299793"
+  },
+  "errors_resolved": 0,
+  "validation_cycles": 1,
+  "recovery_complete": true
+}
