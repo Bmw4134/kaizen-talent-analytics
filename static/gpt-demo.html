@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS GPT Integration Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #0d1117; color: #e6edf3; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh; padding: 20px;
+        }
+        .demo-container { 
+            max-width: 1400px; margin: 0 auto; 
+        }
+        .demo-header { 
+            background: linear-gradient(135deg, #10b981, #059669); 
+            color: white; padding: 20px; border-radius: 12px; 
+            margin-bottom: 30px; text-align: center;
+        }
+        .demo-grid { 
+            display: grid; grid-template-columns: 1fr 1fr; 
+            gap: 30px; margin-bottom: 30px;
+        }
+        .demo-panel { 
+            background: #161b22; border: 1px solid #30363d; 
+            border-radius: 12px; padding: 20px;
+        }
+        .demo-title { 
+            color: #10b981; font-size: 18px; font-weight: 600; 
+            margin-bottom: 15px; display: flex; align-items: center; gap: 10px;
+        }
+        .schema-preview { 
+            background: #0d1117; border: 1px solid #21262d; 
+            border-radius: 6px; padding: 15px; margin: 15px 0;
+            font-family: 'Monaco', 'Menlo', monospace; font-size: 12px;
+            max-height: 300px; overflow-y: auto;
+        }
+        .action-btn { 
+            background: #10b981; color: white; border: none; 
+            padding: 10px 20px; border-radius: 6px; cursor: pointer;
+            font-size: 14px; margin: 5px; width: 100%;
+        }
+        .action-btn:hover { background: #059669; }
+        .step-indicator {
+            background: #1c2128; border: 1px solid #30363d; 
+            border-radius: 8px; padding: 20px; margin: 20px 0;
+        }
+        .step { 
+            margin: 10px 0; padding-left: 20px; position: relative;
+        }
+        .step::before { 
+            content: "→"; position: absolute; left: 0; color: #10b981; font-weight: bold;
+        }
+        .live-demo { 
+            background: #21262d; border-radius: 8px; padding: 20px;
+            border: 2px solid #10b981;
+        }
+        .copy-success {
+            background: #059669; color: white; padding: 5px 10px;
+            border-radius: 4px; font-size: 12px; margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🔧 NEXUS GPT Integration Demo</h1>
+            <p>Autonomous GPT action creation for ChatGPT g-682f5186fdbc81919062447f795d91fd</p>
+            <p><strong>Status:</strong> <span id="connectionStatus">Ready for Integration</span></p>
+        </div>
+
+        <div class="live-demo">
+            <div class="demo-title">
+                🎯 Live Integration Process
+            </div>
+            <div id="integrationSteps">
+                <div class="step">Loading NEXUS action schemas...</div>
+                <div class="step">Preparing GPT integration interface...</div>
+                <div class="step">Ready to copy schemas to ChatGPT editor</div>
+            </div>
+        </div>
+        
+        <div class="demo-grid">
+            <!-- Schema 1: Dashboard Control -->
+            <div class="demo-panel">
+                <div class="demo-title">
+                    📊 NEXUS Dashboard Control
+                </div>
+                <p style="color: #b3b3b3; margin-bottom: 15px;">
+                    Access TRAXOVO, DWC, JDD, and CryptoNexusTrade dashboards
+                </p>
+                <div class="schema-preview" id="dashboardSchema">{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "NEXUS Dashboard API",
+    "description": "Control NEXUS dashboard systems",
+    "version": "v1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://3bd20c6c-a1d3-487a-bfaf-d020ca23564f-00-131vah36ofz2i.riker.replit.dev"
+    }
+  ],
+  "paths": {
+    "/api/dashboard-data/{dashboard_name}": {
+      "get": {
+        "description": "Get dashboard data",
+        "operationId": "GetDashboardData",
+        "parameters": [
+          {
+            "name": "dashboard_name",
+            "in": "path",
+            "description": "Dashboard name (traxovo, dwc, jdd, crypto_nexus_trade)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dashboard data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}</div>
+                <button class="action-btn" onclick="copyAndDemo('dashboardSchema', 'Dashboard Control')">
+                    Copy Schema & Demo Integration
+                </button>
+            </div>
+
+            <!-- Schema 2: Intelligence Processing -->
+            <div class="demo-panel">
+                <div class="demo-title">
+                    🧠 NEXUS Intelligence Processing
+                </div>
+                <p style="color: #b3b3b3; margin-bottom: 15px;">
+                    Execute quantum intelligence analysis and automation
+                </p>
+                <div class="schema-preview" id="intelligenceSchema">{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "NEXUS Intelligence API",
+    "description": "Execute quantum intelligence processing",
+    "version": "v1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://3bd20c6c-a1d3-487a-bfaf-d020ca23564f-00-131vah36ofz2i.riker.replit.dev"
+    }
+  ],
+  "paths": {
+    "/api/intelligence-process": {
+      "post": {
+        "description": "Process intelligence queries",
+        "operationId": "ProcessIntelligence",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "Intelligence query or command"
+                  },
+                  "context": {
+                    "type": "string",
+                    "description": "Additional context"
+                  }
+                },
+                "required": ["query"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Intelligence response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": { "type": "string" },
+                    "confidence": { "type": "number" },
+                    "recommendations": { "type": "array" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}</div>
+                <button class="action-btn" onclick="copyAndDemo('intelligenceSchema', 'Intelligence Processing')">
+                    Copy Schema & Demo Integration
+                </button>
+            </div>
+
+            <!-- Schema 3: System Status -->
+            <div class="demo-panel">
+                <div class="demo-title">
+                    ⚡ NEXUS System Status
+                </div>
+                <p style="color: #b3b3b3; margin-bottom: 15px;">
+                    Real-time system health and performance metrics
+                </p>
+                <div class="schema-preview" id="statusSchema">{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "NEXUS System Status API",
+    "description": "Get system status and health metrics",
+    "version": "v1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://3bd20c6c-a1d3-487a-bfaf-d020ca23564f-00-131vah36ofz2i.riker.replit.dev"
+    }
+  ],
+  "paths": {
+    "/api/system-status": {
+      "get": {
+        "description": "Get system status",
+        "operationId": "GetSystemStatus",
+        "responses": {
+          "200": {
+            "description": "System status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "uptime": { "type": "number" },
+                    "modules": { "type": "object" },
+                    "performance": { "type": "object" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}</div>
+                <button class="action-btn" onclick="copyAndDemo('statusSchema', 'System Status')">
+                    Copy Schema & Demo Integration
+                </button>
+            </div>
+
+            <!-- Schema 4: Browser Automation -->
+            <div class="demo-panel">
+                <div class="demo-title">
+                    🌐 NEXUS Browser Automation
+                </div>
+                <p style="color: #b3b3b3; margin-bottom: 15px;">
+                    PTNI neural breakthrough and web automation
+                </p>
+                <div class="schema-preview" id="browserSchema">{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "NEXUS Browser Automation API",
+    "description": "Execute browser automation and PTNI neural breakthrough",
+    "version": "v1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://3bd20c6c-a1d3-487a-bfaf-d020ca23564f-00-131vah36ofz2i.riker.replit.dev"
+    }
+  ],
+  "paths": {
+    "/ptni-bypass/{url}": {
+      "get": {
+        "description": "Execute PTNI neural breakthrough for any URL",
+        "operationId": "PTNIBreakthrough",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "path",
+            "description": "Target URL for neural breakthrough",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Neural breakthrough result",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}</div>
+                <button class="action-btn" onclick="copyAndDemo('browserSchema', 'Browser Automation')">
+                    Copy Schema & Demo Integration
+                </button>
+            </div>
+        </div>
+
+        <div class="step-indicator">
+            <h3 style="color: #10b981; margin-bottom: 15px;">Integration Instructions</h3>
+            <div class="step">Click any "Copy Schema & Demo Integration" button above</div>
+            <div class="step">Open your ChatGPT GPT editor in another tab</div>
+            <div class="step">Navigate to the "Add actions" section</div>
+            <div class="step">Paste the copied schema into the "Schema" field</div>
+            <div class="step">Keep Authentication set to "None"</div>
+            <div class="step">Click "Create action" to connect to NEXUS</div>
+            <div class="step">Test with queries like: "Get TRAXOVO dashboard data"</div>
+        </div>
+
+        <div class="live-demo">
+            <div class="demo-title">
+                🚀 Test Commands After Integration
+            </div>
+            <div style="margin-top: 15px;">
+                <p><strong>Dashboard Control:</strong> "Get TRAXOVO dashboard data"</p>
+                <p><strong>Intelligence:</strong> "Process intelligence query about market trends"</p>
+                <p><strong>System Status:</strong> "Check NEXUS system status"</p>
+                <p><strong>Browser Automation:</strong> "Use PTNI to access website data"</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyAndDemo(elementId, actionName) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(function() {
+                const btn = element.nextElementSibling;
+                const originalText = btn.textContent;
+                btn.innerHTML = `✓ Copied ${actionName} Schema! <span class="copy-success">Ready to Paste</span>`;
+                
+                // Update integration steps
+                const steps = document.getElementById('integrationSteps');
+                steps.innerHTML = `
+                    <div class="step">✓ ${actionName} schema copied to clipboard</div>
+                    <div class="step">→ Switch to your ChatGPT GPT editor tab</div>
+                    <div class="step">→ Paste schema in "Add actions" section</div>
+                    <div class="step">→ Click "Create action" to complete integration</div>
+                `;
+                
+                // Update status
+                document.getElementById('connectionStatus').textContent = `${actionName} Schema Ready for Integration`;
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 5000);
+                
+            }).catch(function(err) {
+                console.error('Could not copy text: ', err);
+                alert('Copy failed. Please manually select and copy the schema.');
+            });
+        }
+        
+        // Auto-update status
+        setInterval(() => {
+            const statusElement = document.getElementById('connectionStatus');
+            if (statusElement.textContent === 'Ready for Integration') {
+                statusElement.textContent = 'NEXUS Systems Online - Ready for GPT Integration';
+                setTimeout(() => {
+                    statusElement.textContent = 'Ready for Integration';
+                }, 2000);
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
