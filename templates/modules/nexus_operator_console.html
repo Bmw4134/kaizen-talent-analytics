@@ -1,0 +1,565 @@
+<!-- Nexus Operator Console Module -->
+<div class="nexus-operator-console">
+    <div class="console-header">
+        <h3><i class="fas fa-terminal"></i> Nexus Operator Console</h3>
+        <div class="console-status">
+            <span class="status-indicator active"></span>
+            <span>Console Active</span>
+        </div>
+    </div>
+
+    <div class="console-layout">
+        <!-- Left Panel - Diagnostics -->
+        <div class="diagnostics-panel">
+            <div class="panel-header">
+                <h5><i class="fas fa-stethoscope"></i> System Diagnostics</h5>
+                <button class="btn btn-sm btn-outline-success" onclick="runFullDiagnostic()">
+                    <i class="fas fa-play"></i> Run Diagnostic
+                </button>
+            </div>
+            
+            <div class="diagnostic-grid">
+                <div class="diagnostic-item">
+                    <div class="diagnostic-label">Database Connection</div>
+                    <div class="diagnostic-status ok">
+                        <i class="fas fa-check-circle"></i> Operational
+                    </div>
+                </div>
+                <div class="diagnostic-item">
+                    <div class="diagnostic-label">API Endpoints</div>
+                    <div class="diagnostic-status ok">
+                        <i class="fas fa-check-circle"></i> All Responding
+                    </div>
+                </div>
+                <div class="diagnostic-item">
+                    <div class="diagnostic-label">Module Health</div>
+                    <div class="diagnostic-status warning">
+                        <i class="fas fa-exclamation-triangle"></i> 2 Warnings
+                    </div>
+                </div>
+                <div class="diagnostic-item">
+                    <div class="diagnostic-label">Memory Usage</div>
+                    <div class="diagnostic-status ok">
+                        <i class="fas fa-check-circle"></i> 68% Used
+                    </div>
+                </div>
+                <div class="diagnostic-item">
+                    <div class="diagnostic-label">CPU Load</div>
+                    <div class="diagnostic-status ok">
+                        <i class="fas fa-check-circle"></i> 23% Load
+                    </div>
+                </div>
+                <div class="diagnostic-item">
+                    <div class="diagnostic-label">Network Status</div>
+                    <div class="diagnostic-status ok">
+                        <i class="fas fa-check-circle"></i> Connected
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-results">
+                <h6><i class="fas fa-clipboard-check"></i> QA Test Results</h6>
+                <div id="qa-log" class="qa-log">
+                    <div class="qa-entry pass">
+                        <span class="timestamp">[13:45:23]</span>
+                        <span class="test-name">TRAXOVO Module Load</span>
+                        <span class="result">PASS</span>
+                    </div>
+                    <div class="qa-entry pass">
+                        <span class="timestamp">[13:45:25]</span>
+                        <span class="test-name">DWC API Response</span>
+                        <span class="result">PASS</span>
+                    </div>
+                    <div class="qa-entry fail">
+                        <span class="timestamp">[13:45:27]</span>
+                        <span class="test-name">Crypto Module Sync</span>
+                        <span class="result">FAIL - Timeout</span>
+                    </div>
+                    <div class="qa-entry pass">
+                        <span class="timestamp">[13:45:30]</span>
+                        <span class="test-name">Quantum Intelligence</span>
+                        <span class="result">PASS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center Panel - Command Terminal -->
+        <div class="command-terminal">
+            <div class="terminal-header">
+                <h5><i class="fas fa-code"></i> Command Interface</h5>
+                <div class="terminal-controls">
+                    <button class="btn btn-sm btn-outline-danger" onclick="clearTerminal()">Clear</button>
+                    <button class="btn btn-sm btn-outline-info" onclick="showHelp()">Help</button>
+                </div>
+            </div>
+            
+            <div class="terminal-output" id="terminal-output">
+                <div class="terminal-line">
+                    <span class="prompt">nexus@operator:~$</span>
+                    <span class="command">system status</span>
+                </div>
+                <div class="terminal-response">
+                    NEXUS System Status: OPERATIONAL<br>
+                    Active Modules: 12/12<br>
+                    System Health: 96.8%<br>
+                    Uptime: 847h 23m 15s
+                </div>
+                <div class="terminal-line">
+                    <span class="prompt">nexus@operator:~$</span>
+                    <span class="command">module scan --all</span>
+                </div>
+                <div class="terminal-response">
+                    Scanning all modules...<br>
+                    ✓ TRAXOVO: Operational<br>
+                    ✓ DWC: Operational<br>
+                    ✓ JDD: Operational<br>
+                    ⚠ Crypto Trading Hub: Minor warnings<br>
+                    ✓ Quantum Intelligence: Operational<br>
+                    ✓ Master Control: Operational<br>
+                    Scan complete.
+                </div>
+            </div>
+            
+            <div class="terminal-input-area">
+                <span class="prompt">nexus@operator:~$</span>
+                <input type="text" id="terminal-input" class="terminal-input" placeholder="Enter command..." onkeypress="handleCommand(event)">
+            </div>
+        </div>
+
+        <!-- Right Panel - Trigger Controls -->
+        <div class="trigger-controls">
+            <div class="panel-header">
+                <h5><i class="fas fa-sliders-h"></i> System Triggers</h5>
+            </div>
+            
+            <div class="trigger-categories">
+                <div class="trigger-category">
+                    <h6>Automation Triggers</h6>
+                    <div class="trigger-item">
+                        <label class="form-check-label">Auto-Recovery</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="auto-recovery" checked>
+                        </div>
+                    </div>
+                    <div class="trigger-item">
+                        <label class="form-check-label">Module Sync</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="module-sync" checked>
+                        </div>
+                    </div>
+                    <div class="trigger-item">
+                        <label class="form-check-label">Performance Monitor</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="perf-monitor" checked>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="trigger-category">
+                    <h6>Alert Triggers</h6>
+                    <div class="trigger-item">
+                        <label class="form-check-label">System Alerts</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="system-alerts" checked>
+                        </div>
+                    </div>
+                    <div class="trigger-item">
+                        <label class="form-check-label">Security Warnings</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="security-alerts" checked>
+                        </div>
+                    </div>
+                    <div class="trigger-item">
+                        <label class="form-check-label">Performance Alerts</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="perf-alerts">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="trigger-category">
+                    <h6>Manual Triggers</h6>
+                    <button class="btn btn-outline-warning btn-sm w-100 mb-2" onclick="triggerMasterSync()">
+                        <i class="fas fa-sync"></i> Master Sync
+                    </button>
+                    <button class="btn btn-outline-info btn-sm w-100 mb-2" onclick="triggerModuleReload()">
+                        <i class="fas fa-redo"></i> Module Reload
+                    </button>
+                    <button class="btn btn-outline-success btn-sm w-100 mb-2" onclick="triggerHealthCheck()">
+                        <i class="fas fa-heart"></i> Health Check
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm w-100" onclick="triggerEmergencyStop()">
+                        <i class="fas fa-stop"></i> Emergency Stop
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.nexus-operator-console {
+    background: #0a0e1a;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    min-height: 600px;
+}
+
+.console-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #333;
+}
+
+.console-header h3 {
+    color: #00ff88;
+    margin: 0;
+}
+
+.console-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #28a745;
+    animation: pulse 2s infinite;
+}
+
+.console-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 1.5rem;
+    height: 100%;
+}
+
+.diagnostics-panel, .command-terminal, .trigger-controls {
+    background: #1a1a2e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #333;
+}
+
+.panel-header h5 {
+    color: #00ff88;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.diagnostic-grid {
+    display: grid;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.diagnostic-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: #16213e;
+    border-radius: 4px;
+}
+
+.diagnostic-label {
+    font-size: 0.85rem;
+    color: #ccc;
+}
+
+.diagnostic-status {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.diagnostic-status.ok {
+    color: #28a745;
+}
+
+.diagnostic-status.warning {
+    color: #ffc107;
+}
+
+.diagnostic-status.error {
+    color: #dc3545;
+}
+
+.qa-results h6 {
+    color: #00bfff;
+    margin-bottom: 1rem;
+}
+
+.qa-log {
+    max-height: 200px;
+    overflow-y: auto;
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-family: monospace;
+    font-size: 0.8rem;
+}
+
+.qa-entry {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.qa-entry .timestamp {
+    color: #666;
+}
+
+.qa-entry .test-name {
+    color: #ccc;
+    flex: 1;
+}
+
+.qa-entry.pass .result {
+    color: #28a745;
+}
+
+.qa-entry.fail .result {
+    color: #dc3545;
+}
+
+.command-terminal {
+    display: flex;
+    flex-direction: column;
+}
+
+.terminal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #333;
+}
+
+.terminal-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.terminal-output {
+    flex: 1;
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 1rem;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    max-height: 400px;
+}
+
+.terminal-line {
+    margin-bottom: 0.5rem;
+}
+
+.prompt {
+    color: #00ff88;
+    font-weight: bold;
+}
+
+.command {
+    color: #fff;
+    margin-left: 0.5rem;
+}
+
+.terminal-response {
+    color: #ccc;
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+    white-space: pre-line;
+}
+
+.terminal-input-area {
+    display: flex;
+    align-items: center;
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-family: 'Courier New', monospace;
+}
+
+.terminal-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    outline: none;
+    font-family: inherit;
+    margin-left: 0.5rem;
+}
+
+.trigger-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.trigger-category h6 {
+    color: #00bfff;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 0.5rem;
+}
+
+.trigger-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.trigger-item label {
+    font-size: 0.9rem;
+    color: #ccc;
+    margin: 0;
+}
+
+@media (max-width: 1200px) {
+    .console-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+</style>
+
+<script>
+function runFullDiagnostic() {
+    const diagnostics = document.querySelectorAll('.diagnostic-status');
+    diagnostics.forEach(status => {
+        status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+        status.className = 'diagnostic-status';
+    });
+    
+    setTimeout(() => {
+        location.reload();
+    }, 3000);
+}
+
+function clearTerminal() {
+    document.getElementById('terminal-output').innerHTML = '';
+}
+
+function showHelp() {
+    const output = document.getElementById('terminal-output');
+    const helpText = `
+<div class="terminal-line">
+    <span class="prompt">nexus@operator:~$</span>
+    <span class="command">help</span>
+</div>
+<div class="terminal-response">
+Available Commands:
+- system status: Show system status
+- module scan: Scan all modules
+- module reload [name]: Reload specific module
+- health check: Run system health check
+- sync master: Execute master synchronization
+- clear: Clear terminal
+- help: Show this help
+</div>`;
+    output.innerHTML += helpText;
+    output.scrollTop = output.scrollHeight;
+}
+
+function handleCommand(event) {
+    if (event.key === 'Enter') {
+        const input = event.target;
+        const command = input.value.trim();
+        const output = document.getElementById('terminal-output');
+        
+        if (command) {
+            const commandLine = `
+<div class="terminal-line">
+    <span class="prompt">nexus@operator:~$</span>
+    <span class="command">${command}</span>
+</div>`;
+            
+            let response = '<div class="terminal-response">';
+            
+            switch(command.toLowerCase()) {
+                case 'system status':
+                    response += 'NEXUS System Status: OPERATIONAL<br>Active Modules: 12/12<br>System Health: 96.8%<br>Uptime: 847h 23m 15s';
+                    break;
+                case 'module scan':
+                    response += 'Scanning all modules...<br>✓ All modules operational<br>Scan complete.';
+                    break;
+                case 'health check':
+                    response += 'Running health check...<br>✓ Database: OK<br>✓ APIs: OK<br>✓ Memory: OK<br>Health check complete.';
+                    break;
+                case 'sync master':
+                    response += 'Initiating master sync...<br>✓ Modules synchronized<br>✓ Data integrity verified<br>Master sync complete.';
+                    break;
+                case 'clear':
+                    output.innerHTML = '';
+                    input.value = '';
+                    return;
+                default:
+                    response += `Command not found: ${command}<br>Type 'help' for available commands.`;
+            }
+            
+            response += '</div>';
+            output.innerHTML += commandLine + response;
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        input.value = '';
+    }
+}
+
+function triggerMasterSync() {
+    addTerminalOutput('sync master', 'Master sync initiated...<br>✓ All modules synchronized');
+}
+
+function triggerModuleReload() {
+    addTerminalOutput('module reload --all', 'Reloading all modules...<br>✓ Reload complete');
+}
+
+function triggerHealthCheck() {
+    addTerminalOutput('health check', 'Running comprehensive health check...<br>✓ All systems healthy');
+}
+
+function triggerEmergencyStop() {
+    if (confirm('Are you sure you want to trigger emergency stop?')) {
+        addTerminalOutput('emergency stop', '⚠ Emergency stop initiated<br>System entering safe mode...');
+    }
+}
+
+function addTerminalOutput(command, response) {
+    const output = document.getElementById('terminal-output');
+    const content = `
+<div class="terminal-line">
+    <span class="prompt">nexus@operator:~$</span>
+    <span class="command">${command}</span>
+</div>
+<div class="terminal-response">${response}</div>`;
+    output.innerHTML += content;
+    output.scrollTop = output.scrollHeight;
+}
+</script>
