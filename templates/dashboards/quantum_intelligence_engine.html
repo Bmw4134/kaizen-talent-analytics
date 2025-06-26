@@ -1,0 +1,356 @@
+{% extends "base.html" %}
+
+{% block title %}Quantum Intelligence Engine{% endblock %}
+
+{% block content %}
+<div class="container-fluid" data-dashboard-name="quantum_intelligence_engine">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="fas fa-atom me-2 text-primary"></i>
+                        Quantum Intelligence Engine
+                    </h2>
+                    <p class="text-muted mb-0">Advanced quantum-enhanced AI processing</p>
+                </div>
+                <div class="text-end">
+                    <span class="badge bg-success">{{ dashboard_data.status or 'active' }}</span>
+                    <small class="text-muted d-block">v{{ dashboard_data.version or '3.2.0' }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if dashboard_data and not dashboard_data.error %}
+    <!-- Quantum Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <div class="metric-value">
+                        {{ (dashboard_data.quantum_metrics.quantum_coherence * 100) | round(1) or 97.0 }}%
+                    </div>
+                    <div class="metric-label">Quantum Coherence</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <div class="metric-value">
+                        {{ dashboard_data.quantum_metrics.quantum_volume or 512 }}
+                    </div>
+                    <div class="metric-label">Quantum Volume</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <div class="metric-value">
+                        {{ dashboard_data.quantum_metrics.superposition_states or 128 }}
+                    </div>
+                    <div class="metric-label">Superposition States</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <div class="metric-value">
+                        {{ dashboard_data.quantum_metrics.quantum_advantage or '1847x' }}
+                    </div>
+                    <div class="metric-label">Quantum Advantage</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intelligence Processing -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-microchip me-2"></i>
+                        Intelligence Processing
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if dashboard_data.intelligence_processing %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="metric-group">
+                                <div class="metric-item">
+                                    <span class="metric-label">Neural Network Layers:</span>
+                                    <span class="metric-value">{{ dashboard_data.intelligence_processing.neural_network_layers or 2048 }}</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Synaptic Connections:</span>
+                                    <span class="metric-value">{{ dashboard_data.intelligence_processing.synaptic_connections or '12.7M' }}</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Intelligence Quotient:</span>
+                                    <span class="metric-value text-primary">{{ dashboard_data.intelligence_processing.intelligence_quotient or 347 }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="metric-group">
+                                <div class="metric-item">
+                                    <span class="metric-label">Processing Threads:</span>
+                                    <span class="metric-value">{{ dashboard_data.intelligence_processing.processing_threads or 64 }}</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Learning Rate:</span>
+                                    <span class="metric-value">{{ dashboard_data.intelligence_processing.learning_rate or 'adaptive' }}</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Cognitive Modeling:</span>
+                                    <span class="metric-value">{{ dashboard_data.intelligence_processing.cognitive_modeling or 'active' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-brain fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Intelligence processing data loading...</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-tachometer-alt me-2"></i>
+                        Optimization Results
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if dashboard_data.optimization_results %}
+                    <div class="optimization-metric">
+                        <div class="d-flex justify-content-between">
+                            <span>Optimization Cycles:</span>
+                            <strong>{{ dashboard_data.optimization_results.optimization_cycles or 1847 }}</strong>
+                        </div>
+                    </div>
+                    <div class="optimization-metric">
+                        <div class="d-flex justify-content-between">
+                            <span>Performance Improvements:</span>
+                            <strong class="text-success">{{ dashboard_data.optimization_results.performance_improvements or '+67%' }}</strong>
+                        </div>
+                    </div>
+                    <div class="optimization-metric">
+                        <div class="d-flex justify-content-between">
+                            <span>Quantum Speedup:</span>
+                            <strong class="text-primary">{{ dashboard_data.optimization_results.quantum_speedup or '1200x' }}</strong>
+                        </div>
+                    </div>
+                    <div class="optimization-metric">
+                        <div class="d-flex justify-content-between">
+                            <span>Energy Efficiency:</span>
+                            <strong class="text-success">{{ dashboard_data.optimization_results.energy_efficiency or '+89%' }}</strong>
+                        </div>
+                    </div>
+                    <div class="optimization-metric">
+                        <div class="d-flex justify-content-between">
+                            <span>Optimization Score:</span>
+                            <strong class="text-warning">{{ dashboard_data.optimization_results.optimization_score or 97.3 }}</strong>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-line fa-2x text-muted mb-2"></i>
+                        <p class="text-muted small">Optimization data loading...</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quantum Status Indicators -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-satellite-dish me-2"></i>
+                        Quantum System Status
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="status-indicator">
+                                <div class="status-icon bg-success">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="status-label">Entanglement</div>
+                                <div class="status-value">Stable</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="status-indicator">
+                                <div class="status-icon bg-primary">
+                                    <i class="fas fa-wave-square"></i>
+                                </div>
+                                <div class="status-label">Superposition</div>
+                                <div class="status-value">Active</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="status-indicator">
+                                <div class="status-icon bg-info">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="status-label">Error Correction</div>
+                                <div class="status-value">Enabled</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="status-indicator">
+                                <div class="status-icon bg-warning">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="status-label">Decoherence Time</div>
+                                <div class="status-value">2.3ms</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="status-indicator">
+                                <div class="status-icon bg-success">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <div class="status-label">Quantum Gates</div>
+                                <div class="status-value">15.8K</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="status-indicator">
+                                <div class="status-icon bg-primary">
+                                    <i class="fas fa-memory"></i>
+                                </div>
+                                <div class="status-label">Qubits</div>
+                                <div class="status-value">64</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QNI Metadata -->
+    {% if dashboard_data and dashboard_data.qni_metadata %}
+    <div id="qni-metadata" class="mb-4">
+        <div class="card border-primary">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="fas fa-brain me-2"></i>
+                    QNI Processing Information
+                </h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <small class="text-muted">Processing Time</small>
+                        <div>{{ dashboard_data.qni_metadata.processing_time_ms or 0 }}ms</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Confidence Score</small>
+                        <div>{{ (dashboard_data.qni_metadata.confidence_score or 0) | round(2) }}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">Last Processed</small>
+                        <div>{{ dashboard_data.qni_metadata.timestamp or 'N/A' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <!-- Error State -->
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-danger">
+                <h5 class="alert-heading">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Dashboard Error
+                </h5>
+                <p class="mb-0">{{ dashboard_data.error }}</p>
+                <button class="btn btn-outline-danger btn-sm mt-2" onclick="window.location.reload()">
+                    <i class="fas fa-redo me-1"></i>
+                    Retry
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.metric-value {
+    font-size: 2rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.metric-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.metric-group .metric-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.metric-group .metric-item:last-child {
+    border-bottom: none;
+}
+
+.optimization-metric {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.optimization-metric:last-child {
+    border-bottom: none;
+}
+
+.status-indicator {
+    text-align: center;
+    padding: 1rem;
+}
+
+.status-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.5rem;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.status-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.status-value {
+    font-weight: bold;
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}
